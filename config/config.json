@@ -1,21 +1,22 @@
 {
     "primarySQLConnection": {
-        "host": "localhost",
-        "port": 3307,
-        "username": "root",
-        "password": "Abcd1234",
-        "database": "test_{0}"
+        "host": "172.16.0.110",
+        "port": 6003,
+        "username": "dev",
+        "password": "comatic_dev@2022",
+        "database": "comatic_{0}"
     },
     "secondarySQLConnection": {
-        "host": "localhost",
-        "port": 3307,
-        "username": "root",
-        "password": "Abcd1234",
-        "database": "test_{0}"
+        "host": "172.16.0.110",
+        "port": 6003,
+        "username": "dev",
+        "password": "comatic_dev@2022",
+        "database": "comatic_{0}"
     },
     "redis": {
-        "host": "localhost",
-        "port": 6379,
-        "db": 1
+        "host": "172.16.0.110",
+        "port": 5001,
+        "password": "abcd1234",
+        "db": 2
     }
 }
