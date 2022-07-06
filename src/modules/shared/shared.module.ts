@@ -4,13 +4,15 @@ import QueriesList from './queries'
 import RepositoriesList from './repositories'
 import { ExampleModel } from './models/example.model';
 import { CommonModule, ScopeVariableModule } from 'be-core';
+import { PriceListModel } from './models/price-list.model';
 
 @Module({
     imports: [
         ScopeVariableModule,
         CommonModule,
         TypeOrmModule.forFeature([
-            ExampleModel
+            ExampleModel,
+            PriceListModel
         ])
     ],
     providers: [

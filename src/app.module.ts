@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { load } from './config';
 import { ExampleModule } from '@modules/example';
+import { PriceListModule } from '@modules/price-list';
 import { REQUEST } from '@nestjs/core';
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { CachingModule, CommonModule, HealthModule } from 'be-core';
@@ -34,7 +35,8 @@ console.log(__dirname + '/modules/shared/models/*{.ts,.js}')
     CommonModule,
     HealthModule,
     CachingModule,
-    ExampleModule
+    ExampleModule,
+    PriceListModule
   ]
 })
 export class AppModule {}
