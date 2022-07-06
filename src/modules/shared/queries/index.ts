@@ -2,7 +2,6 @@ import { IsNumberString } from 'class-validator';
 import { ExampleQueries } from './example.queries'
 import { PriceListQueries } from './price-list.queries'
 import { UomQueries } from './uom.queries'
-
 export default [
     ExampleQueries,
     PriceListQueries,
@@ -29,7 +28,8 @@ export class Paging {
     @IsNumberString()
     pageSize = 10
     searchText?: string
-    // @IsNumberString()
+    @IsNumberString()
     viewMode = 1
+
 
 }

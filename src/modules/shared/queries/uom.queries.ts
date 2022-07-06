@@ -29,30 +29,30 @@ export class UomQueries extends BaseQueries {
 
     public async getPagings(param: Paging) : Promise<object> 
     {
-        const currentRow = param.pageSize * (param.currentPage - 1)
+        const currentRow = param._pageSize * (param._currentPage - 1)
 
         let conds = "uom.isDeleted = false"
         if (param.searchText) {
             conds += ` AND uom.name like '${param.searchText}'`
         }
-        if (param.viewMode == 2)
+        if (param._viewMode === 2)
         {
             conds += ` AND uom.status = true`
         } 
-        else if (param.viewMode == 3) 
+        else if (param._viewMode === 3) 
         {      
             conds += ` AND uom.status = false`
         }
 
         const result = await this.uomRepository
         .createQueryBuilder("uom").where(conds)
-        .take(param.pageSize).skip(currentRow).getMany()
+        .take(param._pageSize).skip(currentRow).getMany()
 
         const totalRows = await this.uomRepository.createQueryBuilder("uom").where(conds).getCount()
         return  {
                     dataSource: result,
-                    currentPage: param.currentPage,
-                    currentPageSize: param.pageSize,
+                    currentPage: param._currentPage,
+                    currentPageSize: param._pageSize,
                     totalRows: totalRows,
                 };
 
