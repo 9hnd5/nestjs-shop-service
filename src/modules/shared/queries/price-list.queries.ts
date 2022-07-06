@@ -33,26 +33,25 @@ export class PriceListQueries extends BaseQueries {
     }
 
     public async getsPaging(currentPage: number, pageSize: number, searchText: string | undefined, viewMode: number): Promise<any> {
-        const condition = {
-            isDeleted: false,
-            name: searchText ? Like(`%${searchText}%`) : undefined,
-            status: {
-                2: PriceListStatus.Active,
-                3: PriceListStatus.Deactive
-            }[viewMode],
-            companyId: this.request.scopeVariable.tenantId ?? 0
-        };
-
-        const dataSource = await this.priceListRepository.findAndCount({
-            where: condition,
+        const [dataSource, totalRows] = await this.priceListRepository.findAndCount({
+            where: {
+                isDeleted: false,
+                name: searchText ? Like(`%${searchText}%`) : undefined,
+                status: {
+                    2: PriceListStatus.Active,
+                    3: PriceListStatus.Deactive
+                }[viewMode],
+                companyId: this.request.scopeVariable.tenantId ?? 0
+            },
             skip: pageSize * (currentPage - 1),
             take: pageSize
         });
         
         return {
-            dataSource: dataSource[0],
-            totalRows: dataSource[1],
-            currentPage, pageSize
+            dataSource,
+            totalRows,
+            currentPage,
+            pageSize
         };
     }
 }

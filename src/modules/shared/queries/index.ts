@@ -13,15 +13,9 @@ export class PagingQuery {
     @IsNumberString()
     currentPage: number = 1;
     searchText?: string;
-
-    // pageSize returned as string if used as query model
-    get _pageSize() { return parseInt(this.pageSize.toString()) }
-    get _currentPage() { return parseInt(this.currentPage.toString()) }
 }
 
 export class PriceListPagingQuery extends PagingQuery {
     @IsNumberString()
     viewMode: number = 2;
-
-    get _viewMode() { return parseInt(this.viewMode.toString()) }
 }

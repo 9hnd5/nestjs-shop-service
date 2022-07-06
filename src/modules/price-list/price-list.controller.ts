@@ -8,7 +8,7 @@ import { PriceListPagingQuery } from "@modules/shared/queries";
 import { FeatureConst } from "@constants/.";
 
 // <access modifier, optional>/<service name>/<version>/<controller>/<action>
-@Controller('/shop/v1/price-list')
+@Controller('/shop/v1/price-lists')
 @Injectable({ scope: Scope.REQUEST })
 @UseInterceptors(CoreResponseInterceptor)
 @ApiTags('Price List')
@@ -28,7 +28,7 @@ export class PriceListController extends BaseController {
     async getsPaging(
         @Query() query: PriceListPagingQuery,
     ) {
-        return await this.priceListQueries.getsPaging(query._currentPage, query._pageSize, query.searchText, query._viewMode);
+        return await this.priceListQueries.getsPaging(+query.currentPage, +query.pageSize, query.searchText, +query.viewMode);
     }   
 
     @Get(':id')

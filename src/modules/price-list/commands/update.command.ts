@@ -6,21 +6,25 @@ import {
 } from '@modules/shared/models/price-list.model'
 import { RequestHandler, BusinessException, BaseCommandHandler, BaseCommand } from 'be-core'
 import { PriceListQueries } from "@modules/shared/queries/price-list.queries";
-import { IsEnum, MaxLength } from "class-validator";
+import { IsEnum, IsNotEmpty, MaxLength } from "class-validator";
 import { MessageConst, PriceListStatus } from '@constants/.';
 
 export class UpdateCommand extends BaseCommand<PriceListModel> {
     public id: number;
     
+    @IsNotEmpty()
     @MaxLength(50)
     public name: string;
 
+    @IsNotEmpty()
     @MaxLength(50)
     public roundingMethod: string;
 
+    @IsNotEmpty()
     @MaxLength(50)
     public roundingRule: string;
 
+    @IsNotEmpty()
     @MaxLength(50)
     public description: string;
 
