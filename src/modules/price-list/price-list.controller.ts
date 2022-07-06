@@ -50,10 +50,11 @@ export class PriceListController extends BaseController {
         return await this.mediator.send(command);
     }
 
-    @Put()
+    @Put(':id')
     @ApiBody({ type: UpdateCommand })
     @Authorization(FeatureConst.priceListManagement, Permissions.Update, true)
-    async update(@Body() command: UpdateCommand) {
+    async update(@Param('id') id: number, @Body() command: UpdateCommand) {
+        command.id = id;
         return await this.mediator.send(command);
     }
 }
