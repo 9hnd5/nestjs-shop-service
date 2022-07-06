@@ -22,6 +22,6 @@ export class ExampleQueries extends BaseQueries {
     }
 
     public async gets() {
-        return this.exampleTestRepository.find({})
+        return this.exampleTestRepository.find()
     }
 }
