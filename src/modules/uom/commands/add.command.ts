@@ -1,23 +1,18 @@
 import { Uom } from '@modules/shared/models/uom.model'
 import { RequestHandler, BaseCommandHandler, BaseCommand } from 'be-core'
-import { ApiProperty } from "@nestjs/swagger";
 import { UomRepository } from "@modules/shared/repositories/uom.repository";
 import { IsNotEmpty } from "class-validator";
 
 export class AddCommand extends BaseCommand<Uom> {
 
     @IsNotEmpty()
-    @ApiProperty()
     public code: string;
 
-    @ApiProperty()
     @IsNotEmpty()
     public name: string;
 
-    @ApiProperty()
     public description: string;
 
-    @ApiProperty()
     @IsNotEmpty()
     public status: boolean;
 }

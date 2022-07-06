@@ -1,17 +1,13 @@
-import { Body, Controller, Delete, Get, Injectable, Post, Put, Scope, UseInterceptors, Param, Inject, Query } from "@nestjs/common";
-import { AddCommand, DeleteCommand, UpdateCommand } from "./commands";
-import { ApiBody, ApiParam, ApiTags } from "@nestjs/swagger";
-import { REQUEST } from "@nestjs/core";
-import { Authorization, BaseController, CoreResponseInterceptor, Mediator, Permissions, Headers } from "be-core";
-import { UomQueries } from "@modules/shared/queries/uom.queries";
 import { Paging } from "@modules/shared/queries";
+import { UomQueries } from "@modules/shared/queries/uom.queries";
+import { Body, Controller, Delete, Get, Inject, Injectable, Param, Post, Put, Query, Scope, UseInterceptors } from "@nestjs/common";
+import { REQUEST } from "@nestjs/core";
+import { Authorization, BaseController, CoreResponseInterceptor, Mediator, Permissions } from "be-core";
+import { AddCommand, DeleteCommand, UpdateCommand } from "./commands";
 
-
-@Controller('/core/v1/uom')
+@Controller('/shop/v1/uom')
 @Injectable({ scope: Scope.REQUEST })
 @UseInterceptors(CoreResponseInterceptor)
-@ApiTags('Uom')
-@Headers()
 export class UomController extends BaseController {
 
     constructor(
@@ -29,7 +25,6 @@ export class UomController extends BaseController {
     }
 
     @Get(':id')
-    @ApiParam({ name: 'id', type: Number })
     @Authorization('uomManagement', Permissions.View, true)
     async get(@Param('id') id: number) {
         return this.uomQueries.get(id)
@@ -42,23 +37,23 @@ export class UomController extends BaseController {
     }
 
     @Post('')
-    @ApiBody({ type: AddCommand })
     @Authorization('uomManagement', Permissions.Insert, true)
     async add(@Body() command: AddCommand) {
         return this.mediator.send(command);
     }
 
-    @Put('')
-    @ApiBody({ type: UpdateCommand })
+    @Put(':id')
     @Authorization('uomManagement', Permissions.Update, true)
-    async update(@Body() command: UpdateCommand) {
+    async update(@Param('id') id: number, @Body() command: UpdateCommand) {
+        command.id = id;
         return this.mediator.send(command);
     }
 
-    @Delete('')
-    @ApiBody({ type: DeleteCommand })
-    @Authorization('uomManagement', Permissions.Delete)
-    async delete(@Body() command: DeleteCommand) {
+    @Delete(':id')
+    @Authorization('uomManagement', Permissions.Delete, true)
+    async delete(@Param('id') id: number) {
+        const command = new DeleteCommand();
+        command.id = id;
         return this.mediator.send(command);
     }
 }

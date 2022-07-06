@@ -30,6 +30,4 @@ export class Paging {
     searchText?: string
     @IsNumberString()
     viewMode = 1
-
-
 }

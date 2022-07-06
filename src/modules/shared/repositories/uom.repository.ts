@@ -12,11 +12,11 @@ export class UomRepository extends BaseRepository {
         @InjectRepository(Uom) private uomRepository: Repository<Uom>) { 
         super(request)
     }
-    public async add(data: Uom): Promise<Uom> {
+    public async add(data: Uom) {
         return this.uomRepository.save(data);
     }
 
-    public async update(data: Uom): Promise<Uom> {
+    public async update(data: Uom) {
         return await this.uomRepository.save(data)
     }
 }

@@ -17,12 +17,12 @@ export class DeleteCommand extends BaseCommand<number> {
 }
 
 @RequestHandler(DeleteCommand)
-export class DeleteCommandHandler extends BaseCommandHandler<DeleteCommand, ExampleModel> {
+export class DeleteCommandHandler extends BaseCommandHandler<DeleteCommand, ExampleModel | null> {
     constructor(private exampleRepository: ExampleRepository, private exampleQueries: ExampleQueries) { 
         super()
     }
 
-    async apply(command: DeleteCommand): Promise<ExampleModel> {
+    async apply(command: DeleteCommand) {
         let data = await this.exampleQueries.get(command.id)
         if (!data) 
         {

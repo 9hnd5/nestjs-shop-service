@@ -1,13 +1,9 @@
 import { Uom } from '@modules/shared/models/uom.model'
 import { RequestHandler, BaseCommandHandler, BaseCommand, BusinessException } from 'be-core'
 import { UomQueries } from '@modules/shared/queries/uom.queries'
-import { IsNotEmpty } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
 import { UomRepository } from '@modules/shared/repositories/uom.repository';
 
 export class DeleteCommand extends BaseCommand<number> {
-    @IsNotEmpty()
-    @ApiProperty()
     public id: number
 }
 
