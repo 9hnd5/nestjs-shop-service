@@ -5,33 +5,28 @@ import {
     PriceListModel
 } from '@modules/shared/models/price-list.model'
 import { RequestHandler, BusinessException, BaseCommandHandler, BaseCommand } from 'be-core'
-import { ApiProperty } from "@nestjs/swagger";
 import { PriceListQueries } from "@modules/shared/queries/price-list.queries";
-import { MaxLength } from "class-validator";
-import { MessageConst } from "@constants/message.const";
+import { IsEnum, MaxLength } from "class-validator";
+import { MessageConst, PriceListStatus } from '@constants/.';
 
 export class UpdateCommand extends BaseCommand<PriceListModel> {
-    @ApiProperty()
     public id: number;
     
     @MaxLength(50)
-    @ApiProperty()
     public name: string;
 
     @MaxLength(50)
-    @ApiProperty()
     public roundingMethod: string;
 
     @MaxLength(50)
-    @ApiProperty()
     public roundingRule: string;
 
     @MaxLength(50)
-    @ApiProperty()
     public description: string;
 
-    @ApiProperty()
-    public status: boolean;
+    @MaxLength(20)
+    @IsEnum(PriceListStatus)
+    public status: PriceListStatus;
 }
 
 @RequestHandler(UpdateCommand)

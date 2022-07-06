@@ -13,7 +13,7 @@ export class ExampleQueries extends BaseQueries {
         super(request)
     }
     
-    public async get(id: number): Promise<ExampleModel> {
+    public async get(id: number): Promise<ExampleModel | null> {
         return this.exampleTestRepository.findOne({
             where: {
                 id

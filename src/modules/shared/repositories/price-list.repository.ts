@@ -7,11 +7,12 @@ import { PriceListModel } from "../models/price-list.model";
 
 @Injectable({ scope: Scope.TRANSIENT })
 export class PriceListRepository extends BaseRepository {
-    constructor(@Inject(REQUEST) request: any,
+    constructor(@Inject(REQUEST) private request: any,
         @InjectRepository(PriceListModel) private exampleTestRepository: Repository<PriceListModel>) { 
         super(request)
     }
     public async add(data: PriceListModel): Promise<PriceListModel> {
+        data.companyId = this.request.scopeVariable.tenantId ?? 0;
         return await this.exampleTestRepository.save(data);
     }
 

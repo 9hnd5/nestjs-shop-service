@@ -1,4 +1,3 @@
-import { Type } from "class-transformer";
 import {
     PriceListRepository
 } from '@modules/shared/repositories/price-list.repository'
@@ -6,28 +5,24 @@ import {
     PriceListModel
 } from '@modules/shared/models/price-list.model'
 import { RequestHandler, BusinessException, BaseCommandHandler, BaseCommand } from 'be-core'
-import { ApiProperty } from "@nestjs/swagger";
-import { MaxLength } from "class-validator";
+import { MaxLength, IsEnum } from "class-validator";
+import { PriceListStatus } from '@constants/.';
 
 export class AddCommand extends BaseCommand<PriceListModel> {
     @MaxLength(50)
-    @ApiProperty()
     public name: string;
 
     @MaxLength(50)
-    @ApiProperty()
     public roundingMethod: string;
 
     @MaxLength(50)
-    @ApiProperty()
     public roundingRule: string;
 
     @MaxLength(50)
-    @ApiProperty()
     public description: string;
 
-    @ApiProperty()
-    public status: boolean;
+    @IsEnum(PriceListStatus)
+    public status: PriceListStatus;
 }
 
 @RequestHandler(AddCommand)

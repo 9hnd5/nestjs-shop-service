@@ -1,3 +1,4 @@
+import { PriceListStatus } from "@constants/.";
 import { Inject, Injectable, Scope } from "@nestjs/common";
 import { REQUEST } from "@nestjs/core";
 import { InjectRepository } from "@nestjs/typeorm";
@@ -7,50 +8,50 @@ import { PriceListModel } from "../models/price-list.model";
 
 @Injectable({ scope: Scope.TRANSIENT })
 export class PriceListQueries extends BaseQueries {
-    constructor(@Inject(REQUEST) request: any,
+    constructor(@Inject(REQUEST) private request: any,
         @InjectRepository(PriceListModel) private priceListRepository: Repository<PriceListModel>) {
         super(request)
     }
     
-    public async get(id: number): Promise<PriceListModel> {
+    public async get(id: number): Promise<PriceListModel | null> {
         return await this.priceListRepository.findOne({
             where: {
                 id,
-                isDeleted: false
+                isDeleted: false,
+                companyId: this.request.scopeVariable.tenantId ?? 0
             }
         });
     }
 
-    public async gets() {
-        return await this.priceListRepository.find({ where: {isDeleted: false} });
+    public async gets(): Promise<PriceListModel[]> {
+        return await this.priceListRepository.find({
+            where: {
+                isDeleted: false,
+                companyId: this.request.scopeVariable.tenantId ?? 0
+            }
+        });
     }
 
-    public async getsPaging(currentPage: number, pageSize: number, searchText: string, viewMode: number) {
+    public async getsPaging(currentPage: number, pageSize: number, searchText: string | undefined, viewMode: number): Promise<any> {
         const condition = {
-            isDeleted: false
+            isDeleted: false,
+            name: searchText ? Like(`%${searchText}%`) : undefined,
+            status: {
+                2: PriceListStatus.Active,
+                3: PriceListStatus.Deactive
+            }[viewMode],
+            companyId: this.request.scopeVariable.tenantId ?? 0
         };
 
-        if (searchText) {
-            condition['name'] = Like(`%${searchText}%`);
-        }
-
-        if (viewMode === 2) {
-            condition['status'] = true;
-        } else if (viewMode === 3) {
-            condition['status'] = false;
-        }
-
-        const dataSource = await this.priceListRepository.find({
+        const dataSource = await this.priceListRepository.findAndCount({
             where: condition,
             skip: pageSize * (currentPage - 1),
             take: pageSize
         });
-        const count = await this.priceListRepository.count({
-            where: condition
-        });
+        
         return {
-            dataSource,
-            totalRows: count,
+            dataSource: dataSource[0],
+            totalRows: dataSource[1],
             currentPage, pageSize
         };
     }
