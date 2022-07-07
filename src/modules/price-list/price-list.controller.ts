@@ -1,5 +1,5 @@
 import { FeatureConst } from '@constants/.';
-import { PriceListPagingQuery } from '@modules/shared/queries';
+import { Paging } from '@modules/shared/queries';
 import { PriceListQueries } from '@modules/shared/queries/price-list.queries';
 import {
     Body,
@@ -44,12 +44,12 @@ export class PriceListController extends BaseController {
     // ExpressJs prioritize any well defined routes
     @Get('paging')
     @Authorization(FeatureConst.priceListManagement, Permissions.View, true)
-    async getsPaging(@Query() query: PriceListPagingQuery) {
+    async getsPaging(@Query() query: Paging) {
         return await this.priceListQueries.getsPaging(
-            +query.currentPage,
-            +query.pageSize,
+            query.currentPage,
+            query.pageSize,
             query.searchText,
-            +query.viewMode
+            query.viewMode
         );
     }
 
