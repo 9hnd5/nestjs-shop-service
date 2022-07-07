@@ -27,7 +27,7 @@ module.exports = {
           '@typescript-eslint/no-redeclare': ['error'],
 
           'no-unused-vars': 'off',
-          '@typescript-eslint/no-unused-vars': "off",
+          '@typescript-eslint/no-unused-vars': ["error"],
           '@typescript-eslint/no-unsafe-assignment': 'off',
           '@typescript-eslint/no-unsafe-return': 'off',
           '@typescript-eslint/no-unsafe-call': 'off',

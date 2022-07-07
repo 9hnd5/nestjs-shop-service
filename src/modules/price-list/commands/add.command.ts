@@ -1,8 +1,8 @@
-import { PriceListRepository } from '@modules/shared/repositories/price-list.repository';
-import { PriceListModel } from '@modules/shared/models/price-list.model';
-import { RequestHandler, BusinessException, BaseCommandHandler, BaseCommand } from 'be-core';
-import { MaxLength, IsEnum, IsNotEmpty } from 'class-validator';
 import { PriceListStatus } from '@constants/.';
+import { PriceListModel } from '@modules/shared/models/price-list.model';
+import { PriceListRepository } from '@modules/shared/repositories/price-list.repository';
+import { BaseCommand, BaseCommandHandler, RequestHandler } from 'be-core';
+import { IsEnum, IsNotEmpty, MaxLength } from 'class-validator';
 
 export class AddCommand extends BaseCommand<PriceListModel> {
     @IsNotEmpty()

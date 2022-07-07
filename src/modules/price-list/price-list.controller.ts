@@ -1,32 +1,30 @@
+import { FeatureConst } from '@constants/.';
+import { PriceListPagingQuery } from '@modules/shared/queries';
+import { PriceListQueries } from '@modules/shared/queries/price-list.queries';
 import {
     Body,
     Controller,
-    Delete,
     Get,
+    Inject,
     Injectable,
+    Param,
     Post,
     Put,
+    Query,
     Scope,
     UseInterceptors,
-    Param,
-    Inject,
-    Query,
 } from '@nestjs/common';
-import { AddCommand, UpdateCommand } from './commands';
-import { ApiBody, ApiTags } from '@nestjs/swagger';
 import { REQUEST } from '@nestjs/core';
+import { ApiBody, ApiTags } from '@nestjs/swagger';
 import {
     Authorization,
     BaseController,
-    BusinessException,
     CoreResponseInterceptor,
+    Headers,
     Mediator,
     Permissions,
-    Headers,
 } from 'be-core';
-import { PriceListQueries } from '@modules/shared/queries/price-list.queries';
-import { PriceListPagingQuery } from '@modules/shared/queries';
-import { FeatureConst } from '@constants/.';
+import { AddCommand, UpdateCommand } from './commands';
 
 // <access modifier, optional>/<service name>/<version>/<controller>/<action>
 @Controller('/shop/v1/price-lists')
