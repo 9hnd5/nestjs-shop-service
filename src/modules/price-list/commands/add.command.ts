@@ -1,11 +1,7 @@
-import {
-    PriceListRepository
-} from '@modules/shared/repositories/price-list.repository'
-import {
-    PriceListModel
-} from '@modules/shared/models/price-list.model'
-import { RequestHandler, BusinessException, BaseCommandHandler, BaseCommand } from 'be-core'
-import { MaxLength, IsEnum, IsNotEmpty } from "class-validator";
+import { PriceListRepository } from '@modules/shared/repositories/price-list.repository';
+import { PriceListModel } from '@modules/shared/models/price-list.model';
+import { RequestHandler, BusinessException, BaseCommandHandler, BaseCommand } from 'be-core';
+import { MaxLength, IsEnum, IsNotEmpty } from 'class-validator';
 import { PriceListStatus } from '@constants/.';
 
 export class AddCommand extends BaseCommand<PriceListModel> {
@@ -33,7 +29,7 @@ export class AddCommand extends BaseCommand<PriceListModel> {
 @RequestHandler(AddCommand)
 export class AddCommandHandler extends BaseCommandHandler<AddCommand, PriceListModel> {
     constructor(private priceListRepository: PriceListRepository) {
-        super()
+        super();
     }
 
     public async apply(command: AddCommand): Promise<PriceListModel> {

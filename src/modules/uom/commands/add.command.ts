@@ -1,10 +1,9 @@
-import { Uom } from '@modules/shared/models/uom.model'
-import { RequestHandler, BaseCommandHandler, BaseCommand } from 'be-core'
-import { UomRepository } from "@modules/shared/repositories/uom.repository";
-import { IsNotEmpty } from "class-validator";
+import { Uom } from '@modules/shared/models/uom.model';
+import { RequestHandler, BaseCommandHandler, BaseCommand } from 'be-core';
+import { UomRepository } from '@modules/shared/repositories/uom.repository';
+import { IsNotEmpty } from 'class-validator';
 
 export class AddCommand extends BaseCommand<Uom> {
-
     @IsNotEmpty()
     public code: string;
 
@@ -20,7 +19,7 @@ export class AddCommand extends BaseCommand<Uom> {
 @RequestHandler(AddCommand)
 export class AddCommandHandler extends BaseCommandHandler<AddCommand, Uom> {
     constructor(private uomRepository: UomRepository) {
-        super()
+        super();
     }
 
     public async apply(command: AddCommand): Promise<Uom> {

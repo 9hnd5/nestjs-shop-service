@@ -1,1 +1,1 @@
-export * from './price-list.module'
+export * from './price-list.module';

@@ -1,1 +1,1 @@
-export * from './uom.module'
+export * from './uom.module';
