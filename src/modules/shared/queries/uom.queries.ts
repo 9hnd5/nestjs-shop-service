@@ -47,8 +47,8 @@ export class UomQueries extends BaseQueries {
         return {
             dataSource,
             totalRows,
-            currentPage: +param.pageSize,
-            currentPageSize: +param.currentPage,
+            currentPage: param.pageSize,
+            currentPageSize: param.currentPage,
         };
     }
 }
