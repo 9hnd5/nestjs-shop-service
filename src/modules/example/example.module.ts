@@ -12,13 +12,9 @@ import { ExampleController } from './example.controller';
         CommonModule,
         SharedModule,
         CQRSModule,
-        TypeOrmModule.forFeature([ExampleModel])
+        TypeOrmModule.forFeature([ExampleModel]),
     ],
-  controllers: [ExampleController],
-  providers: [
-      AddCommandHandler,
-      UpdateCommandHandler,
-      DeleteCommandHandler
-  ]
+    controllers: [ExampleController],
+    providers: [AddCommandHandler, UpdateCommandHandler, DeleteCommandHandler],
 })
 export class ExampleModule {}

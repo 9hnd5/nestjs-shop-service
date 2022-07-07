@@ -12,13 +12,9 @@ import { UomController } from './uom.controller';
         CommonModule,
         SharedModule,
         CQRSModule,
-        TypeOrmModule.forFeature([Uom])
+        TypeOrmModule.forFeature([Uom]),
     ],
-  controllers: [UomController],
-  providers: [
-      AddCommandHandler,
-      UpdateCommandHandler,
-      DeleteCommandHandler
-  ]
+    controllers: [UomController],
+    providers: [AddCommandHandler, UpdateCommandHandler, DeleteCommandHandler],
 })
 export class UomModule {}

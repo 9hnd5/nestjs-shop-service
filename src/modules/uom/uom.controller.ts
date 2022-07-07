@@ -1,39 +1,57 @@
-import { Paging } from "@modules/shared/queries";
-import { UomQueries } from "@modules/shared/queries/uom.queries";
-import { Body, Controller, Delete, Get, Inject, Injectable, Param, Post, Put, Query, Scope, UseInterceptors } from "@nestjs/common";
-import { REQUEST } from "@nestjs/core";
-import { Authorization, BaseController, CoreResponseInterceptor, Mediator, Permissions } from "be-core";
-import { AddCommand, DeleteCommand, UpdateCommand } from "./commands";
+import { Paging } from '@modules/shared/queries';
+import { UomQueries } from '@modules/shared/queries/uom.queries';
+import {
+    Body,
+    Controller,
+    Delete,
+    Get,
+    Inject,
+    Injectable,
+    Param,
+    Post,
+    Put,
+    Query,
+    Scope,
+    UseInterceptors,
+} from '@nestjs/common';
+import { REQUEST } from '@nestjs/core';
+import {
+    Authorization,
+    BaseController,
+    CoreResponseInterceptor,
+    Mediator,
+    Permissions,
+} from 'be-core';
+import { AddCommand, DeleteCommand, UpdateCommand } from './commands';
 
 @Controller('/shop/v1/uom')
 @Injectable({ scope: Scope.REQUEST })
 @UseInterceptors(CoreResponseInterceptor)
 export class UomController extends BaseController {
-
     constructor(
         @Inject(REQUEST) httpRequest: any,
         private mediator: Mediator,
         private uomQueries: UomQueries
     ) {
-        super(httpRequest)
+        super(httpRequest);
     }
 
     @Get('pagings')
     @Authorization('uomManagement', Permissions.View, true)
     async getPagings(@Query() param: Paging) {
-        return this.uomQueries.getPagings(param)
+        return this.uomQueries.getPagings(param);
     }
 
     @Get(':id')
     @Authorization('uomManagement', Permissions.View, true)
     async get(@Param('id') id: number) {
-        return this.uomQueries.get(id)
+        return this.uomQueries.get(id);
     }
 
     @Get('')
     @Authorization('uomManagement', Permissions.View, true)
     async gets() {
-        return this.uomQueries.gets()
+        return this.uomQueries.gets();
     }
 
     @Post('')
@@ -57,4 +75,3 @@ export class UomController extends BaseController {
         return this.mediator.send(command);
     }
 }
-
