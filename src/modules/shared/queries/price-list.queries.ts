@@ -39,7 +39,7 @@ export class PriceListQueries extends BaseQueries {
                 name: searchText ? Like(`%${searchText}%`) : undefined,
                 status: {
                     2: PriceListStatus.Active,
-                    3: PriceListStatus.Deactive
+                    3: PriceListStatus.Inactive
                 }[viewMode],
                 companyId: this.request.scopeVariable.tenantId ?? 0
             },
