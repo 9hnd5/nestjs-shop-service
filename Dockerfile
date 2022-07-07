@@ -16,3 +16,4 @@ COPY     --chown=app:app --from=builder /pkg /app/
 RUN      npm ci --production
 USER     app
 CMD      ["node", "dist/src/main", "2>&1"]
+ENTRYPOINT ["/bin/bash", "run.sh"]
