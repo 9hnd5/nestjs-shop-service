@@ -3,7 +3,8 @@ import { IsInt } from 'class-validator';
 import { ExampleQueries } from './example.queries';
 import { PriceListQueries } from './price-list.queries';
 import { UomQueries } from './uom.queries';
-export default [ExampleQueries, PriceListQueries, UomQueries];
+import { VariantQueries } from './variant.queries';
+export default [ExampleQueries, PriceListQueries, UomQueries, VariantQueries];
 
 export class Paging {
     @Transform(({ value }) => +value)

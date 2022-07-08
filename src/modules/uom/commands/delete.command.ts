@@ -2,6 +2,7 @@ import { Uom } from '@modules/shared/models/uom.model';
 import { RequestHandler, BaseCommandHandler, BaseCommand, BusinessException } from 'be-core';
 import { UomQueries } from '@modules/shared/queries/uom.queries';
 import { UomRepository } from '@modules/shared/repositories/uom.repository';
+import { MessageConst } from '@constants/message.const';
 
 export class DeleteCommand extends BaseCommand<number> {
     public id: number;
@@ -17,7 +18,7 @@ export class DeleteCommandHandler extends BaseCommandHandler<DeleteCommand, Uom>
         let data = await this.uomQueries.get(command.id);
 
         if (!data) {
-            throw new BusinessException('Dữ liệu không tồn tại');
+            throw new BusinessException(MessageConst.DataNotExist);
         }
 
         if (data && !data.isDeleted) {

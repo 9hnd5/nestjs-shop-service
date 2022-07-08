@@ -1,3 +1,4 @@
+import { MessageConst } from '@constants/message.const';
 import { Uom } from '@modules/shared/models/uom.model';
 import { UomQueries } from '@modules/shared/queries/uom.queries';
 import { UomRepository } from '@modules/shared/repositories/uom.repository';
@@ -28,7 +29,7 @@ export class UpdateCommandHandler extends BaseCommandHandler<UpdateCommand, Uom>
         let uom = await this.uomQueries.get(command.id);
 
         if (!uom) {
-            throw new BusinessException('Dữ liệu không tồn tại');
+            throw new BusinessException(MessageConst.DataNotExist);
         }
         uom.name = command.name;
         uom.description = command.description;
