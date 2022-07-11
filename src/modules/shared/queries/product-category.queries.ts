@@ -4,19 +4,20 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { BaseQueries } from 'be-core';
 import { Like, Repository } from 'typeorm';
 import { Paging } from '.';
-import { Uom } from '../models/uom.model';
+import { ProductCategory } from '../models/product-category.model';
 
 @Injectable({ scope: Scope.TRANSIENT })
-export class UomQueries extends BaseQueries {
+export class ProductCategoryQueries extends BaseQueries {
     constructor(
         @Inject(REQUEST) private request: any,
-        @InjectRepository(Uom) private uomRepository: Repository<Uom>
+        @InjectRepository(ProductCategory)
+        private productCategoryRepository: Repository<ProductCategory>
     ) {
         super(request);
     }
 
     public async get(id: number) {
-        return this.uomRepository.findOne({
+        return this.productCategoryRepository.findOne({
             where: {
                 id,
             },
@@ -24,16 +25,16 @@ export class UomQueries extends BaseQueries {
     }
 
     public async gets() {
-        return this.uomRepository.find({});
+        return this.productCategoryRepository.find({});
     }
 
     public async getsPaging(param: Paging) {
         const currentRow = param.pageSize * (param.currentPage - 1);
 
-        const [dataSource, totalRows] = await this.uomRepository.findAndCount({
+        const [dataSource, totalRows] = await this.productCategoryRepository.findAndCount({
             where: {
                 isDeleted: false,
-                name: param.searchText && Like(`%${param.searchText}%`),
+                productGroup: param.searchText && Like(`%${param.searchText}%`),
                 status: {
                     2: true,
                     3: false,
