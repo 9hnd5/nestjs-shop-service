@@ -1,13 +1,14 @@
-import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
-import { load } from './config';
 import { ExampleModule } from '@modules/example';
 import { PriceListModule } from '@modules/price-list';
 import { UomModule } from '@modules/uom';
+import { VariantModule } from '@modules/variant';
+import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { REQUEST } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CachingModule, CommonModule, HealthModule } from 'be-core';
-import { VariantModule } from '@modules/variant';
+import { load } from './config';
+import { BrandModule } from './modules/brand/brand.module';
 console.log(__dirname + '/modules/shared/models/*{.ts,.js}');
 @Module({
     imports: [
@@ -38,7 +39,8 @@ console.log(__dirname + '/modules/shared/models/*{.ts,.js}');
         ExampleModule,
         PriceListModule,
         UomModule,
-        VariantModule
+        VariantModule,
+        BrandModule,
     ],
 })
 export class AppModule {}

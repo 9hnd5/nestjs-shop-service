@@ -1,3 +1,4 @@
+import { BrandModel } from './models/brand.model';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import QueriesList from './queries';
@@ -12,7 +13,7 @@ import { Variant } from './models/variant.model';
     imports: [
         ScopeVariableModule,
         CommonModule,
-        TypeOrmModule.forFeature([ExampleModel, PriceListModel, Uom, Variant]),
+        TypeOrmModule.forFeature([ExampleModel, PriceListModel, Uom, Variant, BrandModel]),
     ],
     providers: [...QueriesList, ...RepositoriesList],
     exports: [...QueriesList, ...RepositoriesList],
