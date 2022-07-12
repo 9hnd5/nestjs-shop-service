@@ -1,6 +1,7 @@
-import { BrandQueries } from './brand.queries';
 import { Transform } from 'class-transformer';
 import { IsInt } from 'class-validator';
+import { AttributeQueries } from './attribute.queries';
+import { BrandQueries } from './brand.queries';
 import { ExampleQueries } from './example.queries';
 import { PriceListQueries } from './price-list.queries';
 import { ProductCategoryQueries } from './product-category.queries';
@@ -13,6 +14,7 @@ export default [
     VariantQueries,
     ProductCategoryQueries,
     BrandQueries,
+    AttributeQueries,
 ];
 
 export class Paging {
