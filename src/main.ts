@@ -5,6 +5,7 @@ import * as pgk from 'package.json';
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
+    app.enableCors();
     const config = new DocumentBuilder()
         .setTitle('Example')
         .setDescription('The core api document for example')
