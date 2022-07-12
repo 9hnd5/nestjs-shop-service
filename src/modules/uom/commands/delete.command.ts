@@ -22,7 +22,7 @@ export class DeleteCommandHandler extends BaseCommandHandler<DeleteCommand, Uom>
         }
 
         if (data && !data.isDeleted) {
-            data = await this.deleteBuild(data, command.session);
+            data = this.deleteBuild(data, command.session);
             return this.uomRepository.update(data);
         }
         return data;

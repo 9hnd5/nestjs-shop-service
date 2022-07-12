@@ -32,7 +32,7 @@ export class UpdateCommandHandler extends BaseCommandHandler<UpdateCommand, Bran
         brand.description = command.description;
         brand.status = command.status;
 
-        brand = await this.updateBuild(brand, command.session);
+        brand = this.updateBuild(brand, command.session);
         return await this.brandRepo.update(brand);
     }
 }

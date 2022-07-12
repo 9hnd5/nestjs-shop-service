@@ -25,7 +25,7 @@ export class DeleteCommandHandler extends BaseCommandHandler<DeleteCommand, Prod
         }
 
         if (data && !data.isDeleted) {
-            data = await this.deleteBuild(data, command.session);
+            data = this.deleteBuild(data, command.session);
             return this.productCategoryRepository.update(data);
         }
         return data;

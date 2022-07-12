@@ -29,7 +29,7 @@ export class AddCommandHandler extends BaseCommandHandler<AddCommand, Variant> {
         data.description = command.description;
         data.status = command.status;
 
-        data = await this.createBuild(data, command.session);
+        data = this.createBuild(data, command.session);
         return await this.variantRepository.add(data);
     }
 }

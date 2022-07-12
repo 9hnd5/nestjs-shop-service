@@ -17,11 +17,11 @@ import {
 } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
 import {
-    Authorization,
     BaseController,
     CoreResponseInterceptor,
     Mediator,
-    Permissions,
+    Authorize,
+    Permission
 } from 'be-core';
 import { AddCommand, DeleteCommand, UpdateCommand } from './commands';
 
@@ -38,38 +38,38 @@ export class VariantController extends BaseController {
     }
 
     @Get('paging')
-    @Authorization(FeatureConst.variantManagement, Permissions.View, true)
+    @Authorize(FeatureConst.variantManagement, Permission.View)
     async getsPaging(@Query() param: Paging) {
         return this.variantQueries.getsPaging(param);
     }
 
     @Get(':id')
-    @Authorization(FeatureConst.variantManagement, Permissions.View, true)
+    @Authorize(FeatureConst.variantManagement, Permission.View)
     async get(@Param('id') id: number) {
         return this.variantQueries.get(id);
     }
 
     @Get('')
-    @Authorization(FeatureConst.variantManagement, Permissions.View, true)
+    @Authorize(FeatureConst.variantManagement, Permission.View)
     async gets() {
         return this.variantQueries.gets();
     }
 
     @Post('')
-    @Authorization(FeatureConst.variantManagement, Permissions.Insert, true)
+    @Authorize(FeatureConst.variantManagement, Permission.Insert)
     async add(@Body() command: AddCommand) {
         return this.mediator.send(command);
     }
 
     @Put(':id')
-    @Authorization(FeatureConst.variantManagement, Permissions.Update, true)
+    @Authorize(FeatureConst.variantManagement, Permission.Update)
     async update(@Param('id') id: number, @Body() command: UpdateCommand) {
         command.id = id;
         return this.mediator.send(command);
     }
 
     @Delete(':id')
-    @Authorization(FeatureConst.variantManagement, Permissions.Delete, true)
+    @Authorize(FeatureConst.variantManagement, Permission.Delete)
     async delete(@Param('id') id: number) {
         const command = new DeleteCommand();
         command.id = id;

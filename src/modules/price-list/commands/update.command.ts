@@ -49,7 +49,7 @@ export class UpdateCommandHandler extends BaseCommandHandler<UpdateCommand, Pric
         priceList.roundingRule = command.roundingRule;
         priceList.description = command.description;
         priceList.status = command.status;
-        priceList = await this.updateBuild(priceList, command.session);
+        priceList = this.updateBuild(priceList, command.session);
         return await this.priceListRepository.update(priceList);
     }
 }

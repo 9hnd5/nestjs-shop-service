@@ -6,7 +6,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { REQUEST } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { CachingModule, CommonModule, HealthModule } from 'be-core';
+import {InitialModule, AuthModule, CacheModule}from "be-core";
 import { load } from './config';
 import { BrandModule } from './modules/brand/brand.module';
 import { ProductCategoryModule } from '@modules/product-category';
@@ -34,9 +34,9 @@ console.log(__dirname + '/modules/shared/models/*{.ts,.js}');
             },
             inject: [REQUEST],
         }),
-        CommonModule,
-        HealthModule,
-        CachingModule,
+        CacheModule,
+        InitialModule,
+        AuthModule,
         ExampleModule,
         PriceListModule,
         UomModule,

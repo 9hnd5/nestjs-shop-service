@@ -38,7 +38,7 @@ export class UpdateCommandHandler extends BaseCommandHandler<UpdateCommand, Prod
         uom.productGroup = command.productGroup;
         uom.description = command.description;
         uom.status = command.status;
-        uom = await this.updateBuild(uom, command.session);
+        uom = this.updateBuild(uom, command.session);
         return await this.productCategoryRepository.update(uom);
     }
 }

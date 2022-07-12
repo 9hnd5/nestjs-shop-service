@@ -34,7 +34,7 @@ export class UpdateCommandHandler extends BaseCommandHandler<UpdateCommand, Uom>
         uom.name = command.name;
         uom.description = command.description;
         uom.status = command.status;
-        uom = await this.updateBuild(uom, command.session);
+        uom = this.updateBuild(uom, command.session);
         return await this.uomRepository.update(uom);
     }
 }

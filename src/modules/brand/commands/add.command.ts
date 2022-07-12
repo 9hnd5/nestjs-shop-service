@@ -32,7 +32,7 @@ export class AddCommandHandler extends BaseCommandHandler<AddCommand, BrandModel
         brand.description = command.description;
         brand.status = command.status;
 
-        brand = await this.createBuild(brand, command.session);
+        brand = this.createBuild(brand, command.session);
         return await this.brandRepo.add(brand);
     }
 }

@@ -17,12 +17,12 @@ import {
 import { REQUEST } from '@nestjs/core';
 import { ApiBody, ApiTags } from '@nestjs/swagger';
 import {
-    Authorization,
+    Authorize,
     BaseController,
     CoreResponseInterceptor,
     Headers,
     Mediator,
-    Permissions,
+    Permission,
 } from 'be-core';
 import { AddCommand, UpdateCommand } from './commands';
 
@@ -43,7 +43,7 @@ export class PriceListController extends BaseController {
 
     // ExpressJs prioritize any well defined routes
     @Get('paging')
-    @Authorization(FeatureConst.priceListManagement, Permissions.View, true)
+    @Authorize(FeatureConst.priceListManagement, Permission.View)
     async getsPaging(@Query() query: Paging) {
         return await this.priceListQueries.getsPaging(
             query.currentPage,
@@ -54,27 +54,27 @@ export class PriceListController extends BaseController {
     }
 
     @Get(':id')
-    @Authorization(FeatureConst.priceListManagement, Permissions.View, true)
+    @Authorize(FeatureConst.priceListManagement, Permission.View)
     async get(@Param('id') id: number) {
         return await this.priceListQueries.get(id);
     }
 
     @Get()
-    @Authorization(FeatureConst.priceListManagement, Permissions.View, true)
+    @Authorize(FeatureConst.priceListManagement, Permission.View)
     async gets() {
         return await this.priceListQueries.gets();
     }
 
     @Post()
     @ApiBody({ type: AddCommand })
-    @Authorization(FeatureConst.priceListManagement, Permissions.Insert, true)
+    @Authorize(FeatureConst.priceListManagement, Permission.Insert)
     async add(@Body() command: AddCommand) {
         return await this.mediator.send(command);
     }
 
     @Put(':id')
     @ApiBody({ type: UpdateCommand })
-    @Authorization(FeatureConst.priceListManagement, Permissions.Update, true)
+    @Authorize(FeatureConst.priceListManagement, Permission.Update)
     async update(@Param('id') id: number, @Body() command: UpdateCommand) {
         command.id = id;
         return await this.mediator.send(command);
