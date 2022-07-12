@@ -10,7 +10,10 @@ export class DeleteCommand extends BaseCommand<number> {
 
 @RequestHandler(DeleteCommand)
 export class DeleteCommandHandler extends BaseCommandHandler<DeleteCommand, Variant> {
-    constructor(private variantRepository: VariantRepository, private variantQueries: VariantQueries) {
+    constructor(
+        private variantRepository: VariantRepository,
+        private variantQueries: VariantQueries
+    ) {
         super();
     }
 

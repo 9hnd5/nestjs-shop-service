@@ -21,7 +21,10 @@ export class UpdateCommand extends BaseCommand<Variant> {
 
 @RequestHandler(UpdateCommand)
 export class UpdateCommandHandler extends BaseCommandHandler<UpdateCommand, Variant> {
-    constructor(private variantRepository: VariantRepository, private variantQueries: VariantQueries) {
+    constructor(
+        private variantRepository: VariantRepository,
+        private variantQueries: VariantQueries
+    ) {
         super();
     }
 

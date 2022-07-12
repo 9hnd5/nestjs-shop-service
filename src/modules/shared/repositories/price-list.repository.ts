@@ -9,16 +9,16 @@ import { PriceListModel } from '../models/price-list.model';
 export class PriceListRepository extends BaseRepository {
     constructor(
         @Inject(REQUEST) private request: any,
-        @InjectRepository(PriceListModel) private exampleTestRepository: Repository<PriceListModel>
+        @InjectRepository(PriceListModel) private pricelistRepository: Repository<PriceListModel>
     ) {
         super(request);
     }
     public async add(data: PriceListModel): Promise<PriceListModel> {
         data.companyId = this.request.scopeVariable.tenantId ?? 0;
-        return await this.exampleTestRepository.save(data);
+        return await this.pricelistRepository.save(data);
     }
 
     public async update(data: PriceListModel): Promise<PriceListModel> {
-        return await this.exampleTestRepository.save(data);
+        return await this.pricelistRepository.save(data);
     }
 }
