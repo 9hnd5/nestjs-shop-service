@@ -37,7 +37,7 @@ export class UpdateCommandHandler extends BaseCommandHandler<UpdateCommand, Vari
         variant.variantName = command.variantName;
         variant.description = command.description;
         variant.status = command.status;
-        variant = await this.updateBuild(variant, command.session);
+        variant =  this.updateBuild(variant, command.session);
         return await this.variantRepository.update(variant);
     }
 }

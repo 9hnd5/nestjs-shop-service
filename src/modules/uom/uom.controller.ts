@@ -17,11 +17,11 @@ import {
 } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
 import {
-    Authorization,
+    Authorize,
     BaseController,
     CoreResponseInterceptor,
     Mediator,
-    Permissions,
+    Permission,
 } from 'be-core';
 import { AddCommand, DeleteCommand, UpdateCommand } from './commands';
 
@@ -32,44 +32,44 @@ export class UomController extends BaseController {
     constructor(
         @Inject(REQUEST) httpRequest: any,
         private mediator: Mediator,
-        private uomQueries: UomQueries
+        private uomQueries: UomQueries,
     ) {
         super(httpRequest);
     }
 
     @Get('paging')
-    @Authorization(FeatureConst.uomManagement, Permissions.View, true)
+    @Authorize(FeatureConst.uomManagement, Permission.All)
     async getsPaging(@Query() param: Paging) {
         return this.uomQueries.getsPaging(param);
     }
 
     @Get(':id')
-    @Authorization(FeatureConst.uomManagement, Permissions.View, true)
+    @Authorize(FeatureConst.uomManagement, Permission.View)
     async get(@Param('id') id: number) {
         return this.uomQueries.get(id);
     }
 
     @Get('')
-    @Authorization(FeatureConst.uomManagement, Permissions.View, true)
+    @Authorize(FeatureConst.uomManagement, Permission.View)
     async gets() {
         return this.uomQueries.gets();
     }
 
     @Post('')
-    @Authorization(FeatureConst.uomManagement, Permissions.Insert, true)
+    @Authorize(FeatureConst.uomManagement, Permission.Insert)
     async add(@Body() command: AddCommand) {
         return this.mediator.send(command);
     }
 
     @Put(':id')
-    @Authorization(FeatureConst.uomManagement, Permissions.Update, true)
+    @Authorize(FeatureConst.uomManagement, Permission.Update)
     async update(@Param('id') id: number, @Body() command: UpdateCommand) {
         command.id = id;
         return this.mediator.send(command);
     }
 
     @Delete(':id')
-    @Authorization(FeatureConst.uomManagement, Permissions.Delete, true)
+    @Authorize(FeatureConst.uomManagement, Permission.Delete)
     async delete(@Param('id') id: number) {
         const command = new DeleteCommand();
         command.id = id;

@@ -34,7 +34,7 @@ export class UpdateCommandHandler extends BaseCommandHandler<UpdateCommand, Exam
             throw new BusinessException('Dữ liệu không tồn tại');
         }
         example.name = command.data.name;
-        example = await this.updateBuild(example, command.session);
+        example = this.updateBuild(example, command.session);
         return await this.exampleRepository.update(example);
     }
 }

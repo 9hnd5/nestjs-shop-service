@@ -18,11 +18,11 @@ import {
 import { REQUEST } from '@nestjs/core';
 import { ApiTags } from '@nestjs/swagger';
 import {
-    Authorization,
+    Authorize,
     BaseController,
     CoreResponseInterceptor,
     Mediator,
-    Permissions,
+    Permission,
 } from 'be-core';
 import { AddCommand, DeleteCommand, UpdateCommand } from './commands';
 
@@ -40,38 +40,38 @@ export class ProductCategoryController extends BaseController {
     }
 
     @Get('paging')
-    @Authorization(FeatureConst.productCategoryManagement, Permissions.View, true)
+    @Authorize(FeatureConst.productCategoryManagement, Permission.View)
     async getsPaging(@Query() param: Paging) {
         return this.productCategoryQueries.getsPaging(param);
     }
 
     @Get(':id')
-    @Authorization(FeatureConst.productCategoryManagement, Permissions.View, true)
+    @Authorize(FeatureConst.productCategoryManagement, Permission.View)
     async get(@Param('id') id: number) {
         return this.productCategoryQueries.get(id);
     }
 
     @Get('')
-    @Authorization(FeatureConst.productCategoryManagement, Permissions.View, true)
+    @Authorize(FeatureConst.productCategoryManagement, Permission.View)
     async gets() {
         return this.productCategoryQueries.gets();
     }
 
     @Post('')
-    @Authorization(FeatureConst.productCategoryManagement, Permissions.Insert, true)
+    @Authorize(FeatureConst.productCategoryManagement, Permission.Insert)
     async add(@Body() command: AddCommand) {
         return this.mediator.send(command);
     }
 
     @Put(':id')
-    @Authorization(FeatureConst.productCategoryManagement, Permissions.Update, true)
+    @Authorize(FeatureConst.productCategoryManagement, Permission.Update)
     async update(@Param('id') id: number, @Body() command: UpdateCommand) {
         command.id = id;
         return this.mediator.send(command);
     }
 
     @Delete(':id')
-    @Authorization(FeatureConst.productCategoryManagement, Permissions.Delete, true)
+    @Authorize(FeatureConst.productCategoryManagement, Permission.Delete)
     async delete(@Param('id') id: number) {
         const command = new DeleteCommand();
         command.id = id;

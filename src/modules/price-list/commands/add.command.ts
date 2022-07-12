@@ -40,7 +40,7 @@ export class AddCommandHandler extends BaseCommandHandler<AddCommand, PriceListM
         priceList.description = command.description;
         priceList.status = command.status;
 
-        priceList = await this.createBuild(priceList, command.session);
+        priceList = this.createBuild(priceList, command.session);
         return await this.priceListRepository.add(priceList);
     }
 }
