@@ -9,6 +9,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { CachingModule, CommonModule, HealthModule } from 'be-core';
 import { load } from './config';
 import { BrandModule } from './modules/brand/brand.module';
+import { ProductCategoryModule } from '@modules/product-category';
 console.log(__dirname + '/modules/shared/models/*{.ts,.js}');
 @Module({
     imports: [
@@ -41,6 +42,7 @@ console.log(__dirname + '/modules/shared/models/*{.ts,.js}');
         UomModule,
         VariantModule,
         BrandModule,
+        ProductCategoryModule,
     ],
 })
 export class AppModule {}
