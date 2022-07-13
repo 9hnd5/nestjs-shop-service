@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import {  ScopeVariableModule } from 'be-core';
 import { AttributeModel } from './models/attribute.model';
 import { BrandModel } from './models/brand.model';
 import QueriesList from './queries';

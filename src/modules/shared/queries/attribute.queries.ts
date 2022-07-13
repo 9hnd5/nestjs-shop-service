@@ -2,18 +2,12 @@ import { AttributeModel } from './../models/attribute.model';
 import { Inject, Injectable, Scope } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
 import { InjectRepository } from '@nestjs/typeorm';
-import { BaseQueries } from 'be-core';
+import { BaseQueries, QueryModel } from 'be-core';
 import { Transform } from 'class-transformer';
 import { IsNumber } from 'class-validator';
 import { Like, Repository } from 'typeorm';
 
-export class PagingQuery {
-    @Transform(({ value }) => +value)
-    @IsNumber()
-    pageSize: number;
-
-    @Transform(({ value }) => +value)
-    pageIndex: number;
+export class PagingQuery extends QueryModel {
     status?: string;
     searchText?: string;
 }
@@ -48,12 +42,18 @@ export class AttributeQueries extends BaseQueries {
     }
 
     async getsPaging({ pageSize, pageIndex, status, searchText }: PagingQuery) {
+
+        let condition = {
+            isDeleted: false,
+            status: status ? status : undefined
+        }
         const [dataSource, totalRows] = await this.attributeRepo.findAndCount({
-            where: {
-                isDeleted: false,
-                attributeCode: searchText ? Like(`%${searchText}%`) : undefined,
-                status: status ? status : undefined,
-            },
+            where:
+                searchText ?
+                    [
+                        { ...condition, attributeCode: searchText ? Like(`%${searchText}%`) : undefined },
+                        { ...condition, attributeName: searchText ? Like(`%${searchText}%`) : undefined }
+                    ] : condition,
             take: pageSize,
             skip: pageSize * (pageIndex - 1),
         });

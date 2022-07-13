@@ -18,31 +18,31 @@ export class BrandController extends BaseController {
     }
 
     @Get('paging')
-    @Authorize('brandManagement', Permission.View)
+    @Authorize('brandManagement', Permission.All)
     async getsPaging(@Query() filter: PagingQuery) {
         return this.brandQueries.getsPaging(filter);
     }
 
     @Get(':id')
-    @Authorize('brandManagement', Permission.View)
+    @Authorize('brandManagement', Permission.All)
     async get(@Param('id') id: number) {
         return this.brandQueries.get(id);
     }
 
     @Get()
-    @Authorize('brandManagement', Permission.View)
+    @Authorize('brandManagement', Permission.All)
     async getAll() {
         return this.brandQueries.gets();
     }
 
     @Post()
-    @Authorize('brandManagement', Permission.Insert)
+    @Authorize('brandManagement', Permission.All)
     async add(@Body() command: AddCommand) {
         return this.mediator.send(command);
     }
 
     @Put(':id')
-    @Authorize('brandManagement', Permission.Update)
+    @Authorize('brandManagement', Permission.All)
     async update(@Param('id') id: number, @Body() command: UpdateCommand) {
         command.id = id;
         return this.mediator.send(command);
