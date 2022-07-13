@@ -36,7 +36,7 @@ export class AddCommandHandler extends BaseCommandHandler<AddCommand, AttributeM
         attribute.description = command.description;
         attribute.status = command.status;
 
-        attribute = await this.createBuild(attribute, command.session);
+        attribute = this.createBuild(attribute, command.session);
         return this.attributeRepo.add(attribute);
     }
 }

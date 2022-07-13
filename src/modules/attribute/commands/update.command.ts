@@ -1,7 +1,7 @@
-import { MessageConst } from './../../../constants/message.const';
 import { AttributeModel } from '@modules/shared/models/attribute.model';
 import { BaseCommand, BaseCommandHandler, BusinessException, RequestHandler } from 'be-core';
 import { IsNotEmpty, MaxLength } from 'class-validator';
+import { MessageConst } from './../../../constants/message.const';
 import { AttributeQueries } from './../../shared/queries/attribute.queries';
 import { AttributeRepository } from './../../shared/repositories/attribute.repository';
 
@@ -48,7 +48,7 @@ export class UpdateCommandHandler extends BaseCommandHandler<UpdateCommand, Attr
         attribute.description = command.description;
         attribute.status = command.status;
 
-        attribute = await this.updateBuild(attribute, command.session);
+        attribute = this.updateBuild(attribute, command.session);
         return this.attributeRepo.update(attribute);
     }
 }

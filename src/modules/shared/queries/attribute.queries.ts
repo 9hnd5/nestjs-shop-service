@@ -1,11 +1,9 @@
-import { AttributeModel } from './../models/attribute.model';
 import { Inject, Injectable, Scope } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BaseQueries, QueryModel } from 'be-core';
-import { Transform } from 'class-transformer';
-import { IsNumber } from 'class-validator';
 import { Like, Repository } from 'typeorm';
+import { AttributeModel } from './../models/attribute.model';
 
 export class PagingQuery extends QueryModel {
     status?: string;
@@ -43,7 +41,7 @@ export class AttributeQueries extends BaseQueries {
 
     async getsPaging({ pageSize, pageIndex, status, searchText }: PagingQuery) {
 
-        let condition = {
+        const condition = {
             isDeleted: false,
             status: status ? status : undefined
         }
