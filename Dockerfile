@@ -13,7 +13,7 @@ FROM     node:16
 RUN      useradd -m -U -d /app -s /bin/bash app
 WORKDIR  /app
 COPY     --chown=app:app --from=builder /pkg /app/ 
-RUN      npm ci --production
+RUN      npm ci --omit=dev --ignore-scripts --production
 USER     app
 CMD      ["node", "dist/src/main", "2>&1"]
 ENTRYPOINT ["/bin/bash", "run.sh"]
