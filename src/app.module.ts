@@ -1,3 +1,4 @@
+import { AttributeModule } from './modules/attribute/attribute.module';
 import { ExampleModule } from '@modules/example';
 import { PriceListModule } from '@modules/price-list';
 import { UomModule } from '@modules/uom';
@@ -43,6 +44,7 @@ console.log(__dirname + '/modules/shared/models/*{.ts,.js}');
         VariantModule,
         BrandModule,
         ProductCategoryModule,
+        AttributeModule,
     ],
 })
 export class AppModule {}

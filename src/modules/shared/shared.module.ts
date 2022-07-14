@@ -1,6 +1,7 @@
-import { BrandModel } from './models/brand.model';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { AttributeModel } from './models/attribute.model';
+import { BrandModel } from './models/brand.model';
 import QueriesList from './queries';
 import RepositoriesList from './repositories';
 import { ExampleModel } from './models/example.model';
@@ -20,6 +21,7 @@ import { ProductCategory } from './models/product-category.model';
             Variant,
             ProductCategory,
             BrandModel,
+            AttributeModel,
         ]),
     ],
     providers: [...QueriesList, ...RepositoriesList],
