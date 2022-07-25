@@ -17,13 +17,7 @@ import {
 } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
 import { ApiTags } from '@nestjs/swagger';
-import {
-    Authorize,
-    BaseController,
-    CoreResponseInterceptor,
-    Mediator,
-    Permission,
-} from 'be-core';
+import { Authorize, BaseController, CoreResponseInterceptor, Mediator, Permission } from 'be-core';
 import { AddCommand, DeleteCommand, UpdateCommand } from './commands';
 
 @Controller('/shop/v1/product-category')

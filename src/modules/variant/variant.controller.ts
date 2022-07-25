@@ -16,13 +16,7 @@ import {
     UseInterceptors,
 } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
-import {
-    BaseController,
-    CoreResponseInterceptor,
-    Mediator,
-    Authorize,
-    Permission
-} from 'be-core';
+import { BaseController, CoreResponseInterceptor, Mediator, Authorize, Permission } from 'be-core';
 import { AddCommand, DeleteCommand, UpdateCommand } from './commands';
 
 @Controller('/shop/v1/variant')

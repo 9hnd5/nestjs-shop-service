@@ -18,13 +18,13 @@ export class AttributeController extends BaseController {
     }
 
     @Get('paging')
-    @Authorize("attributeManagement", Permission.All)
+    @Authorize('attributeManagement', Permission.All)
     getsPaging(@Query() filter: PagingQuery) {
         return this.attributeQueries.getsPaging(filter);
     }
 
     @Get(':id')
-    @Authorize("attributeManagement", Permission.All)
+    @Authorize('attributeManagement', Permission.All)
     get(@Param('id') id: number) {
         return this.attributeQueries.get(id);
     }
@@ -36,13 +36,13 @@ export class AttributeController extends BaseController {
     }
 
     @Post()
-    @Authorize("attributeManagement", Permission.All)
+    @Authorize('attributeManagement', Permission.All)
     add(@Body() command: AddCommand) {
         return this.mediator.send(command);
     }
 
     @Put(':id')
-    @Authorize("attributeManagement", Permission.All)
+    @Authorize('attributeManagement', Permission.All)
     update(@Param('id') id: number, @Body() command: UpdateCommand) {
         command.id = id;
         return this.mediator.send(command);

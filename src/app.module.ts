@@ -1,17 +1,17 @@
-import { AttributeModule } from './modules/attribute/attribute.module';
 import { ExampleModule } from '@modules/example';
 import { PriceListModule } from '@modules/price-list';
+import { ProductCategoryModule } from '@modules/product-category';
 import { UomModule } from '@modules/uom';
 import { VariantModule } from '@modules/variant';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { REQUEST } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import {InitialModule, AuthModule, CacheModule}from "be-core";
+import { AuthModule, CacheModule, InitialModule } from 'be-core';
+import { DataSource } from 'typeorm';
 import { load } from './config';
+import { AttributeModule } from './modules/attribute/attribute.module';
 import { BrandModule } from './modules/brand/brand.module';
-import { ProductCategoryModule } from '@modules/product-category';
-console.log(__dirname + '/modules/shared/models/*{.ts,.js}');
 @Module({
     imports: [
         ConfigModule.forRoot({
@@ -48,3 +48,15 @@ console.log(__dirname + '/modules/shared/models/*{.ts,.js}');
     ],
 })
 export class AppModule {}
+const dataSource = new DataSource({
+    type: 'mysql',
+    host: 'localhost',
+    port: 3306,
+    username: 'root',
+    password: '',
+    database: 'icc_comatic',
+    entities: [__dirname + '/modules/shared/models/*{.ts,.js}'],
+    migrations: [__dirname + '/migrations/*.{ts,js}'],
+    synchronize: false,
+});
+export { dataSource };

@@ -16,13 +16,7 @@ import {
     UseInterceptors,
 } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
-import {
-    Authorize,
-    BaseController,
-    CoreResponseInterceptor,
-    Mediator,
-    Permission,
-} from 'be-core';
+import { Authorize, BaseController, CoreResponseInterceptor, Mediator, Permission } from 'be-core';
 import { AddCommand, DeleteCommand, UpdateCommand } from './commands';
 
 @Controller('/shop/v1/uom')
@@ -32,7 +26,7 @@ export class UomController extends BaseController {
     constructor(
         @Inject(REQUEST) httpRequest: any,
         private mediator: Mediator,
-        private uomQueries: UomQueries,
+        private uomQueries: UomQueries
     ) {
         super(httpRequest);
     }

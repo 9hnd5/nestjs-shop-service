@@ -40,18 +40,23 @@ export class AttributeQueries extends BaseQueries {
     }
 
     async getsPaging({ pageSize, pageIndex, status, searchText }: PagingQuery) {
-
         const condition = {
             isDeleted: false,
-            status: status ? status : undefined
-        }
+            status: status ? status : undefined,
+        };
         const [dataSource, totalRows] = await this.attributeRepo.findAndCount({
-            where:
-                searchText ?
-                    [
-                        { ...condition, attributeCode: searchText ? Like(`%${searchText}%`) : undefined },
-                        { ...condition, attributeName: searchText ? Like(`%${searchText}%`) : undefined }
-                    ] : condition,
+            where: searchText
+                ? [
+                      {
+                          ...condition,
+                          attributeCode: searchText ? Like(`%${searchText}%`) : undefined,
+                      },
+                      {
+                          ...condition,
+                          attributeName: searchText ? Like(`%${searchText}%`) : undefined,
+                      },
+                  ]
+                : condition,
             take: pageSize,
             skip: pageSize * (pageIndex - 1),
         });
