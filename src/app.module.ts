@@ -1,17 +1,28 @@
-import { ExampleModule } from '@modules/example';
+import { AttributeModule } from '@modules/attribute';
+import { BrandModule } from '@modules/brand';
 import { PriceListModule } from '@modules/price-list';
 import { ProductCategoryModule } from '@modules/product-category';
+import { SalesOrderModule } from '@modules/sales-order/sales-order.module';
 import { UomModule } from '@modules/uom';
 import { VariantModule } from '@modules/variant';
-import { Module } from '@nestjs/common';
+import { Module, Scope } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { REQUEST } from '@nestjs/core';
+import { APP_INTERCEPTOR, REQUEST } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AuthModule, CacheModule, InitialModule } from 'be-core';
+import { AuthModule, CacheModule, CoreResponseInterceptor, InitialModule } from 'be-core';
 import { DataSource } from 'typeorm';
 import { load } from './config';
-import { AttributeModule } from './modules/attribute/attribute.module';
-import { BrandModule } from './modules/brand/brand.module';
+const dataSource = new DataSource({
+    type: 'mysql',
+    host: '172.16.0.110',
+    port: 6002,
+    username: 'dev',
+    password: 'comatic_dev@2022',
+    database: 'comatic_icc',
+    entities: [__dirname + '/modules/**/**.entity.{ts,js}'],
+    migrations: [__dirname + '/migrations/*.{ts,js}'],
+    synchronize: false,
+});
 @Module({
     imports: [
         ConfigModule.forRoot({
@@ -27,7 +38,7 @@ import { BrandModule } from './modules/brand/brand.module';
                     username: request.scopeVariable.primary.username,
                     password: request.scopeVariable.primary.password,
                     database: request.scopeVariable.primary.database,
-                    entities: [__dirname + '/modules/shared/models/*{.ts,.js}'],
+                    entities: [__dirname + '/modules/**/**.entity.{ts,js}'],
                     synchronize: false,
                     retryAttempts: 3,
                     retryDelay: 1000,
@@ -35,10 +46,10 @@ import { BrandModule } from './modules/brand/brand.module';
             },
             inject: [REQUEST],
         }),
+        SalesOrderModule,
         CacheModule,
         InitialModule,
         AuthModule,
-        ExampleModule,
         PriceListModule,
         UomModule,
         VariantModule,
@@ -46,17 +57,13 @@ import { BrandModule } from './modules/brand/brand.module';
         ProductCategoryModule,
         AttributeModule,
     ],
+    providers: [
+        {
+            provide: APP_INTERCEPTOR,
+            useClass: CoreResponseInterceptor,
+            scope: Scope.REQUEST,
+        },
+    ],
 })
 export class AppModule {}
-const dataSource = new DataSource({
-    type: 'mysql',
-    host: 'localhost',
-    port: 3306,
-    username: 'root',
-    password: '',
-    database: 'icc_comatic',
-    entities: [__dirname + '/modules/shared/models/*{.ts,.js}'],
-    migrations: [__dirname + '/migrations/*.{ts,js}'],
-    synchronize: false,
-});
 export { dataSource };

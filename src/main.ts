@@ -5,6 +5,7 @@ import * as pgk from 'package.json';
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
+    app.setGlobalPrefix('/shop/v1');
     app.enableCors();
     const config = new DocumentBuilder()
         .setTitle('Example')
