@@ -1,23 +1,41 @@
 import { SalesOrder } from '@modules/sales-order/entities/sales-order.entity';
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity({ name: 'sales_order_item' })
 export class SalesOrderItem {
-    @PrimaryGeneratedColumn()
+    constructor(itemCode: string, unitPrice: number, quantity: number) {
+        this.itemCode = itemCode;
+        this._unitPrice = unitPrice;
+        this._quantity = quantity;
+        this._totalPrice = this._quantity * this._unitPrice;
+    }
+
     id: number;
-    @Column({ name: 'item_code', length: 50 })
     itemCode: string;
-    @Column({ name: 'unit_price', type: 'float' })
-    unitPrice: number;
-    @Column({ name: 'quantity', type: 'float' })
-    quantity: number;
-    @Column({ name: 'total_price', type: 'float' })
-    totalPrice: number;
-    @ManyToOne(() => SalesOrder, (order) => order.items, {
-        onDelete: 'CASCADE',
-        nullable: false,
-        orphanedRowAction: 'delete',
-    })
-    @JoinColumn({ name: 'order_id' })
-    order: SalesOrder;
+
+    private _unitPrice: number;
+    get unitPrice() {
+        return this._unitPrice;
+    }
+    set unitPrice(unitPrice: number) {
+        this._unitPrice = unitPrice;
+        this._totalPrice = this._quantity * this._unitPrice;
+    }
+
+    private _quantity: number;
+    get quantity() {
+        return this._quantity;
+    }
+    set quantity(quantity: number) {
+        this._quantity = quantity;
+        this._totalPrice = this._quantity * this._unitPrice;
+    }
+
+    private _totalPrice: number;
+    get totalPrice() {
+        return this._totalPrice;
+    }
+    private set totalPrice(value: number) {
+        this._totalPrice = value;
+    }
+
+    readonly order: SalesOrder;
 }

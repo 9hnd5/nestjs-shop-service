@@ -1,11 +1,12 @@
+import { SalesOrderEntity } from '@modules/sales-order/config/sales-order.config';
 import { SalesOrderItem } from '@modules/sales-order/entities/sales-order-item.entity';
 import { SalesOrder } from '@modules/sales-order/entities/sales-order.entity';
 import { BaseCommand, BaseCommandHandler, NotFoundException, RequestHandler } from 'be-core';
-import { Expose, Type } from 'class-transformer';
+import { Exclude, Expose, Type } from 'class-transformer';
 import { IsNotEmpty } from 'class-validator';
-import { remove } from 'lodash';
 import { DataSource, Repository } from 'typeorm';
 
+@Exclude()
 class Item {
     @Expose()
     id?: number;
@@ -19,9 +20,8 @@ class Item {
     @Expose()
     quantity: number;
 }
+@Exclude()
 export class UpdateSalesOrderCommand extends BaseCommand<SalesOrder> {
-    @Expose()
-    @IsNotEmpty()
     id: number;
 
     @Expose()
@@ -29,12 +29,13 @@ export class UpdateSalesOrderCommand extends BaseCommand<SalesOrder> {
     name: string;
 
     @Expose()
-    @IsNotEmpty()
-    status: string;
+    customerId?: number;
 
     @Expose()
-    @IsNotEmpty()
-    customerId: number;
+    customerName?: string;
+
+    @Expose()
+    deliveryCode?: string;
 
     @Type(() => SalesOrderItem)
     @Expose()
@@ -50,29 +51,32 @@ export class UpdateSalesOrderCommandHanlder extends BaseCommandHandler<
     private salesOrderRepo: Repository<SalesOrder>;
     constructor(dataSource: DataSource) {
         super();
-        this.salesOrderRepo = dataSource.getRepository(SalesOrder);
+        this.salesOrderRepo = dataSource.getRepository<SalesOrder>(SalesOrderEntity);
     }
     async apply(command: UpdateSalesOrderCommand) {
+        const { id, name, customerId, customerName, deliveryCode, items } = command;
         let salesOrder = await this.salesOrderRepo.findOne({
-            where: { id: command.id },
+            where: { id },
             relations: {
                 items: true,
             },
         });
+
         if (!salesOrder) {
             throw new NotFoundException('Entity not found');
         }
-        salesOrder.name = command.name;
-        salesOrder.status = command.status;
-        salesOrder.customerId = command.customerId;
+
+        salesOrder.name = name;
+        salesOrder.customerId = customerId;
+        salesOrder.customerName = customerName;
+        salesOrder.deliveryCode = deliveryCode;
         salesOrder = this.updateBuild(salesOrder, command.session);
 
         const orderItems = [...salesOrder.items];
         for (const item of orderItems) {
-            const index = command.items.findIndex((x) => x.id === item.id);
-            console.log(index);
+            const index = items.findIndex((x) => x.id === item.id);
             if (index < 0) {
-                remove(salesOrder.items, (x) => x.id === item.id);
+                salesOrder.removeItem(item.id);
             }
         }
 
@@ -87,11 +91,8 @@ export class UpdateSalesOrderCommandHanlder extends BaseCommandHandler<
                 }
                 //insert
             } else {
-                const newItem = new SalesOrderItem();
-                newItem.itemCode = item.itemCode;
-                newItem.quantity = item.quantity;
-                newItem.unitPrice = item.unitPrice;
-                salesOrder.items.push(newItem);
+                const newItem = new SalesOrderItem(item.itemCode, item.unitPrice, item.quantity);
+                salesOrder.addItem(newItem);
             }
         }
         const result = await this.salesOrderRepo.save(salesOrder);

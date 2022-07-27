@@ -1,13 +1,13 @@
-import { SummaryQuery } from '@modules/sales-order/dtos/summary-query.dto';
-import { SummaryResponse } from '@modules/sales-order/dtos/summary-response.dto';
+import { GetByIdResponse } from '@modules/sales-order/dtos/get-by-id-response.dto';
 import { GetQuery } from '@modules/sales-order/dtos/get-query.dto';
 import { GetResponse } from '@modules/sales-order/dtos/get-response.dto';
+import { SummaryQuery } from '@modules/sales-order/dtos/summary-query.dto';
+import { SummaryResponse } from '@modules/sales-order/dtos/summary-response.dto';
 import { SalesOrder } from '@modules/sales-order/entities/sales-order.entity';
 import { Injectable } from '@nestjs/common';
 import { Paginated } from 'be-core';
 import { plainToInstance } from 'class-transformer';
 import { DataSource, Repository } from 'typeorm';
-import { GetByIdResponse } from '@modules/sales-order/dtos/get-by-id-response.dto';
 
 @Injectable()
 export class SalesOrderQuery {
@@ -26,7 +26,7 @@ export class SalesOrderQuery {
             skip: pageSize * (pageIndex - 1),
         });
 
-        const result = plainToInstance(GetResponse, dataSource);
+        const result = plainToInstance(GetResponse, dataSource, { excludeExtraneousValues: true });
         const response: Paginated<GetResponse> = {
             pageIndex,
             pageSize,
@@ -42,23 +42,22 @@ export class SalesOrderQuery {
             where: { id },
             relations: { items: true },
         });
-        const response = plainToInstance(GetByIdResponse, salesOrder);
+        const response = plainToInstance(GetByIdResponse, salesOrder, {
+            excludeExtraneousValues: true,
+        });
         return response;
     }
 
     async getSummary(query: SummaryQuery) {
         const { fromDate, toDate } = query;
-        console.log(fromDate, toDate);
         const result = await this.salesOrderRepo
             .createQueryBuilder('s')
-            .where('s.created_date < :fromDate', { fromDate })
-            .andWhere('s.created_date > :toDate', { toDate })
+            .where('s.created_date >= :fromDate', { fromDate: fromDate?.toISOString() })
+            .andWhere('s.created_date < :toDate', { toDate: toDate?.toISOString() })
             .groupBy('s.status')
             .select(['count(s.status) as count', 's.status as status'])
             .getRawMany();
-
         const response = plainToInstance(SummaryResponse, result);
-
         return response;
     }
 }

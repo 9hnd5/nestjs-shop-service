@@ -30,7 +30,8 @@ export class SalesOrderController {
     }
 
     @Put(':id')
-    put(@Body() command: UpdateSalesOrderCommand) {
+    put(@Param('id') id: number, @Body() command: UpdateSalesOrderCommand) {
+        command.id = id;
         return this.mediator.send(command);
     }
 }

@@ -19,7 +19,7 @@ const dataSource = new DataSource({
     username: 'dev',
     password: 'comatic_dev@2022',
     database: 'comatic_icc',
-    entities: [__dirname + '/modules/**/**.entity.{ts,js}'],
+    entities: [__dirname + '/modules/**/**.config.{ts,js}'],
     migrations: [__dirname + '/migrations/*.{ts,js}'],
     synchronize: false,
 });
@@ -38,7 +38,7 @@ const dataSource = new DataSource({
                     username: request.scopeVariable.primary.username,
                     password: request.scopeVariable.primary.password,
                     database: request.scopeVariable.primary.database,
-                    entities: [__dirname + '/modules/**/**.entity.{ts,js}'],
+                    entities: [__dirname + '/modules/**/**.config.{ts,js}'],
                     synchronize: false,
                     retryAttempts: 3,
                     retryDelay: 1000,

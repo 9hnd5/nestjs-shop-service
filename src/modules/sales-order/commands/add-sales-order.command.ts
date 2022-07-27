@@ -1,7 +1,8 @@
+import { SalesOrderEntity } from '@modules/sales-order/config/sales-order.config';
 import { SalesOrderItem } from '@modules/sales-order/entities/sales-order-item.entity';
 import { SalesOrder } from '@modules/sales-order/entities/sales-order.entity';
 import { BaseCommand, BaseCommandHandler, RequestHandler } from 'be-core';
-import { Exclude, Expose, plainToInstance, Type } from 'class-transformer';
+import { Exclude, Expose, Type } from 'class-transformer';
 import { IsNotEmpty } from 'class-validator';
 import { DataSource, Repository } from 'typeorm';
 
@@ -20,12 +21,13 @@ export class AddSalesOrderCommand extends BaseCommand<SalesOrder> {
     name: string;
 
     @Expose()
-    @IsNotEmpty()
-    status: string;
+    customerId?: number;
 
     @Expose()
-    @IsNotEmpty()
-    customerId: number;
+    customerName?: string;
+
+    @Expose()
+    deliveryCode?: string;
 
     @Type(() => SalesOrderItem)
     @Expose()
@@ -34,17 +36,20 @@ export class AddSalesOrderCommand extends BaseCommand<SalesOrder> {
 }
 
 @RequestHandler(AddSalesOrderCommand)
-export class AddSalesOrderCommandHandler extends BaseCommandHandler<AddSalesOrderCommand, number> {
+export class AddSalesOrderCommandHandler extends BaseCommandHandler<AddSalesOrderCommand, any> {
     private salesOrderRepo: Repository<SalesOrder>;
     constructor(dataSource: DataSource) {
         super();
-        this.salesOrderRepo = dataSource.getRepository(SalesOrder);
+        this.salesOrderRepo = dataSource.getRepository<SalesOrder>(SalesOrderEntity);
     }
     async apply(command: AddSalesOrderCommand) {
-        let order = plainToInstance(SalesOrder, command);
+        const { name, customerId, customerName, deliveryCode, items } = command;
+        let order = new SalesOrder(name, customerId, customerName, deliveryCode);
+        for (const item of items) {
+            const newItem = new SalesOrderItem(item.itemCode, item.unitPrice, item.quantity);
+            order.addItem(newItem);
+        }
         order = this.createBuild(order, command.session);
-        order.modifiedBy = 0;
-        order.modifiedDate = new Date();
         const result = await this.salesOrderRepo.save(order);
         return result.id;
     }

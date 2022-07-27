@@ -1,19 +1,38 @@
 import { SalesOrderItem } from '@modules/sales-order/entities/sales-order-item.entity';
-import { TenantBaseModel } from 'be-core';
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { SalesOrderStatus } from '@modules/sales-order/enums/sales-order-status.enum';
+import { TenantBase } from 'be-core';
+import { isArray, remove } from 'lodash';
+export class SalesOrder extends TenantBase {
+    constructor(name: string, customerId?: number, customerName?: string, deliveryCode?: string) {
+        super();
+        this.name = name;
+        this.customerId = customerId;
+        this.customerName = customerName;
+        this.deliveryCode = deliveryCode;
+        this.status = SalesOrderStatus.Draft;
+    }
 
-@Entity({ name: 'sales_order' })
-export class SalesOrder extends TenantBaseModel {
-    @PrimaryGeneratedColumn()
     id: number;
-    @Column({ name: 'name', length: 50 })
     name: string;
-    @Column({ name: 'status', length: 50 })
+    customerId?: number;
+    customerName?: string;
+    deliveryCode?: string;
     status: string;
-    @Column({ name: 'customer_id' })
-    customerId: number;
-    @OneToMany(() => SalesOrderItem, (s) => s.order, {
-        cascade: true,
-    })
     items: SalesOrderItem[];
+
+    addItem(item: SalesOrderItem) {
+        this.initItems();
+        this.items.push(item);
+    }
+
+    removeItem(id: number) {
+        this.initItems();
+        remove(this.items, (x) => x.id === id);
+    }
+
+    private initItems() {
+        if (!isArray(this.items)) {
+            this.items = [];
+        }
+    }
 }

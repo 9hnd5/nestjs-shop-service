@@ -1,11 +1,10 @@
 import { GetResponse } from '@modules/sales-order/dtos/get-response.dto';
-import { SalesOrderItem } from '@modules/sales-order/entities/sales-order-item.entity';
 import { Exclude, Expose, Type } from 'class-transformer';
 
 @Exclude()
 export class GetByIdResponse extends GetResponse {
-    @Type(() => SalesOrderItem)
     @Expose()
+    @Type(() => Item)
     items: Item[];
 }
 
@@ -22,4 +21,7 @@ class Item {
 
     @Expose()
     quantity: number;
+
+    @Expose()
+    totalPrice: number;
 }

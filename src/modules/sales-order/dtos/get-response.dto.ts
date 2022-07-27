@@ -12,7 +12,13 @@ export class GetResponse {
     status: string;
 
     @Expose()
-    customerId: number;
+    customerId?: number;
+
+    @Expose()
+    customerName?: string;
+
+    @Expose()
+    deliveryCode?: string;
 
     @Expose()
     @Type(() => Date)
