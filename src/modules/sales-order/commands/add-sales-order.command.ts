@@ -2,35 +2,29 @@ import { SalesOrderEntity } from '@modules/sales-order/config/sales-order.config
 import { SalesOrderItem } from '@modules/sales-order/entities/sales-order-item.entity';
 import { SalesOrder } from '@modules/sales-order/entities/sales-order.entity';
 import { BaseCommand, BaseCommandHandler, RequestHandler } from 'be-core';
-import { Exclude, Expose, Type } from 'class-transformer';
 import { IsNotEmpty } from 'class-validator';
 import { DataSource, Repository } from 'typeorm';
 
 class Item {
-    @Expose()
+    @IsNotEmpty()
     itemCode: string;
-    @Expose()
+
+    @IsNotEmpty()
     unitPrice: number;
-    @Expose()
+
+    @IsNotEmpty()
     quantity: number;
 }
-@Exclude()
 export class AddSalesOrderCommand extends BaseCommand<SalesOrder> {
-    @Expose()
     @IsNotEmpty()
     name: string;
 
-    @Expose()
     customerId?: number;
 
-    @Expose()
     customerName?: string;
 
-    @Expose()
     deliveryCode?: string;
 
-    @Type(() => SalesOrderItem)
-    @Expose()
     @IsNotEmpty()
     items: Item[];
 }
