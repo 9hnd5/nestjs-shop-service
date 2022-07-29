@@ -8,7 +8,7 @@ import { SalesOrder } from '@modules/sales-order/entities/sales-order.entity';
 import { Injectable } from '@nestjs/common';
 import { HttpService, Paginated } from 'be-core';
 import { plainToInstance } from 'class-transformer';
-import { DataSource, Repository } from 'typeorm';
+import { Brackets, DataSource, Repository } from 'typeorm';
 import { get as getConfig } from '../../config';
 
 const externalServiceConfig = getConfig('externalService');
@@ -20,21 +20,20 @@ export class SalesOrderQuery {
         this.salesOrderRepo = dataSource.getRepository<SalesOrder>(SalesOrderSchema);
     }
 
-    async paging(query: GetQuery) {
-        const { pageIndex, pageSize, status, searchText, salesChannel } = query;
-        let { fromDate, toDate } = query;
+    async get(query: GetQuery) {
+        const { pageIndex, pageSize, status, searchText, salesChannel, fromDate, toDate } = query;
         // Get Orders for a week if no date query values are presented
-        toDate = toDate ?? new Date();
-        if (!fromDate) {
-            fromDate = new Date();
-            fromDate.setDate(fromDate.getDate() - 7);
-        }
+        const now = new Date();
+        const aWeekBefore = new Date();
+        aWeekBefore.setDate(aWeekBefore.getDate() - 7);
 
         let cond = this.salesOrderRepo
             .createQueryBuilder('s')
             .where('is_deleted = :isDeleted', { isDeleted: false })
-            .andWhere('s.created_date >= :fromDate', { fromDate: fromDate.toISOString() })
-            .andWhere('s.created_date < :toDate', { toDate: toDate.toISOString() })
+            .andWhere('s.created_date >= :fromDate', {
+                fromDate: (fromDate ?? aWeekBefore).toISOString(),
+            })
+            .andWhere('s.created_date < :toDate', { toDate: (toDate ?? now).toISOString() })
             .take(pageSize)
             .skip(pageSize * (pageIndex - 1));
 
@@ -45,10 +44,14 @@ export class SalesOrderQuery {
             cond = cond.andWhere('s.sales_channel = :salesChannel', { salesChannel });
         }
         if (searchText) {
-            cond = cond.andWhere('(s.code = :searchCode OR s.customer_name like :searchText)', {
-                searchCode: searchText,
-                searchText: `%${searchText}%`,
-            });
+            cond = cond.andWhere(
+                new Brackets((qb) => {
+                    qb.where('s.code = :searchCode', { searchCode: searchText }).orWhere(
+                        's.customer_name like :searchText',
+                        { searchText: `%${searchText}%` }
+                    );
+                })
+            );
         }
 
         const [dataSource, totalRow] = await cond.getManyAndCount();
@@ -63,7 +66,7 @@ export class SalesOrderQuery {
         return response;
     }
 
-    async get(id: number) {
+    async getById(id: number) {
         const salesOrder = await this.salesOrderRepo.findOne({
             where: { id, isDeleted: false },
             relations: { items: true },

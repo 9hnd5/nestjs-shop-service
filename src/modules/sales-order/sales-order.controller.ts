@@ -9,9 +9,9 @@ import { Mediator } from 'be-core';
 @Controller('sales-order')
 export class SalesOrderController {
     constructor(private mediator: Mediator, private salesOrderQuery: SalesOrderQuery) {}
-    @Get('paging')
-    paging(@Query() query: GetQuery) {
-        return this.salesOrderQuery.paging(query);
+    @Get()
+    get(@Query() query: GetQuery) {
+        return this.salesOrderQuery.get(query);
     }
 
     @Get('/summary')
@@ -20,8 +20,8 @@ export class SalesOrderController {
     }
 
     @Get(':id')
-    get(@Param('id') id: number) {
-        return this.salesOrderQuery.get(id);
+    getById(@Param('id') id: number) {
+        return this.salesOrderQuery.getById(id);
     }
 
     @Post()
