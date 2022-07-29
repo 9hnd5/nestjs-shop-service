@@ -2,7 +2,8 @@ import { SalesOrderSchema } from '@modules/sales-order/config/sales-order.config
 import { SalesOrderItem } from '@modules/sales-order/entities/sales-order-item.entity';
 import { SalesOrder } from '@modules/sales-order/entities/sales-order.entity';
 import { BaseCommand, BaseCommandHandler, RequestHandler } from 'be-core';
-import { IsNotEmpty } from 'class-validator';
+import { Type } from 'class-transformer';
+import { ArrayNotEmpty, IsNotEmpty, ValidateNested } from 'class-validator';
 import { DataSource, Repository } from 'typeorm';
 
 class Item {
@@ -18,19 +19,14 @@ class Item {
     @IsNotEmpty()
     quantity: number;
 
-    tax: number;
+    tax?: number;
 }
 export class AddSalesOrderCommand extends BaseCommand<SalesOrder> {
-    code: string;
-
+    code?: string;
     customerId?: number;
-
     customerName?: string;
-
     phoneNumber?: string;
-
     address?: string;
-
     @IsNotEmpty()
     contactPerson: string;
     @IsNotEmpty()
@@ -43,18 +39,18 @@ export class AddSalesOrderCommand extends BaseCommand<SalesOrder> {
     deliveryPartner: string;
     @IsNotEmpty()
     deliveryDate: Date;
-
+    @IsNotEmpty()
     shippingFee: number;
-
+    @IsNotEmpty()
     paymentMethodId: number;
-
     commission?: number;
-
     tax?: number;
-
     note?: string;
 
+    @ArrayNotEmpty()
     @IsNotEmpty()
+    @ValidateNested()
+    @Type(() => Item)
     items: Item[];
 }
 
@@ -84,13 +80,13 @@ export class AddSalesOrderCommandHandler extends BaseCommandHandler<AddSalesOrde
             commission,
         } = command;
         let order = new SalesOrder(
-            code,
             contactPerson,
             contactNumber,
             shipAddress,
             shippingFee,
             paymentMethodId,
             salesChannel,
+            code,
             customerId,
             customerName,
             phoneNumber,

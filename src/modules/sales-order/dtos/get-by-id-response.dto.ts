@@ -14,7 +14,10 @@ class Item {
     id: number;
 
     @Expose()
-    itemCode: string;
+    itemId: string;
+
+    @Expose()
+    uomId: string;
 
     @Expose()
     unitPrice: number;

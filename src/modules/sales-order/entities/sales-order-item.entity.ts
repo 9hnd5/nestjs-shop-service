@@ -2,13 +2,13 @@ import { SalesOrder } from '@modules/sales-order/entities/sales-order.entity';
 import { TenantBase } from 'be-core';
 
 export class SalesOrderItem extends TenantBase {
-    constructor(itemId: number, uomId: number, unitPrice: number, quantity: number, tax: number) {
+    constructor(itemId: number, uomId: number, unitPrice: number, quantity: number, tax?: number) {
         super();
         this.itemId = itemId;
         this.uomId = uomId;
         this.unitPrice = unitPrice;
         this.quantity = quantity;
-        this.tax = tax;
+        this.tax = tax ?? 0;
         this.lineTotal = this.quantity * this.unitPrice;
         this.discountAmount = 0;
     }

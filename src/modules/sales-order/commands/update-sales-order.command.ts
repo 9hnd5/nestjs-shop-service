@@ -2,7 +2,8 @@ import { SalesOrderSchema } from '@modules/sales-order/config/sales-order.config
 import { SalesOrderItem } from '@modules/sales-order/entities/sales-order-item.entity';
 import { SalesOrder } from '@modules/sales-order/entities/sales-order.entity';
 import { BaseCommand, BaseCommandHandler, NotFoundException, RequestHandler } from 'be-core';
-import { IsNotEmpty } from 'class-validator';
+import { Type } from 'class-transformer';
+import { ArrayNotEmpty, IsNotEmpty, ValidateNested } from 'class-validator';
 import { DataSource, Repository } from 'typeorm';
 
 class Item {
@@ -20,23 +21,16 @@ class Item {
     @IsNotEmpty()
     quantity: number;
 
-    tax: number;
+    tax?: number;
 }
 
 export class UpdateSalesOrderCommand extends BaseCommand<SalesOrder> {
     id: number;
-
-    @IsNotEmpty()
-    code: string;
-
+    code?: string;
     customerId?: number;
-
     customerName?: string;
-
     phoneNumber?: string;
-
     address?: string;
-
     @IsNotEmpty()
     contactPerson: string;
     @IsNotEmpty()
@@ -49,20 +43,18 @@ export class UpdateSalesOrderCommand extends BaseCommand<SalesOrder> {
     deliveryPartner: string;
     @IsNotEmpty()
     deliveryDate: Date;
-
-    shippingFee: number;
-
-    paymentMethodId: number;
-
-    totalDiscountAmount: number;
-
-    commission: number;
-
-    tax: number;
-
-    note: string;
-
     @IsNotEmpty()
+    shippingFee: number;
+    @IsNotEmpty()
+    paymentMethodId: number;
+    commission?: number;
+    tax?: number;
+    note?: string;
+
+    @ArrayNotEmpty()
+    @IsNotEmpty()
+    @ValidateNested()
+    @Type(() => Item)
     items: Item[];
 }
 
@@ -85,11 +77,15 @@ export class UpdateSalesOrderCommandHanlder extends BaseCommandHandler<
             shipAddress,
             shippingFee,
             paymentMethodId,
+            salesChannel,
             customerId,
             customerName,
             phoneNumber,
+            address,
             deliveryPartner,
+            deliveryDate,
             items,
+            commission,
         } = command;
         let salesOrder = await this.salesOrderRepo.findOne({
             where: { id },
@@ -105,13 +101,17 @@ export class UpdateSalesOrderCommandHanlder extends BaseCommandHandler<
         salesOrder.contactPerson = contactPerson;
         salesOrder.contactNumber = contactNumber;
         salesOrder.shipAddress = shipAddress;
+        salesOrder.salesChannel = salesChannel;
+        salesOrder.commission = commission ?? 0;
         salesOrder.code = code;
         salesOrder.shippingFee = shippingFee;
         salesOrder.paymentMethodId = paymentMethodId;
         salesOrder.customerId = customerId;
         salesOrder.customerName = customerName;
         salesOrder.phoneNumber = phoneNumber;
+        salesOrder.address = address;
         salesOrder.deliveryPartner = deliveryPartner;
+        salesOrder.deliveryDate = deliveryDate;
         salesOrder = this.updateBuild(salesOrder, command.session);
 
         const orderItems = [...salesOrder.items];

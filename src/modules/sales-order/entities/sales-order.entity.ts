@@ -4,13 +4,13 @@ import { TenantBase } from 'be-core';
 import { isArray, remove } from 'lodash';
 export class SalesOrder extends TenantBase {
     constructor(
-        code: string,
         contactPerson: string,
         contactNumber: string,
         shipAddress: string,
         shippingFee: number,
         paymentMethodId: number,
         salesChannel: string,
+        code?: string,
         customerId?: number,
         customerName?: string,
         phoneNumber?: string,
@@ -39,7 +39,7 @@ export class SalesOrder extends TenantBase {
     }
 
     id: number;
-    code: string;
+    code?: string;
     status: string;
     postingDate: Date;
     address?: string;
@@ -57,7 +57,7 @@ export class SalesOrder extends TenantBase {
     totalAmount: number;
     discountAmount: number;
     commission: number;
-    note: string;
+    note?: string;
 
     private _totalBeforeDiscount: number;
     get totalBeforeDiscount() {
