@@ -52,7 +52,6 @@ export class UpdateSalesOrderCommand extends BaseCommand<SalesOrder> {
     note?: string;
 
     @ArrayNotEmpty()
-    @IsNotEmpty()
     @ValidateNested()
     @Type(() => Item)
     items: Item[];
@@ -134,13 +133,14 @@ export class UpdateSalesOrderCommandHanlder extends BaseCommandHandler<
                 }
                 //insert
             } else {
-                const newItem = new SalesOrderItem(
+                let newItem = new SalesOrderItem(
                     item.itemId,
                     item.uomId,
                     item.unitPrice,
                     item.quantity,
                     item.tax
                 );
+                newItem = this.createBuild(newItem, command.session);
                 salesOrder.addItem(newItem);
             }
         }

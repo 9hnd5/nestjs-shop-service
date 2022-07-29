@@ -26,5 +26,5 @@ class Item {
     quantity: number;
 
     @Expose()
-    totalPrice: number;
+    lineTotal: number;
 }

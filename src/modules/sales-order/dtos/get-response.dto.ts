@@ -21,22 +21,25 @@ export class GetResponse {
     phoneNumber?: string;
 
     @Expose()
-    contactPerson?: string;
+    contactPerson: string;
 
     @Expose()
-    contactNumber?: string;
+    contactNumber: string;
 
     @Expose()
     address?: string;
 
     @Expose()
-    shipAddress?: string;
+    shipAddress: string;
 
     @Expose()
-    shippingFee?: number;
+    shippingFee: number;
 
     @Expose()
-    deliveryPartner?: string;
+    deliveryPartner: string;
+
+    @Expose()
+    totalAmount: number;
 
     @Expose()
     @Type(() => Date)

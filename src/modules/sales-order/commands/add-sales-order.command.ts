@@ -48,7 +48,6 @@ export class AddSalesOrderCommand extends BaseCommand<SalesOrder> {
     note?: string;
 
     @ArrayNotEmpty()
-    @IsNotEmpty()
     @ValidateNested()
     @Type(() => Item)
     items: Item[];
