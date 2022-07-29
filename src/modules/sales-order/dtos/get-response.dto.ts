@@ -12,6 +12,9 @@ export class GetResponse {
     status: string;
 
     @Expose()
+    salesChannel: string;
+
+    @Expose()
     customerId?: number;
 
     @Expose()
@@ -44,4 +47,8 @@ export class GetResponse {
     @Expose()
     @Type(() => Date)
     createdDate: Date;
+
+    @Expose()
+    @Type(() => Date)
+    deliveryDate: Date;
 }

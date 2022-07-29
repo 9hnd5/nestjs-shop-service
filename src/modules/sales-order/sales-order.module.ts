@@ -3,10 +3,10 @@ import { UpdateSalesOrderCommandHanlder } from '@modules/sales-order/commands/up
 import { SalesOrderController } from '@modules/sales-order/sales-order.controller';
 import { SalesOrderQuery } from '@modules/sales-order/sales-order.query';
 import { Module } from '@nestjs/common';
-import { CQRSModule } from 'be-core';
+import { CQRSModule, HttpModule } from 'be-core';
 
 @Module({
-    imports: [CQRSModule],
+    imports: [CQRSModule, HttpModule.register({})],
     providers: [AddSalesOrderCommandHandler, UpdateSalesOrderCommandHanlder, SalesOrderQuery],
     controllers: [SalesOrderController],
 })
