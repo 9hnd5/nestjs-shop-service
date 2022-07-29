@@ -15,7 +15,7 @@ import { load } from './config';
 const dataSource = new DataSource({
     type: 'mysql',
     host: '172.16.0.110',
-    port: 6002,
+    port: 6003,
     username: 'dev',
     password: 'comatic_dev@2022',
     database: 'comatic_icc',

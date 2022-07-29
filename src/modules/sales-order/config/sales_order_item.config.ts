@@ -11,22 +11,86 @@ export const SalesOrderItemEntity = new EntitySchema<SalesOrderItem>({
             generated: true,
             primary: true,
         },
-        itemCode: {
-            name: 'item_code',
-            type: String,
-            length: 50,
+        itemId: {
+            name: 'item_id',
+            type: Number,
+            nullable: false,
+        },
+        uomId: {
+            name: 'uom_id',
+            type: Number,
+            nullable: false,
+        },
+        itemType: {
+            name: 'item_type',
+            type: Number,
+            nullable: false,
+            default: 0,
+        },
+        tax: {
+            name: 'tax',
+            nullable: false,
+            type: 'double',
+            default: 0,
         },
         unitPrice: {
             name: 'unit_price',
-            type: 'float',
+            type: 'double',
+            nullable: false,
         },
         quantity: {
             name: 'quantity',
-            type: 'float',
+            type: 'double',
+            nullable: false,
         },
-        totalPrice: {
-            name: 'total_price',
-            type: 'float',
+        percentageDiscount: {
+            name: 'percentage_discount',
+            nullable: false,
+            type: 'double',
+            default: 0,
+        },
+        discountAmount: {
+            name: 'discount_amount',
+            nullable: false,
+            type: 'double',
+            default: 0,
+        },
+        lineTotal: {
+            name: 'line_total',
+            type: 'double',
+            nullable: false,
+        },
+        isDeleted: {
+            name: 'is_deleted',
+            type: Boolean,
+            nullable: false,
+            default: false,
+        },
+        createdDate: {
+            name: 'created_date',
+            type: 'date',
+            nullable: false,
+        },
+        createdBy: {
+            name: 'created_by',
+            type: Number,
+            nullable: false,
+            default: -1,
+        },
+        modifiedDate: {
+            name: 'modified_date',
+            type: 'date',
+            nullable: true,
+        },
+        modifiedBy: {
+            name: 'modified_by',
+            type: Number,
+            nullable: true,
+        },
+        companyId: {
+            name: 'company_id',
+            type: Number,
+            default: 0,
         },
     },
     relations: {

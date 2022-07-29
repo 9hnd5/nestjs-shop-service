@@ -9,26 +9,58 @@ class Item {
     id?: number;
 
     @IsNotEmpty()
-    itemCode: string;
+    itemId: number;
+
+    @IsNotEmpty()
+    uomId: number;
 
     @IsNotEmpty()
     unitPrice: number;
 
     @IsNotEmpty()
     quantity: number;
+
+    tax: number;
 }
 
 export class UpdateSalesOrderCommand extends BaseCommand<SalesOrder> {
     id: number;
 
     @IsNotEmpty()
-    name: string;
+    code: string;
 
     customerId?: number;
 
     customerName?: string;
 
-    deliveryCode?: string;
+    phoneNumber?: string;
+
+    address?: string;
+
+    @IsNotEmpty()
+    contactPerson: string;
+    @IsNotEmpty()
+    contactNumber: string;
+    @IsNotEmpty()
+    shipAddress: string;
+    @IsNotEmpty()
+    salesChannel: string;
+    @IsNotEmpty()
+    deliveryPartner: string;
+    @IsNotEmpty()
+    deliveryDate: Date;
+
+    shippingFee: number;
+
+    paymentMethodId: number;
+
+    totalDiscountAmount: number;
+
+    commission: number;
+
+    tax: number;
+
+    note: string;
 
     @IsNotEmpty()
     items: Item[];
@@ -45,7 +77,20 @@ export class UpdateSalesOrderCommandHanlder extends BaseCommandHandler<
         this.salesOrderRepo = dataSource.getRepository<SalesOrder>(SalesOrderEntity);
     }
     async apply(command: UpdateSalesOrderCommand) {
-        const { id, name, customerId, customerName, deliveryCode, items } = command;
+        const {
+            id,
+            code,
+            contactPerson,
+            contactNumber,
+            shipAddress,
+            shippingFee,
+            paymentMethodId,
+            customerId,
+            customerName,
+            phoneNumber,
+            deliveryPartner,
+            items,
+        } = command;
         let salesOrder = await this.salesOrderRepo.findOne({
             where: { id },
             relations: {
@@ -57,10 +102,16 @@ export class UpdateSalesOrderCommandHanlder extends BaseCommandHandler<
             throw new NotFoundException('Entity not found');
         }
 
-        salesOrder.name = name;
+        salesOrder.contactPerson = contactPerson;
+        salesOrder.contactNumber = contactNumber;
+        salesOrder.shipAddress = shipAddress;
+        salesOrder.code = code;
+        salesOrder.shippingFee = shippingFee;
+        salesOrder.paymentMethodId = paymentMethodId;
         salesOrder.customerId = customerId;
         salesOrder.customerName = customerName;
-        salesOrder.deliveryCode = deliveryCode;
+        salesOrder.phoneNumber = phoneNumber;
+        salesOrder.deliveryPartner = deliveryPartner;
         salesOrder = this.updateBuild(salesOrder, command.session);
 
         const orderItems = [...salesOrder.items];
@@ -76,13 +127,20 @@ export class UpdateSalesOrderCommandHanlder extends BaseCommandHandler<
             if (item.id) {
                 const index = salesOrder.items.findIndex((x) => x.id == item.id);
                 if (index >= 0) {
-                    salesOrder.items[index].itemCode = item.itemCode;
+                    salesOrder.items[index].itemId = item.itemId;
+                    salesOrder.items[index].uomId = item.uomId;
                     salesOrder.items[index].quantity = item.quantity;
                     salesOrder.items[index].unitPrice = item.unitPrice;
                 }
                 //insert
             } else {
-                const newItem = new SalesOrderItem(item.itemCode, item.unitPrice, item.quantity);
+                const newItem = new SalesOrderItem(
+                    item.itemId,
+                    item.uomId,
+                    item.unitPrice,
+                    item.quantity,
+                    item.tax
+                );
                 salesOrder.addItem(newItem);
             }
         }

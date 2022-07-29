@@ -12,8 +12,9 @@ export const SalesOrderEntity = new EntitySchema<SalesOrder>({
             primary: true,
             generated: true,
         },
-        name: {
-            name: 'name',
+        code: {
+            name: 'code',
+            nullable: true,
             type: String,
             length: 50,
         },
@@ -22,20 +23,107 @@ export const SalesOrderEntity = new EntitySchema<SalesOrder>({
             type: String,
             length: 50,
         },
+        salesChannel: {
+            name: 'sales_channel',
+            type: String,
+            length: 50,
+        },
+        postingDate: {
+            name: 'posting_date',
+            type: Date,
+        },
         customerId: {
             name: 'customer_id',
             nullable: true,
             type: Number,
         },
+        address: {
+            name: 'address',
+            nullable: false,
+            type: String,
+            length: 50,
+        },
+        contactPerson: {
+            name: 'contact_person',
+            nullable: false,
+            type: String,
+            length: 50,
+        },
+        contactNumber: {
+            name: 'contact_number',
+            nullable: false,
+            type: String,
+            length: 11,
+        },
         customerName: {
             name: 'customer_name',
-            nullable: true,
+            nullable: false,
             type: String,
+            length: 50,
         },
-        deliveryCode: {
-            name: 'delivery_code',
+        phoneNumber: {
+            name: 'phone_number',
+            nullable: false,
+            type: String,
+            length: 11,
+        },
+        shipAddress: {
+            name: 'ship_address',
+            nullable: false,
+            type: String,
+            length: 255,
+        },
+        deliveryPartner: {
+            name: 'delivery_partner',
+            nullable: false,
+            type: String,
+            length: 50,
+        },
+        deliveryDate: {
+            name: 'delivery_date',
+            nullable: false,
+            type: Date,
+        },
+        shippingFee: {
+            name: 'shipping_fee',
+            nullable: true,
+            type: 'double',
+            default: 0,
+        },
+        paymentMethodId: {
+            name: 'payment_method_id',
+            nullable: false,
+            type: Number,
+        },
+        totalAmount: {
+            name: 'total_amount',
+            nullable: false,
+            type: 'double',
+            default: 0,
+        },
+        discountAmount: {
+            name: 'discount_amount',
+            nullable: false,
+            type: 'double',
+            default: 0,
+        },
+        commission: {
+            name: 'commission',
+            nullable: false,
+            type: 'double',
+            default: 0,
+        },
+        tax: {
+            name: 'tax',
+            nullable: false,
+            type: 'double',
+            default: 0,
+        },
+        note: {
+            name: 'note',
             nullable: true,
             type: String,
+            length: 500,
         },
         isDeleted: {
             name: 'is_deleted',
@@ -63,6 +151,11 @@ export const SalesOrderEntity = new EntitySchema<SalesOrder>({
             name: 'modified_by',
             type: Number,
             nullable: true,
+        },
+        companyId: {
+            name: 'company_id',
+            type: Number,
+            default: 0,
         },
     },
     relations: {

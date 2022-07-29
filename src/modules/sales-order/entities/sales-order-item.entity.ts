@@ -1,15 +1,26 @@
 import { SalesOrder } from '@modules/sales-order/entities/sales-order.entity';
+import { TenantBase } from 'be-core';
 
-export class SalesOrderItem {
-    constructor(itemCode: string, unitPrice: number, quantity: number) {
-        this.itemCode = itemCode;
-        this._unitPrice = unitPrice;
-        this._quantity = quantity;
-        this._totalPrice = this._quantity * this._unitPrice;
+export class SalesOrderItem extends TenantBase {
+    constructor(itemId: number, uomId: number, unitPrice: number, quantity: number, tax: number) {
+        super();
+        this.itemId = itemId;
+        this.uomId = uomId;
+        this.unitPrice = unitPrice;
+        this.quantity = quantity;
+        this.tax = tax;
+        this.lineTotal = this.quantity * this.unitPrice;
+        this.discountAmount = 0;
     }
 
     id: number;
-    itemCode: string;
+    orderId: number;
+    itemId: number;
+    itemType?: number;
+    uomId: number;
+    tax: number;
+    percentageDiscount: number;
+    discountAmount: number;
 
     private _unitPrice: number;
     get unitPrice() {
@@ -17,7 +28,7 @@ export class SalesOrderItem {
     }
     set unitPrice(unitPrice: number) {
         this._unitPrice = unitPrice;
-        this._totalPrice = this._quantity * this._unitPrice;
+        this._lineTotal = this._quantity * this._unitPrice;
     }
 
     private _quantity: number;
@@ -26,15 +37,15 @@ export class SalesOrderItem {
     }
     set quantity(quantity: number) {
         this._quantity = quantity;
-        this._totalPrice = this._quantity * this._unitPrice;
+        this._lineTotal = this._quantity * this._unitPrice;
     }
 
-    private _totalPrice: number;
-    get totalPrice() {
-        return this._totalPrice;
+    private _lineTotal: number;
+    get lineTotal() {
+        return this._lineTotal;
     }
-    private set totalPrice(value: number) {
-        this._totalPrice = value;
+    private set lineTotal(value: number) {
+        this._lineTotal = value;
     }
 
     readonly order: SalesOrder;

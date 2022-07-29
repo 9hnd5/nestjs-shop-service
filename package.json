@@ -7,9 +7,9 @@
     "license": "UNLICENSED",
     "scripts": {
         "prebuild": "rimraf dist",
-        "migration:generate": "node -r tsconfig-paths/register node_modules/.bin/typeorm-ts-node-commonjs migration:generate -d src/app.module.ts",
-        "migration:run": "node -r tsconfig-paths/register node_modules/.bin/typeorm-ts-node-commonjs migration:run -d src/app.module.ts",
-        "migration:revert": "node -r tsconfig-paths/register node_modules/.bin/typeorm-ts-node-commonjs migration:revert -d src/app.module.ts",
+        "migration:generate": "node -r tsconfig-paths/register node_modules/typeorm/cli-ts-node-commonjs.js migration:generate -d src/app.module.ts",
+        "migration:run": "node -r tsconfig-paths/register node_modules/typeorm/cli-ts-node-commonjs.js migration:run -d src/app.module.ts",
+        "migration:revert": "node -r tsconfig-paths/register node_modules/typeorm/cli-ts-node-commonjs.js migration:revert -d src/app.module.ts",
         "build": "nest build",
         "format": "prettier --write \"src/**/*.ts\"",
         "start": "nest start",
