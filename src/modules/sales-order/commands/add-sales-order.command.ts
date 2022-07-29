@@ -22,7 +22,6 @@ class Item {
     tax?: number;
 }
 export class AddSalesOrderCommand extends BaseCommand<SalesOrder> {
-    code?: string;
     customerId?: number;
     customerName?: string;
     phoneNumber?: string;
@@ -46,6 +45,7 @@ export class AddSalesOrderCommand extends BaseCommand<SalesOrder> {
     commission?: number;
     tax?: number;
     note?: string;
+    discountAmount?: number;
 
     @ArrayNotEmpty()
     @ValidateNested()
@@ -62,7 +62,6 @@ export class AddSalesOrderCommandHandler extends BaseCommandHandler<AddSalesOrde
     }
     async apply(command: AddSalesOrderCommand) {
         const {
-            code,
             contactPerson,
             contactNumber,
             shipAddress,
@@ -77,6 +76,7 @@ export class AddSalesOrderCommandHandler extends BaseCommandHandler<AddSalesOrde
             deliveryDate,
             items,
             commission,
+            discountAmount,
         } = command;
         let order = new SalesOrder(
             contactPerson,
@@ -85,14 +85,14 @@ export class AddSalesOrderCommandHandler extends BaseCommandHandler<AddSalesOrde
             shippingFee,
             paymentMethodId,
             salesChannel,
-            code,
             customerId,
             customerName,
             phoneNumber,
             address,
             deliveryPartner,
             deliveryDate,
-            commission
+            commission,
+            discountAmount
         );
         for (const item of items) {
             let newItem = new SalesOrderItem(
@@ -107,6 +107,10 @@ export class AddSalesOrderCommandHandler extends BaseCommandHandler<AddSalesOrde
         }
         order = this.createBuild(order, command.session);
         const result = await this.salesOrderRepo.save(order);
+
+        result.code = result.generateCode(result.id);
+        await this.salesOrderRepo.save(result);
+
         return result.id;
     }
 }

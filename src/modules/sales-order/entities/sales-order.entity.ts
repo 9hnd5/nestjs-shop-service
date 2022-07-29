@@ -2,6 +2,7 @@ import { SalesOrderItem } from '@modules/sales-order/entities/sales-order-item.e
 import { SalesOrderStatus } from '@modules/sales-order/enums/sales-order-status.enum';
 import { TenantBase } from 'be-core';
 import { isArray, remove } from 'lodash';
+
 export class SalesOrder extends TenantBase {
     constructor(
         contactPerson: string,
@@ -10,17 +11,16 @@ export class SalesOrder extends TenantBase {
         shippingFee: number,
         paymentMethodId: number,
         salesChannel: string,
-        code?: string,
         customerId?: number,
         customerName?: string,
         phoneNumber?: string,
         address?: string,
         deliveryPartner?: string,
         deliveryDate?: Date,
-        commission?: number
+        commission?: number,
+        discountAmount?: number
     ) {
         super();
-        this.code = code;
         this.customerId = customerId;
         this.customerName = customerName;
         this.phoneNumber = phoneNumber;
@@ -35,7 +35,8 @@ export class SalesOrder extends TenantBase {
         this.commission = commission ?? 0;
         this.shippingFee = shippingFee;
         this.paymentMethodId = paymentMethodId;
-        this.status = SalesOrderStatus.Draft;
+        this.discountAmount = discountAmount ?? 0;
+        this.status = SalesOrderStatus.New;
     }
 
     id: number;
@@ -107,9 +108,19 @@ export class SalesOrder extends TenantBase {
         this.totalAmount =
             this.totalBeforeDiscount -
             this.totalLineDiscount -
+            this.discountAmount -
             this.commission +
             this.tax +
             this.shippingFee;
+    }
+    generateCode(orderId: number) {
+        const currentDate = new Date();
+        return 'SO'.concat(
+            currentDate.getFullYear().toString(),
+            currentDate.getMonth().toString(),
+            currentDate.getDate().toString(),
+            orderId.toString()
+        );
     }
 
     private initItems() {
