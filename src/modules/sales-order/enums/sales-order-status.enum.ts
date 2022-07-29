@@ -1,5 +1,5 @@
 export enum SalesOrderStatus {
-    New = 'New',
+    WaitingConfirm = 'WaitingConfirm ',
     Confirmed = 'Confirmed',
     WaitingTakeOrder = 'WaitingTakeOrder',
     Delivering = 'Delivering',
