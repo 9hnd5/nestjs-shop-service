@@ -54,9 +54,15 @@ export class SalesOrderQuery {
         const result = await this.salesOrderRepo
             .createQueryBuilder('s')
             .where('s.created_date >= :fromDate', { fromDate: fromDate?.toISOString() })
-            .andWhere('s.created_date < :toDate', { toDate: toDate?.toISOString() })
-            .groupBy('s.status')
-            .select(['count(s.status) as count', 's.status as status'])
+            .andWhere('s.created_date <= :toDate', { toDate: toDate?.toISOString() })
+            .select([
+                's.status as status',
+                's.customer_name as customerName',
+                's.code as code',
+                's.salesChannel as salesChannel',
+                's.created_date as createdDate',
+                'total_amount as totalSmount',
+            ])
             .getRawMany();
         const response = plainToInstance(SummaryResponse, result);
         return response;
