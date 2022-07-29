@@ -1,4 +1,4 @@
-import { SalesOrderEntity } from '@modules/sales-order/config/sales-order.config';
+import { SalesOrderSchema } from '@modules/sales-order/config/sales-order.config';
 import { GetByIdResponse } from '@modules/sales-order/dtos/get-by-id-response.dto';
 import { GetQuery } from '@modules/sales-order/dtos/get-query.dto';
 import { GetResponse } from '@modules/sales-order/dtos/get-response.dto';
@@ -14,7 +14,7 @@ import { DataSource, Repository } from 'typeorm';
 export class SalesOrderQuery {
     private salesOrderRepo: Repository<SalesOrder>;
     constructor(dataSource: DataSource) {
-        this.salesOrderRepo = dataSource.getRepository<SalesOrder>(SalesOrderEntity);
+        this.salesOrderRepo = dataSource.getRepository<SalesOrder>(SalesOrderSchema);
     }
 
     async get(query: GetQuery) {

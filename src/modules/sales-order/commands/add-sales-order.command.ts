@@ -1,4 +1,4 @@
-import { SalesOrderEntity } from '@modules/sales-order/config/sales-order.config';
+import { SalesOrderSchema } from '@modules/sales-order/config/sales-order.config';
 import { SalesOrderItem } from '@modules/sales-order/entities/sales-order-item.entity';
 import { SalesOrder } from '@modules/sales-order/entities/sales-order.entity';
 import { BaseCommand, BaseCommandHandler, RequestHandler } from 'be-core';
@@ -63,7 +63,7 @@ export class AddSalesOrderCommandHandler extends BaseCommandHandler<AddSalesOrde
     private salesOrderRepo: Repository<SalesOrder>;
     constructor(dataSource: DataSource) {
         super();
-        this.salesOrderRepo = dataSource.getRepository<SalesOrder>(SalesOrderEntity);
+        this.salesOrderRepo = dataSource.getRepository<SalesOrder>(SalesOrderSchema);
     }
     async apply(command: AddSalesOrderCommand) {
         const {

@@ -1,7 +1,7 @@
 import { SalesOrder } from '@modules/sales-order/entities/sales-order.entity';
 import { EntitySchema } from 'typeorm';
 
-export const SalesOrderEntity = new EntitySchema<SalesOrder>({
+export const SalesOrderSchema = new EntitySchema<SalesOrder>({
     name: 'SalesOrder',
     tableName: 'sales_order',
     target: SalesOrder,
