@@ -6,7 +6,7 @@ export class GetResponse {
     id: number;
 
     @Expose()
-    name: string;
+    code: string;
 
     @Expose()
     status: string;
@@ -18,7 +18,28 @@ export class GetResponse {
     customerName?: string;
 
     @Expose()
-    deliveryCode?: string;
+    phoneNumber?: string;
+
+    @Expose()
+    contactPerson: string;
+
+    @Expose()
+    contactNumber: string;
+
+    @Expose()
+    address?: string;
+
+    @Expose()
+    shipAddress: string;
+
+    @Expose()
+    shippingFee: number;
+
+    @Expose()
+    deliveryPartner: string;
+
+    @Expose()
+    totalAmount: number;
 
     @Expose()
     @Type(() => Date)

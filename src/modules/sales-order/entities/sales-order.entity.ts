@@ -3,31 +3,113 @@ import { SalesOrderStatus } from '@modules/sales-order/enums/sales-order-status.
 import { TenantBase } from 'be-core';
 import { isArray, remove } from 'lodash';
 export class SalesOrder extends TenantBase {
-    constructor(name: string, customerId?: number, customerName?: string, deliveryCode?: string) {
+    constructor(
+        contactPerson: string,
+        contactNumber: string,
+        shipAddress: string,
+        shippingFee: number,
+        paymentMethodId: number,
+        salesChannel: string,
+        code?: string,
+        customerId?: number,
+        customerName?: string,
+        phoneNumber?: string,
+        address?: string,
+        deliveryPartner?: string,
+        deliveryDate?: Date,
+        commission?: number
+    ) {
         super();
-        this.name = name;
+        this.code = code;
         this.customerId = customerId;
         this.customerName = customerName;
-        this.deliveryCode = deliveryCode;
+        this.phoneNumber = phoneNumber;
+        this.address = address;
+        this.contactPerson = contactPerson;
+        this.contactNumber = contactNumber;
+        this.salesChannel = salesChannel;
+        this.postingDate = new Date();
+        this.shipAddress = shipAddress;
+        this.deliveryPartner = deliveryPartner;
+        this.deliveryDate = deliveryDate;
+        this.commission = commission ?? 0;
+        this.shippingFee = shippingFee;
+        this.paymentMethodId = paymentMethodId;
         this.status = SalesOrderStatus.Draft;
     }
 
     id: number;
-    name: string;
+    code?: string;
+    status: string;
+    postingDate: Date;
+    address?: string;
+    contactPerson: string;
+    contactNumber: string;
+    shipAddress: string;
     customerId?: number;
     customerName?: string;
-    deliveryCode?: string;
-    status: string;
+    phoneNumber?: string;
+    salesChannel: string;
+    deliveryPartner?: string;
+    deliveryDate?: Date;
+    shippingFee: number;
+    paymentMethodId: number;
+    totalAmount: number;
+    discountAmount: number;
+    commission: number;
+    note?: string;
+
+    private _totalBeforeDiscount: number;
+    get totalBeforeDiscount() {
+        return this.items.reduce((value, current) => {
+            return value + current.quantity * current.unitPrice;
+        }, 0);
+    }
+    private set totalBeforeDiscount(value) {
+        this._totalBeforeDiscount = value;
+    }
+
+    private _totalLineDiscount: number;
+    get totalLineDiscount() {
+        return this.items.reduce((value, current) => {
+            return value + current.discountAmount;
+        }, 0);
+    }
+    private set totalLineDiscount(value) {
+        this._totalLineDiscount = value;
+    }
+
+    private _tax: number;
+    get tax() {
+        return this.items.reduce((value, current) => {
+            return value + current.tax;
+        }, 0);
+    }
+    private set tax(value) {
+        this._tax = value;
+    }
+
     items: SalesOrderItem[];
 
     addItem(item: SalesOrderItem) {
         this.initItems();
         this.items.push(item);
+        this.calcTotalAmount();
     }
 
     removeItem(id: number) {
         this.initItems();
         remove(this.items, (x) => x.id === id);
+        this.calcTotalAmount();
+    }
+
+    private calcTotalAmount() {
+        this.totalAmount =
+            this.totalBeforeDiscount -
+            this.totalLineDiscount -
+            this.commission +
+            this.tax +
+            this.shippingFee;
     }
 
     private initItems() {

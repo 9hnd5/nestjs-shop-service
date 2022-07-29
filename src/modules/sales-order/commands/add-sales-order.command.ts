@@ -1,31 +1,55 @@
-import { SalesOrderEntity } from '@modules/sales-order/config/sales-order.config';
+import { SalesOrderSchema } from '@modules/sales-order/config/sales-order.config';
 import { SalesOrderItem } from '@modules/sales-order/entities/sales-order-item.entity';
 import { SalesOrder } from '@modules/sales-order/entities/sales-order.entity';
 import { BaseCommand, BaseCommandHandler, RequestHandler } from 'be-core';
-import { IsNotEmpty } from 'class-validator';
+import { Type } from 'class-transformer';
+import { ArrayNotEmpty, IsNotEmpty, ValidateNested } from 'class-validator';
 import { DataSource, Repository } from 'typeorm';
 
 class Item {
     @IsNotEmpty()
-    itemCode: string;
+    itemId: number;
+
+    @IsNotEmpty()
+    uomId: number;
 
     @IsNotEmpty()
     unitPrice: number;
 
     @IsNotEmpty()
     quantity: number;
+
+    tax?: number;
 }
 export class AddSalesOrderCommand extends BaseCommand<SalesOrder> {
-    @IsNotEmpty()
-    name: string;
-
+    code?: string;
     customerId?: number;
-
     customerName?: string;
-
-    deliveryCode?: string;
-
+    phoneNumber?: string;
+    address?: string;
     @IsNotEmpty()
+    contactPerson: string;
+    @IsNotEmpty()
+    contactNumber: string;
+    @IsNotEmpty()
+    shipAddress: string;
+    @IsNotEmpty()
+    salesChannel: string;
+    @IsNotEmpty()
+    deliveryPartner: string;
+    @IsNotEmpty()
+    deliveryDate: Date;
+    @IsNotEmpty()
+    shippingFee: number;
+    @IsNotEmpty()
+    paymentMethodId: number;
+    commission?: number;
+    tax?: number;
+    note?: string;
+
+    @ArrayNotEmpty()
+    @ValidateNested()
+    @Type(() => Item)
     items: Item[];
 }
 
@@ -34,13 +58,51 @@ export class AddSalesOrderCommandHandler extends BaseCommandHandler<AddSalesOrde
     private salesOrderRepo: Repository<SalesOrder>;
     constructor(dataSource: DataSource) {
         super();
-        this.salesOrderRepo = dataSource.getRepository<SalesOrder>(SalesOrderEntity);
+        this.salesOrderRepo = dataSource.getRepository<SalesOrder>(SalesOrderSchema);
     }
     async apply(command: AddSalesOrderCommand) {
-        const { name, customerId, customerName, deliveryCode, items } = command;
-        let order = new SalesOrder(name, customerId, customerName, deliveryCode);
+        const {
+            code,
+            contactPerson,
+            contactNumber,
+            shipAddress,
+            shippingFee,
+            paymentMethodId,
+            salesChannel,
+            customerId,
+            customerName,
+            phoneNumber,
+            address,
+            deliveryPartner,
+            deliveryDate,
+            items,
+            commission,
+        } = command;
+        let order = new SalesOrder(
+            contactPerson,
+            contactNumber,
+            shipAddress,
+            shippingFee,
+            paymentMethodId,
+            salesChannel,
+            code,
+            customerId,
+            customerName,
+            phoneNumber,
+            address,
+            deliveryPartner,
+            deliveryDate,
+            commission
+        );
         for (const item of items) {
-            const newItem = new SalesOrderItem(item.itemCode, item.unitPrice, item.quantity);
+            let newItem = new SalesOrderItem(
+                item.itemId,
+                item.uomId,
+                item.unitPrice,
+                item.quantity,
+                item.tax
+            );
+            newItem = this.createBuild(newItem, command.session);
             order.addItem(newItem);
         }
         order = this.createBuild(order, command.session);
