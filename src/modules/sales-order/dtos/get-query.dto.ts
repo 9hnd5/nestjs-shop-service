@@ -1,14 +1,20 @@
 import { QueryModel } from 'be-core';
 import { Type } from 'class-transformer';
-
+import { Allow } from 'class-validator';
+import { subDays } from 'date-fns';
 export class GetQuery extends QueryModel {
+    @Allow()
     status?: string;
+    @Allow()
     searchText?: string;
+    @Allow()
     salesChannel?: string;
 
     @Type(() => Date)
-    fromDate?: Date;
+    @Allow()
+    fromDate: Date = subDays(new Date(), 7);
 
     @Type(() => Date)
-    toDate?: Date;
+    @Allow()
+    toDate: Date = new Date();
 }

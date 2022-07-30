@@ -15,23 +15,13 @@ import {
     UseInterceptors,
 } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
-import { ApiBody, ApiTags } from '@nestjs/swagger';
-import {
-    Authorize,
-    BaseController,
-    CoreResponseInterceptor,
-    Headers,
-    Mediator,
-    Permission,
-} from 'be-core';
+import { Authorize, BaseController, CoreResponseInterceptor, Mediator, Permission } from 'be-core';
 import { AddCommand, UpdateCommand } from './commands';
 
 // <access modifier, optional>/<service name>/<version>/<controller>/<action>
 @Controller('/shop/v1/price-lists')
 @Injectable({ scope: Scope.REQUEST })
 @UseInterceptors(CoreResponseInterceptor)
-@ApiTags('Price List')
-@Headers()
 export class PriceListController extends BaseController {
     constructor(
         @Inject(REQUEST) httpRequest: any,
@@ -66,14 +56,12 @@ export class PriceListController extends BaseController {
     }
 
     @Post()
-    @ApiBody({ type: AddCommand })
     @Authorize(FeatureConst.priceListManagement, Permission.Insert)
     async add(@Body() command: AddCommand) {
         return await this.mediator.send(command);
     }
 
     @Put(':id')
-    @ApiBody({ type: UpdateCommand })
     @Authorize(FeatureConst.priceListManagement, Permission.Update)
     async update(@Param('id') id: number, @Body() command: UpdateCommand) {
         command.id = id;

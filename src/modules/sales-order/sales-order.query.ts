@@ -22,18 +22,14 @@ export class SalesOrderQuery {
 
     async get(query: GetQuery) {
         const { pageIndex, pageSize, status, searchText, salesChannel, fromDate, toDate } = query;
-        // Get Orders for a week if no date query values are presented
-        const now = new Date();
-        const aWeekBefore = new Date();
-        aWeekBefore.setDate(aWeekBefore.getDate() - 7);
 
         let cond = this.salesOrderRepo
             .createQueryBuilder('s')
             .where('is_deleted = :isDeleted', { isDeleted: false })
             .andWhere('s.created_date >= :fromDate', {
-                fromDate: (fromDate ?? aWeekBefore).toISOString(),
+                fromDate: fromDate.toISOString(),
             })
-            .andWhere('s.created_date < :toDate', { toDate: (toDate ?? now).toISOString() })
+            .andWhere('s.created_date < :toDate', { toDate: toDate.toISOString() })
             .take(pageSize)
             .skip(pageSize * (pageIndex - 1));
 
@@ -75,20 +71,23 @@ export class SalesOrderQuery {
             excludeExtraneousValues: true,
         });
         if (salesOrder) {
-            const paymentMethodRs = await this.httpClient.get(
-                `payment/v1/payment-methods/${salesOrder.paymentMethodId}`,
-                {
-                    autoInject: true,
-                    config: {
-                        baseURL: externalServiceConfig.paymentUrl,
-                    },
-                }
-            );
-            response.paymentMethod = paymentMethodRs.data
-                ? paymentMethodRs.data.paymentMethodName
-                : undefined;
+            try {
+                const paymentMethod = await this.httpClient.get(
+                    `payment/v1/payment-methods/${salesOrder.paymentMethodId}`,
+                    {
+                        autoInject: true,
+                        config: {
+                            baseURL: externalServiceConfig.paymentUrl,
+                        },
+                    }
+                );
+                response.paymentMethod = paymentMethod.data.paymentMethodName;
+            } catch (er) {
+                console.log(er);
+            } finally {
+                response.paymentMethod = 'Unknow';
+            }
         }
-
         return response;
     }
 
