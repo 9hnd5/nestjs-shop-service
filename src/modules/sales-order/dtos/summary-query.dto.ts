@@ -1,12 +1,12 @@
 import { Type } from 'class-transformer';
-import { Allow } from 'class-validator';
+import { IsDate } from 'class-validator';
 
 export class SummaryQuery {
-    @Allow()
     @Type(() => Date)
+    @IsDate()
     fromDate?: Date;
 
-    @Allow()
     @Type(() => Date)
+    @IsDate()
     toDate?: Date;
 }

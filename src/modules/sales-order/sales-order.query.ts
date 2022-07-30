@@ -22,6 +22,7 @@ export class SalesOrderQuery {
 
     async get(query: GetQuery) {
         const { pageIndex, pageSize, status, searchText, salesChannel, fromDate, toDate } = query;
+        console.log(fromDate, toDate);
 
         let cond = this.salesOrderRepo
             .createQueryBuilder('s')
