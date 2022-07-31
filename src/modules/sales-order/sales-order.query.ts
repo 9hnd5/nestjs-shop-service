@@ -55,15 +55,7 @@ export class SalesOrderQuery {
             .createQueryBuilder('s')
             .where('s.created_date >= :fromDate', { fromDate: fromDate?.toISOString() })
             .andWhere('s.created_date <= :toDate', { toDate: toDate?.toISOString() })
-            .select([
-                's.status as status',
-                's.customer_name as customerName',
-                's.code as code',
-                's.salesChannel as salesChannel',
-                's.created_date as createdDate',
-                'total_amount as totalSmount',
-            ])
-            .getRawMany();
+            .getRawMany<SummaryResponse>();
         const response = plainToInstance(SummaryResponse, result);
         return response;
     }
