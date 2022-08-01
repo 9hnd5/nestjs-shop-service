@@ -51,8 +51,6 @@ export class UpdateSalesOrderCommand extends BaseCommand<SalesOrder> {
     tax?: number;
     note?: string;
     discountAmount?: number;
-    @IsNotEmpty()
-    status: string;
 
     @ArrayNotEmpty()
     @ValidateNested()
@@ -88,7 +86,6 @@ export class UpdateSalesOrderCommandHanlder extends BaseCommandHandler<
             items,
             commission,
             discountAmount,
-            status,
         } = command;
         let salesOrder = await this.salesOrderRepo.findOne({
             where: { id },
@@ -100,11 +97,7 @@ export class UpdateSalesOrderCommandHanlder extends BaseCommandHandler<
         if (!salesOrder) {
             throw new NotFoundException('Entity not found');
         }
-        if (!salesOrder.checkStatus(status)) {
-            throw new NotFoundException('Invalid Status');
-        }
 
-        salesOrder.status = status;
         salesOrder.contactPerson = contactPerson;
         salesOrder.contactNumber = contactNumber;
         salesOrder.shipAddress = shipAddress;
