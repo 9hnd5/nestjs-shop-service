@@ -1,8 +1,11 @@
+import { Exclude, Expose, Transform } from 'class-transformer';
+
+@Exclude()
 export class SummaryResponse {
+    @Expose()
+    @Transform(({ value }) => +value)
+    count: number;
+
+    @Expose()
     status: string;
-    customerName: string;
-    code?: string;
-    salesChannel: string;
-    createdDate: Date;
-    totalSmount: number;
 }

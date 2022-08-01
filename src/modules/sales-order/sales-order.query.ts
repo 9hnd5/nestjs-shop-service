@@ -2,7 +2,6 @@ import { SalesOrderSchema } from '@modules/sales-order/config/sales-order.config
 import { GetByIdResponse } from '@modules/sales-order/dtos/get-by-id-response.dto';
 import { GetQuery } from '@modules/sales-order/dtos/get-query.dto';
 import { GetResponse } from '@modules/sales-order/dtos/get-response.dto';
-import { SummaryQuery } from '@modules/sales-order/dtos/summary-query.dto';
 import { SummaryResponse } from '@modules/sales-order/dtos/summary-response.dto';
 import { SalesOrder } from '@modules/sales-order/entities/sales-order.entity';
 import { Injectable } from '@nestjs/common';
@@ -86,18 +85,18 @@ export class SalesOrderQuery {
             } catch (er) {
                 console.log(er);
             } finally {
-                response.paymentMethod = 'Unknow';
+                response.paymentMethod = 'Unknown';
             }
         }
         return response;
     }
 
-    async getSummary(query: SummaryQuery) {
-        const { fromDate, toDate } = query;
+    async getStatusSummary() {
         const result = await this.salesOrderRepo
             .createQueryBuilder('s')
-            .where('s.created_date >= :fromDate', { fromDate: fromDate?.toISOString() })
-            .andWhere('s.created_date <= :toDate', { toDate: toDate?.toISOString() })
+            .where('is_deleted = :isDeleted', { isDeleted: false })
+            .groupBy('s.status')
+            .select(['count(s.status) as count', 's.status as status'])
             .getRawMany<SummaryResponse>();
         const response = plainToInstance(SummaryResponse, result);
         return response;

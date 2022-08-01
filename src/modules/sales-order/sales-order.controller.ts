@@ -1,6 +1,5 @@
 import { AddSalesOrderCommand } from '@modules/sales-order/commands/add-sales-order.command';
 import { UpdateSalesOrderCommand } from '@modules/sales-order/commands/update-sales-order.command';
-import { SummaryQuery } from '@modules/sales-order/dtos/summary-query.dto';
 import { GetQuery } from '@modules/sales-order/dtos/get-query.dto';
 import { SalesOrderQuery } from '@modules/sales-order/sales-order.query';
 import { Body, Controller, Get, Param, Post, Put, Query } from '@nestjs/common';
@@ -15,8 +14,8 @@ export class SalesOrderController {
     }
 
     @Get('/summary')
-    analyze(@Query() query: SummaryQuery) {
-        return this.salesOrderQuery.getSummary(query);
+    analyze() {
+        return this.salesOrderQuery.getStatusSummary();
     }
 
     @Get(':id')
