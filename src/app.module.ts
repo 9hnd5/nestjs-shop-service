@@ -1,10 +1,4 @@
-import { AttributeModule } from '@modules/attribute';
-import { BrandModule } from '@modules/brand';
-import { PriceListModule } from '@modules/price-list';
-import { ProductCategoryModule } from '@modules/product-category';
 import { SalesOrderModule } from '@modules/sales-order/sales-order.module';
-import { UomModule } from '@modules/uom';
-import { VariantModule } from '@modules/variant';
 import { Module, Scope } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_INTERCEPTOR, REQUEST } from '@nestjs/core';
@@ -50,12 +44,6 @@ const dataSource = new DataSource({
         CacheModule,
         InitialModule,
         AuthModule,
-        PriceListModule,
-        UomModule,
-        VariantModule,
-        BrandModule,
-        ProductCategoryModule,
-        AttributeModule,
     ],
     providers: [
         {
