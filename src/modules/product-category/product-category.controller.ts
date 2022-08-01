@@ -13,17 +13,13 @@ import {
     Put,
     Query,
     Scope,
-    UseInterceptors,
 } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
-import { ApiTags } from '@nestjs/swagger';
-import { Authorize, BaseController, CoreResponseInterceptor, Mediator, Permission } from 'be-core';
+import { Authorize, BaseController, Mediator, Permission } from 'be-core';
 import { AddCommand, DeleteCommand, UpdateCommand } from './commands';
 
 @Controller('/shop/v1/product-category')
 @Injectable({ scope: Scope.REQUEST })
-@UseInterceptors(CoreResponseInterceptor)
-@ApiTags('Product Category')
 export class ProductCategoryController extends BaseController {
     constructor(
         @Inject(REQUEST) httpRequest: any,

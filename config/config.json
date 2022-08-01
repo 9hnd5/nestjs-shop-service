@@ -18,5 +18,8 @@
         "port": 5001,
         "password": "abcd1234",
         "db": 2
+    },
+    "externalService": {
+        "paymentUrl": "http://localhost:6006"
     }
 }

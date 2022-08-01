@@ -1,0 +1,130 @@
+{
+  "openapi": "3.0.2",
+  "info": {
+    "title": "be-application-template",
+    "version": "0.0.1",
+    "description": ""
+  },
+  "apis": [
+    "/Users/hnd/Projects/saaspiens/nestjs-shop-service/src/modules/**/**.swagger.yaml",
+    "/Users/hnd/Projects/saaspiens/nestjs-shop-service/src/modules/slug.swagger.yaml"
+  ],
+  "paths": {
+    "shop/v1/sales-order": {
+      "get": {
+        "tags": [
+          "SalesOrder"
+        ],
+        "description": "Get all sales order with pagination",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "pageIndex",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            },
+            "required": false,
+            "description": "The current page"
+          },
+          {
+            "in": "query",
+            "name": "pageSize",
+            "schema": {
+              "type": "integer",
+              "default": 10
+            },
+            "required": false,
+            "description": "The total item that server return"
+          },
+          {
+            "in": "query",
+            "name": "status",
+            "schema": {
+              "type": "string",
+              "example": "draft"
+            },
+            "required": false,
+            "description": "Search by the status sales order"
+          },
+          {
+            "in": "query",
+            "name": "searchText",
+            "schema": {
+              "type": "string"
+            },
+            "required": false,
+            "description": "Search either by code or customer"
+          },
+          {
+            "in": "query",
+            "name": "fromDate",
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "example": "2022-07-10"
+            },
+            "required": false,
+            "description": "Search by create date greater than or equal fromDate"
+          },
+          {
+            "in": "query",
+            "name": "toDate",
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "example": "2022-07-03"
+            },
+            "required": false,
+            "description": "Search by create date less than toDate"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The list of sales order",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "result": {
+                      "type": "number"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/a"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "a": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "code": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "SalesOrder",
+      "description": "API for Sales Order",
+      "x-displayName": "Sales Order"
+    }
+  ]
+}
