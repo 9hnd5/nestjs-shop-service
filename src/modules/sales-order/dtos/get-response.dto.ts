@@ -15,6 +15,9 @@ export class GetResponse {
     salesChannel: string;
 
     @Expose()
+    salesChannelName: string;
+
+    @Expose()
     customerId?: number;
 
     @Expose()

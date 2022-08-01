@@ -20,6 +20,7 @@
         "db": 2
     },
     "externalService": {
-        "paymentUrl": "http://localhost:6006"
+        "paymentUrl": "http://localhost:6006",
+        "ecommerceShopService": "http://localhost:4010"
     }
 }

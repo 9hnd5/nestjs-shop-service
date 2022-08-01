@@ -25,7 +25,7 @@ export class SalesOrderQuery {
 
         let cond = this.salesOrderRepo
             .createQueryBuilder('s')
-            .where('is_deleted = :isDeleted', { isDeleted: false })
+            .where('s.is_deleted = :isDeleted', { isDeleted: false })
             .andWhere('s.created_date >= :fromDate', {
                 fromDate: fromDate.toISOString(),
             })
@@ -67,25 +67,45 @@ export class SalesOrderQuery {
             where: { id, isDeleted: false },
             relations: { items: true },
         });
-        const response = plainToInstance(GetByIdResponse, salesOrder, {
+        let response = plainToInstance(GetByIdResponse, salesOrder, {
             excludeExtraneousValues: true,
         });
         if (salesOrder) {
-            try {
-                const paymentMethod = await this.httpClient.get(
-                    `payment/v1/payment-methods/${salesOrder.paymentMethodId}`,
-                    {
-                        autoInject: true,
-                        config: {
-                            baseURL: externalServiceConfig.paymentUrl,
+            if (salesOrder.items.length > 0) {
+                try {
+                    const itemsRs = await this.httpClient.post(
+                        `internal/ecommerce-shop/v1/item/by-ids`,
+                        {
+                            itemIds: salesOrder.items.map((t) => t.itemId),
+                            customerId: salesOrder.customerId,
                         },
+                        {
+                            autoInject: true,
+                            config: {
+                                baseURL: externalServiceConfig.ecommerceShopService,
+                            },
+                        }
+                    );
+                    if (itemsRs.result !== 0) {
+                        throw itemsRs.errorMessage;
                     }
-                );
-                response.paymentMethod = paymentMethod.data.paymentMethodName;
-            } catch (er) {
-                console.log(er);
-            } finally {
-                response.paymentMethod = 'Unknown';
+                    const itemsWithPrice = itemsRs.data;
+                    for (const line of response.items) {
+                        const item = itemsWithPrice.find((t) => t.id === line.itemId);
+                        if (item) {
+                            line.priceListDetails = item.priceListDetails;
+                            line.itemName = item.name;
+                            line.uomName =
+                                line.priceListDetails.find((t) => t.uomId === line.uomId)
+                                    ?.uomName || '';
+                        }
+                    }
+                    response = plainToInstance(GetByIdResponse, response, {
+                        excludeExtraneousValues: true,
+                    });
+                } catch (er) {
+                    console.log(er);
+                }
             }
         }
         return response;

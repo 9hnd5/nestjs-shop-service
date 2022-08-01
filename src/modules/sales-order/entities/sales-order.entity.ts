@@ -10,7 +10,9 @@ export class SalesOrder extends TenantBase {
         shipAddress: string,
         shippingFee: number,
         paymentMethodId: number,
+        paymentMethodName: string,
         salesChannel: string,
+        salesChannelName: string,
         customerId?: number,
         customerName?: string,
         phoneNumber?: string,
@@ -28,6 +30,7 @@ export class SalesOrder extends TenantBase {
         this.contactPerson = contactPerson;
         this.contactNumber = contactNumber;
         this.salesChannel = salesChannel;
+        this.salesChannelName = salesChannelName;
         this.postingDate = new Date();
         this.shipAddress = shipAddress;
         this.deliveryPartner = deliveryPartner;
@@ -37,6 +40,7 @@ export class SalesOrder extends TenantBase {
         this.paymentMethodId = paymentMethodId;
         this.discountAmount = discountAmount ?? 0;
         this.status = SalesOrderStatus.WaitingConfirm;
+        this.paymentMethodName = paymentMethodName;
     }
 
     id: number;
@@ -51,10 +55,12 @@ export class SalesOrder extends TenantBase {
     customerName?: string;
     phoneNumber?: string;
     salesChannel: string;
+    salesChannelName: string;
     deliveryPartner?: string;
     deliveryDate?: Date;
     shippingFee: number;
     paymentMethodId: number;
+    paymentMethodName: string;
     totalAmount: number;
     discountAmount: number;
     commission: number;
