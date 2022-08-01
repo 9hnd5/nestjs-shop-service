@@ -97,10 +97,8 @@ export class SalesOrderQuery {
         const result = await this.salesOrderRepo
             .createQueryBuilder('s')
             .where('s.created_date >= :fromDate', { fromDate: fromDate?.toISOString() })
-            .andWhere('s.created_date < :toDate', { toDate: toDate?.toISOString() })
-            .groupBy('s.status')
-            .select(['count(s.status) as count', 's.status as status'])
-            .getRawMany();
+            .andWhere('s.created_date <= :toDate', { toDate: toDate?.toISOString() })
+            .getRawMany<SummaryResponse>();
         const response = plainToInstance(SummaryResponse, result);
         return response;
     }

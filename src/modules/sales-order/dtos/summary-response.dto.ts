@@ -1,7 +1,8 @@
-import { Transform } from 'class-transformer';
-
 export class SummaryResponse {
     status: string;
-    @Transform(({ value }) => +value)
-    count: number;
+    customerName: string;
+    code?: string;
+    salesChannel: string;
+    createdDate: Date;
+    totalSmount: number;
 }
