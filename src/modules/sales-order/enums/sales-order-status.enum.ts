@@ -1,8 +1,10 @@
 export enum SalesOrderStatus {
-    New = 'new',
-    Waiting_Delivery = 'waiting delivery',
-    Waiting_payment = 'waiting payment',
-    Late = 'late',
-    Canceled = 'canceled',
-    Draft = 'draft',
+    WaitingConfirm = 'WaitingConfirm',
+    Confirmed = 'Confirmed',
+    WaitingTakeOrder = 'WaitingTakeOrder',
+    Delivering = 'Delivering',
+    Deliveried = 'Deliveried',
+    Canceled = 'Canceled',
+    WaitingReturn = 'WaitingReturn',
+    Draft = 'Draft',
 }

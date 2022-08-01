@@ -1,10 +1,9 @@
-import { SalesOrderSchema } from '@modules/sales-order/config/sales-order.config';
 import { SalesOrderItem } from '@modules/sales-order/entities/sales-order-item.entity';
 import { SalesOrder } from '@modules/sales-order/entities/sales-order.entity';
 import { BaseCommand, BaseCommandHandler, RequestHandler } from 'be-core';
 import { Type } from 'class-transformer';
 import { ArrayNotEmpty, IsNotEmpty, ValidateNested } from 'class-validator';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, QueryRunner } from 'typeorm';
 
 class Item {
     @IsNotEmpty()
@@ -22,7 +21,6 @@ class Item {
     tax?: number;
 }
 export class AddSalesOrderCommand extends BaseCommand<SalesOrder> {
-    code?: string;
     customerId?: number;
     customerName?: string;
     phoneNumber?: string;
@@ -46,6 +44,7 @@ export class AddSalesOrderCommand extends BaseCommand<SalesOrder> {
     commission?: number;
     tax?: number;
     note?: string;
+    discountAmount?: number;
 
     @ArrayNotEmpty()
     @ValidateNested()
@@ -55,14 +54,13 @@ export class AddSalesOrderCommand extends BaseCommand<SalesOrder> {
 
 @RequestHandler(AddSalesOrderCommand)
 export class AddSalesOrderCommandHandler extends BaseCommandHandler<AddSalesOrderCommand, any> {
-    private salesOrderRepo: Repository<SalesOrder>;
+    private queryRunner: QueryRunner;
     constructor(dataSource: DataSource) {
         super();
-        this.salesOrderRepo = dataSource.getRepository<SalesOrder>(SalesOrderSchema);
+        this.queryRunner = dataSource.createQueryRunner();
     }
     async apply(command: AddSalesOrderCommand) {
         const {
-            code,
             contactPerson,
             contactNumber,
             shipAddress,
@@ -77,6 +75,7 @@ export class AddSalesOrderCommandHandler extends BaseCommandHandler<AddSalesOrde
             deliveryDate,
             items,
             commission,
+            discountAmount,
         } = command;
         let order = new SalesOrder(
             contactPerson,
@@ -85,28 +84,41 @@ export class AddSalesOrderCommandHandler extends BaseCommandHandler<AddSalesOrde
             shippingFee,
             paymentMethodId,
             salesChannel,
-            code,
             customerId,
             customerName,
             phoneNumber,
             address,
             deliveryPartner,
             deliveryDate,
-            commission
+            commission,
+            discountAmount
         );
-        for (const item of items) {
-            let newItem = new SalesOrderItem(
-                item.itemId,
-                item.uomId,
-                item.unitPrice,
-                item.quantity,
-                item.tax
-            );
-            newItem = this.createBuild(newItem, command.session);
-            order.addItem(newItem);
+        try {
+            this.queryRunner.connect();
+            this.queryRunner.startTransaction();
+
+            for (const item of items) {
+                let newItem = new SalesOrderItem(
+                    item.itemId,
+                    item.uomId,
+                    item.unitPrice,
+                    item.quantity,
+                    item.tax
+                );
+                newItem = this.createBuild(newItem, command.session);
+                order.addItem(newItem);
+            }
+            order = this.createBuild(order, command.session);
+            const result = await this.queryRunner.manager.save(order);
+
+            result.code = result.generateCode(result.id);
+            await this.queryRunner.manager.save(result);
+            this.queryRunner.commitTransaction();
+
+            return result.id;
+        } catch (error) {
+            this.queryRunner.rollbackTransaction();
+            throw error;
         }
-        order = this.createBuild(order, command.session);
-        const result = await this.salesOrderRepo.save(order);
-        return result.id;
     }
 }
