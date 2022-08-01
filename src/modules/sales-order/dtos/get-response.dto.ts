@@ -12,7 +12,7 @@ export class GetResponse {
     status: string;
 
     @Expose()
-    salesChannel: string;
+    salesChannelCode: string;
 
     @Expose()
     salesChannelName: string;

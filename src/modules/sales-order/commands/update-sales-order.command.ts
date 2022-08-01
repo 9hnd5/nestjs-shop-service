@@ -38,7 +38,7 @@ export class UpdateSalesOrderCommand extends BaseCommand<SalesOrder> {
     @IsNotEmpty()
     shipAddress: string;
     @IsNotEmpty()
-    salesChannel: string;
+    salesChannelCode: string;
     @IsNotEmpty()
     salesChannelName: string;
     @IsNotEmpty()
@@ -81,7 +81,7 @@ export class UpdateSalesOrderCommandHanlder extends BaseCommandHandler<
             shippingFee,
             paymentMethodId,
             paymentMethodName,
-            salesChannel,
+            salesChannelCode,
             salesChannelName,
             customerId,
             customerName,
@@ -107,7 +107,7 @@ export class UpdateSalesOrderCommandHanlder extends BaseCommandHandler<
         salesOrder.contactPerson = contactPerson;
         salesOrder.contactNumber = contactNumber;
         salesOrder.shipAddress = shipAddress;
-        salesOrder.salesChannel = salesChannel;
+        salesOrder.salesChannelCode = salesChannelCode;
         salesOrder.salesChannelName = salesChannelName;
         salesOrder.commission = commission ?? 0;
         salesOrder.shippingFee = shippingFee;

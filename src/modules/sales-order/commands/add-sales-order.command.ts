@@ -32,7 +32,7 @@ export class AddSalesOrderCommand extends BaseCommand<SalesOrder> {
     @IsNotEmpty()
     shipAddress: string;
     @IsNotEmpty()
-    salesChannel: string;
+    salesChannelCode: string;
     @IsNotEmpty()
     salesChannelName: string;
     @IsNotEmpty()
@@ -71,7 +71,7 @@ export class AddSalesOrderCommandHandler extends BaseCommandHandler<AddSalesOrde
             shippingFee,
             paymentMethodId,
             paymentMethodName,
-            salesChannel,
+            salesChannelCode,
             salesChannelName,
             customerId,
             customerName,
@@ -90,7 +90,7 @@ export class AddSalesOrderCommandHandler extends BaseCommandHandler<AddSalesOrde
             shippingFee,
             paymentMethodId,
             paymentMethodName,
-            salesChannel,
+            salesChannelCode,
             salesChannelName,
             customerId,
             customerName,

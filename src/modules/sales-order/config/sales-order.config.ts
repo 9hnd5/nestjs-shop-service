@@ -23,8 +23,8 @@ export const SalesOrderSchema = new EntitySchema<SalesOrder>({
             type: String,
             length: 50,
         },
-        salesChannel: {
-            name: 'sales_channel',
+        salesChannelCode: {
+            name: 'sales_channel_code',
             type: String,
             length: 50,
         },

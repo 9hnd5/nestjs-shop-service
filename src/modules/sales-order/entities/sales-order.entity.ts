@@ -11,7 +11,7 @@ export class SalesOrder extends TenantBase {
         shippingFee: number,
         paymentMethodId: number,
         paymentMethodName: string,
-        salesChannel: string,
+        salesChannelCode: string,
         salesChannelName: string,
         customerId?: number,
         customerName?: string,
@@ -29,7 +29,7 @@ export class SalesOrder extends TenantBase {
         this.address = address;
         this.contactPerson = contactPerson;
         this.contactNumber = contactNumber;
-        this.salesChannel = salesChannel;
+        this.salesChannelCode = salesChannelCode;
         this.salesChannelName = salesChannelName;
         this.postingDate = new Date();
         this.shipAddress = shipAddress;
@@ -54,7 +54,7 @@ export class SalesOrder extends TenantBase {
     customerId?: number;
     customerName?: string;
     phoneNumber?: string;
-    salesChannel: string;
+    salesChannelCode: string;
     salesChannelName: string;
     deliveryPartner?: string;
     deliveryDate?: Date;

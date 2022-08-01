@@ -20,8 +20,8 @@ export class SalesOrderQuery {
     }
 
     async get(query: GetQuery) {
-        const { pageIndex, pageSize, status, searchText, salesChannel, fromDate, toDate } = query;
-        console.log(fromDate, toDate);
+        const { pageIndex, pageSize, status, searchText, salesChannelCode, fromDate, toDate } =
+            query;
 
         let cond = this.salesOrderRepo
             .createQueryBuilder('s')
@@ -29,15 +29,15 @@ export class SalesOrderQuery {
             .andWhere('s.created_date >= :fromDate', {
                 fromDate: fromDate.toISOString(),
             })
-            .andWhere('s.created_date < :toDate', { toDate: toDate.toISOString() })
+            .andWhere('s.created_date <= :toDate', { toDate: toDate.toISOString() })
             .take(pageSize)
             .skip(pageSize * (pageIndex - 1));
 
         if (status) {
             cond = cond.andWhere('s.status = :status', { status });
         }
-        if (salesChannel) {
-            cond = cond.andWhere('s.sales_channel = :salesChannel', { salesChannel });
+        if (salesChannelCode) {
+            cond = cond.andWhere('s.sales_channel_code = :salesChannelCode', { salesChannelCode });
         }
         if (searchText) {
             cond = cond.andWhere(
@@ -104,7 +104,7 @@ export class SalesOrderQuery {
                         excludeExtraneousValues: true,
                     });
                 } catch (er) {
-                    console.log(er);
+                    throw new Error(er);
                 }
             }
         }
