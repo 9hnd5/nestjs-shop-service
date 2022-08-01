@@ -1,11 +1,20 @@
 import { Exclude, Expose, Transform } from 'class-transformer';
 
 @Exclude()
-export class SummaryResponse {
+export class CountStatus {
+    @Expose()
+    status: string;
+
     @Expose()
     @Transform(({ value }) => +value)
     count: number;
+}
+
+@Exclude()
+export class SummaryResponse {
+    @Expose()
+    total: number;
 
     @Expose()
-    status: string;
+    countStatus: CountStatus[];
 }

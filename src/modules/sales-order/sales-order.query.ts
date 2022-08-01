@@ -2,7 +2,7 @@ import { SalesOrderSchema } from '@modules/sales-order/config/sales-order.config
 import { GetByIdResponse } from '@modules/sales-order/dtos/get-by-id-response.dto';
 import { GetQuery } from '@modules/sales-order/dtos/get-query.dto';
 import { GetResponse } from '@modules/sales-order/dtos/get-response.dto';
-import { SummaryResponse } from '@modules/sales-order/dtos/summary-response.dto';
+import { SummaryResponse, CountStatus } from '@modules/sales-order/dtos/summary-response.dto';
 import { SalesOrder } from '@modules/sales-order/entities/sales-order.entity';
 import { Injectable } from '@nestjs/common';
 import { HttpService, Paginated } from 'be-core';
@@ -92,13 +92,18 @@ export class SalesOrderQuery {
     }
 
     async getStatusSummary() {
-        const result = await this.salesOrderRepo
+        const countStatus = await this.salesOrderRepo
             .createQueryBuilder('s')
             .where('is_deleted = :isDeleted', { isDeleted: false })
             .groupBy('s.status')
             .select(['count(s.status) as count', 's.status as status'])
-            .getRawMany<SummaryResponse>();
-        const response = plainToInstance(SummaryResponse, result);
-        return response;
+            .getRawMany<CountStatus>();
+
+        const total = await this.salesOrderRepo.count({ where: { isDeleted: false } });
+        const result = new SummaryResponse();
+        result.countStatus = countStatus;
+        result.total = total;
+
+        return result;
     }
 }
