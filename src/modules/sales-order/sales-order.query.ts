@@ -86,9 +86,6 @@ export class SalesOrderQuery {
                             },
                         }
                     );
-                    if (itemsRs.result !== 0) {
-                        throw itemsRs.errorMessage;
-                    }
                     const itemsWithPrice = itemsRs.data;
                     for (const line of response.items) {
                         const item = itemsWithPrice.find((t) => t.id === line.itemId);

@@ -39,7 +39,7 @@ export class SalesOrder extends TenantBase {
         this.shippingFee = shippingFee;
         this.paymentMethodId = paymentMethodId;
         this.discountAmount = discountAmount ?? 0;
-        this.status = SalesOrderStatus.WaitingConfirm;
+        this.status = SalesOrderStatus.New;
         this.paymentMethodName = paymentMethodName;
     }
 
