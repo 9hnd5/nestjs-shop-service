@@ -20,7 +20,8 @@ export class SalesOrder extends TenantBase {
         deliveryPartner?: string,
         deliveryDate?: Date,
         commission?: number,
-        discountAmount?: number
+        orderDiscountAmount?: number,
+        note?: string
     ) {
         super();
         this.customerId = customerId;
@@ -38,9 +39,10 @@ export class SalesOrder extends TenantBase {
         this.commission = commission ?? 0;
         this.shippingFee = shippingFee;
         this.paymentMethodId = paymentMethodId;
-        this.discountAmount = discountAmount ?? 0;
+        this.orderDiscountAmount = orderDiscountAmount ?? 0;
         this.status = SalesOrderStatus.New;
         this.paymentMethodName = paymentMethodName;
+        this.note = note;
     }
 
     id: number;
@@ -62,7 +64,7 @@ export class SalesOrder extends TenantBase {
     paymentMethodId: number;
     paymentMethodName: string;
     totalAmount: number;
-    discountAmount: number;
+    orderDiscountAmount: number;
     commission: number;
     note?: string;
 
@@ -114,7 +116,7 @@ export class SalesOrder extends TenantBase {
         this.totalAmount =
             this.totalBeforeDiscount -
             this.totalLineDiscount -
-            this.discountAmount -
+            this.orderDiscountAmount -
             this.commission +
             this.tax +
             this.shippingFee;

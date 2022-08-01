@@ -4,10 +4,22 @@ import { Exclude, Expose, Type } from 'class-transformer';
 @Exclude()
 export class GetByIdResponse extends GetResponse {
     @Expose()
+    note?: string;
+
+    @Expose()
     paymentMethodId: number;
 
     @Expose()
     paymentMethodName: string;
+
+    @Expose()
+    orderDiscountAmount: number;
+
+    @Expose()
+    totalBeforeDiscount: number;
+
+    @Expose()
+    totalLineDiscount: number;
 
     @Expose()
     @Type(() => Item)

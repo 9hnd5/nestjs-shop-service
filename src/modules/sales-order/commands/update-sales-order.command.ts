@@ -54,7 +54,7 @@ export class UpdateSalesOrderCommand extends BaseCommand<SalesOrder> {
     commission?: number;
     tax?: number;
     note?: string;
-    discountAmount?: number;
+    orderDiscountAmount?: number;
 
     @ArrayNotEmpty()
     @ValidateNested()
@@ -91,7 +91,8 @@ export class UpdateSalesOrderCommandHanlder extends BaseCommandHandler<
             deliveryDate,
             items,
             commission,
-            discountAmount,
+            orderDiscountAmount,
+            note,
         } = command;
         let salesOrder = await this.salesOrderRepo.findOne({
             where: { id },
@@ -119,7 +120,8 @@ export class UpdateSalesOrderCommandHanlder extends BaseCommandHandler<
         salesOrder.address = address;
         salesOrder.deliveryPartner = deliveryPartner;
         salesOrder.deliveryDate = deliveryDate;
-        salesOrder.discountAmount = discountAmount ?? 0;
+        salesOrder.orderDiscountAmount = orderDiscountAmount ?? 0;
+        salesOrder.note = note;
         salesOrder = this.updateBuild(salesOrder, command.session);
 
         const orderItems = [...salesOrder.items];

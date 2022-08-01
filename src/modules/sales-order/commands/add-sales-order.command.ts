@@ -48,7 +48,7 @@ export class AddSalesOrderCommand extends BaseCommand<SalesOrder> {
     commission?: number;
     tax?: number;
     note?: string;
-    discountAmount?: number;
+    orderDiscountAmount?: number;
 
     @ArrayNotEmpty()
     @ValidateNested()
@@ -81,7 +81,8 @@ export class AddSalesOrderCommandHandler extends BaseCommandHandler<AddSalesOrde
             deliveryDate,
             items,
             commission,
-            discountAmount,
+            orderDiscountAmount,
+            note,
         } = command;
         let order = new SalesOrder(
             contactPerson,
@@ -99,7 +100,8 @@ export class AddSalesOrderCommandHandler extends BaseCommandHandler<AddSalesOrde
             deliveryPartner,
             deliveryDate,
             commission,
-            discountAmount
+            orderDiscountAmount,
+            note
         );
         try {
             this.queryRunner.connect();

@@ -112,8 +112,8 @@ export const SalesOrderSchema = new EntitySchema<SalesOrder>({
             type: 'double',
             default: 0,
         },
-        discountAmount: {
-            name: 'discount_amount',
+        orderDiscountAmount: {
+            name: 'order_discount_amount',
             nullable: false,
             type: 'double',
             default: 0,
