@@ -113,6 +113,9 @@ export class SalesOrder extends TenantBase {
             this.tax +
             this.shippingFee;
     }
+    checkStatus(status: string) {
+        return (<any>Object).values(SalesOrderStatus).includes(status);
+    }
     generateCode(orderId: number) {
         const currentDate = new Date();
         return 'SO'.concat(
