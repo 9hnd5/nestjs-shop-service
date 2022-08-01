@@ -23,10 +23,15 @@ export const SalesOrderSchema = new EntitySchema<SalesOrder>({
             type: String,
             length: 50,
         },
-        salesChannel: {
-            name: 'sales_channel',
+        salesChannelCode: {
+            name: 'sales_channel_code',
             type: String,
             length: 50,
+        },
+        salesChannelName: {
+            name: 'sales_channel_name',
+            type: String,
+            length: 255,
         },
         postingDate: {
             name: 'posting_date',
@@ -94,6 +99,12 @@ export const SalesOrderSchema = new EntitySchema<SalesOrder>({
             name: 'payment_method_id',
             nullable: false,
             type: Number,
+        },
+        paymentMethodName: {
+            name: 'payment_method_name',
+            nullable: false,
+            type: String,
+            length: 255,
         },
         totalAmount: {
             name: 'total_amount',

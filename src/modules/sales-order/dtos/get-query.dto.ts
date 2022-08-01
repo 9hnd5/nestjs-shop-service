@@ -8,7 +8,7 @@ export class GetQuery extends QueryModel {
     @Allow()
     searchText?: string;
     @Allow()
-    salesChannel?: string;
+    salesChannelCode?: string;
 
     @Type(() => Date)
     @IsDate()

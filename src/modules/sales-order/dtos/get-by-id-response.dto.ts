@@ -4,7 +4,10 @@ import { Exclude, Expose, Type } from 'class-transformer';
 @Exclude()
 export class GetByIdResponse extends GetResponse {
     @Expose()
-    paymentMethod?: string;
+    paymentMethodId: number;
+
+    @Expose()
+    paymentMethodName: string;
 
     @Expose()
     @Type(() => Item)
@@ -17,10 +20,16 @@ class Item {
     id: number;
 
     @Expose()
-    itemId: string;
+    itemId: number;
 
     @Expose()
-    uomId: string;
+    itemName: string;
+
+    @Expose()
+    uomId: number;
+
+    @Expose()
+    uomName: string;
 
     @Expose()
     unitPrice: number;
@@ -30,4 +39,28 @@ class Item {
 
     @Expose()
     lineTotal: number;
+
+    @Expose()
+    @Type(() => PriceListDetail)
+    priceListDetails: PriceListDetail[];
+}
+
+class PriceListDetail {
+    @Expose()
+    uomId: number;
+
+    @Expose()
+    uomName: string;
+
+    @Expose()
+    price?: number;
+
+    @Expose()
+    maxPrice?: number;
+
+    @Expose()
+    promotionPrice?: number;
+
+    @Expose()
+    commissionPercent: number;
 }
