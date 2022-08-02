@@ -77,7 +77,7 @@ export class SalesOrderQuery {
                         `internal/ecommerce-shop/v1/item/by-ids`,
                         {
                             itemIds: salesOrder.items.map((t) => t.itemId),
-                            customerId: salesOrder.customerId,
+                            customerId: salesOrder.customerId ?? 0,
                         },
                         {
                             autoInject: true,
