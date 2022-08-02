@@ -2,8 +2,9 @@ import { SalesOrderItem } from '@modules/sales-order/entities/sales-order-item.e
 import { SalesOrder } from '@modules/sales-order/entities/sales-order.entity';
 import { BaseCommand, BaseCommandHandler, RequestHandler } from 'be-core';
 import { Type } from 'class-transformer';
-import { ArrayNotEmpty, IsNotEmpty, ValidateNested } from 'class-validator';
+import { Allow, ArrayNotEmpty, IsNotEmpty, ValidateNested } from 'class-validator';
 import { DataSource, QueryRunner } from 'typeorm';
+import { SalesOrderStatus } from '../enums/sales-order-status.enum';
 
 class Item {
     @IsNotEmpty()
@@ -21,9 +22,13 @@ class Item {
     tax?: number;
 }
 export class AddSalesOrderCommand extends BaseCommand<SalesOrder> {
+    @Allow()
     customerId?: number;
+    @Allow()
     customerName?: string;
+    @Allow()
     phoneNumber?: string;
+    @Allow()
     address?: string;
     @IsNotEmpty()
     contactPerson: string;
@@ -45,10 +50,18 @@ export class AddSalesOrderCommand extends BaseCommand<SalesOrder> {
     paymentMethodId: number;
     @IsNotEmpty()
     paymentMethodName: string;
+    @Allow()
     commission?: number;
+    @Allow()
     tax?: number;
+    @Allow()
     note?: string;
+    @Allow()
     orderDiscountAmount?: number;
+    @Allow()
+    isDraft: boolean;
+
+    status?: string;
 
     @ArrayNotEmpty()
     @ValidateNested()
@@ -65,6 +78,7 @@ export class AddSalesOrderCommandHandler extends BaseCommandHandler<AddSalesOrde
     }
     async apply(command: AddSalesOrderCommand) {
         const {
+            status = command.isDraft ? SalesOrderStatus.Draft : SalesOrderStatus.New,
             contactPerson,
             contactNumber,
             shipAddress,
@@ -85,6 +99,7 @@ export class AddSalesOrderCommandHandler extends BaseCommandHandler<AddSalesOrde
             note,
         } = command;
         let order = new SalesOrder(
+            status,
             contactPerson,
             contactNumber,
             shipAddress,

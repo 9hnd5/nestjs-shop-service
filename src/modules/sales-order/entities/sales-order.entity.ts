@@ -1,10 +1,11 @@
 import { SalesOrderItem } from '@modules/sales-order/entities/sales-order-item.entity';
 import { SalesOrderStatus } from '@modules/sales-order/enums/sales-order-status.enum';
-import { TenantBase } from 'be-core';
+import { BusinessException, TenantBase } from 'be-core';
 import { isArray, remove } from 'lodash';
 
 export class SalesOrder extends TenantBase {
     constructor(
+        status: string,
         contactPerson: string,
         contactNumber: string,
         shipAddress: string,
@@ -40,14 +41,28 @@ export class SalesOrder extends TenantBase {
         this.shippingFee = shippingFee;
         this.paymentMethodId = paymentMethodId;
         this.orderDiscountAmount = orderDiscountAmount ?? 0;
-        this.status = SalesOrderStatus.New;
+        this.status = status;
         this.paymentMethodName = paymentMethodName;
         this.note = note;
     }
 
     id: number;
     code?: string;
-    status: string;
+    private _status: string;
+    get status() {
+        return this._status;
+    }
+    private set status(value) {
+        this._status = value;
+    }
+    setStatus(value: string) {
+        if (this.checkStatus(value)) {
+            this.status = value;
+        } else {
+            throw new BusinessException('Status Invalid');
+        }
+    }
+
     postingDate: Date;
     address?: string;
     contactPerson: string;
@@ -121,8 +136,26 @@ export class SalesOrder extends TenantBase {
             this.tax +
             this.shippingFee;
     }
-    checkStatus(status: string) {
-        return (<any>Object).values(SalesOrderStatus).includes(status);
+
+    private checkStatus(status: string) {
+        const currentStatus = this.status;
+        if ((<any>Object).values(SalesOrderStatus).includes(status)) {
+            if (
+                currentStatus == status ||
+                (currentStatus == SalesOrderStatus.Draft && status == SalesOrderStatus.Canceled) ||
+                (currentStatus == SalesOrderStatus.New && status == SalesOrderStatus.Canceled) ||
+                (currentStatus == SalesOrderStatus.Draft && status == SalesOrderStatus.New) ||
+                (currentStatus == SalesOrderStatus.New && status == SalesOrderStatus.Confirmed) ||
+                (currentStatus == SalesOrderStatus.Confirmed &&
+                    status == SalesOrderStatus.OrderPreparation) ||
+                (currentStatus == SalesOrderStatus.OrderPreparation &&
+                    status == SalesOrderStatus.WaitingDelivery) ||
+                (currentStatus == SalesOrderStatus.WaitingDelivery &&
+                    status == SalesOrderStatus.Delivered) ||
+                (currentStatus == SalesOrderStatus.Delivered && status == SalesOrderStatus.Returned)
+            )
+                return true;
+        } else return false;
     }
     generateCode(orderId: number) {
         const currentDate = new Date();
