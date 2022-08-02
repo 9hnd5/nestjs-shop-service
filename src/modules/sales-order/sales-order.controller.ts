@@ -45,7 +45,7 @@ export class SalesOrderController {
     }
 
     @Put(':id/confirmed')
-    updateStatusToWating(@Param('id') id: number) {
+    updateStatusConfirmed(@Param('id') id: number) {
         const command = new UpdateStatusSalesOrderCommand();
         command.id = id;
         command.status = SalesOrderStatus.Confirmed;

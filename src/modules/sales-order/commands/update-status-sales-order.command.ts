@@ -2,6 +2,7 @@ import { SalesOrderSchema } from '@modules/sales-order/config/sales-order.config
 import { SalesOrder } from '@modules/sales-order/entities/sales-order.entity';
 import { BaseCommand, BaseCommandHandler, NotFoundException, RequestHandler } from 'be-core';
 import { DataSource, Repository } from 'typeorm';
+import { SalesOrderStatus } from '../enums/sales-order-status.enum';
 
 export class UpdateStatusSalesOrderCommand extends BaseCommand<SalesOrder> {
     id: number;
@@ -31,7 +32,32 @@ export class UpdateStatusSalesOrderCommandHanlder extends BaseCommandHandler<
             throw new NotFoundException('Sales Order not found');
         }
 
-        salesOrder.setStatus(status);
+        switch (status) {
+            case SalesOrderStatus.New:
+                salesOrder.changeStatusToNew(status);
+                break;
+            case SalesOrderStatus.Confirmed:
+                salesOrder.changeStatusToConfirmed(status);
+                break;
+            case SalesOrderStatus.Canceled:
+                salesOrder.changeStatusToCanceled(status);
+                break;
+            case SalesOrderStatus.OrderPreparation:
+                salesOrder.changeStatusToOrderPreparation(status);
+                break;
+            case SalesOrderStatus.WaitingDelivery:
+                salesOrder.changeStatusToWaitingDelivery(status);
+                break;
+            case SalesOrderStatus.Delivered:
+                salesOrder.changeStatusToWaitingDelivery(status);
+                break;
+            case SalesOrderStatus.Returned:
+                salesOrder.changeStatusToReturned(status);
+                break;
+            default:
+                break;
+        }
+
         salesOrder = this.updateBuild(salesOrder, command.session);
 
         const result = await this.salesOrderRepo.save(salesOrder);

@@ -2,7 +2,7 @@ import { SalesOrderItem } from '@modules/sales-order/entities/sales-order-item.e
 import { SalesOrder } from '@modules/sales-order/entities/sales-order.entity';
 import { BaseCommand, BaseCommandHandler, RequestHandler } from 'be-core';
 import { Type } from 'class-transformer';
-import { Allow, ArrayNotEmpty, IsNotEmpty, ValidateNested } from 'class-validator';
+import { Allow, ArrayNotEmpty, IsNotEmpty, ValidateNested, IsDateString } from 'class-validator';
 import { DataSource, QueryRunner } from 'typeorm';
 import { SalesOrderStatus } from '../enums/sales-order-status.enum';
 
@@ -42,7 +42,7 @@ export class AddSalesOrderCommand extends BaseCommand<SalesOrder> {
     salesChannelName: string;
     @IsNotEmpty()
     deliveryPartner: string;
-    @IsNotEmpty()
+    @IsDateString()
     deliveryDate: Date;
     @IsNotEmpty()
     shippingFee: number;
@@ -108,12 +108,12 @@ export class AddSalesOrderCommandHandler extends BaseCommandHandler<AddSalesOrde
             paymentMethodName,
             salesChannelCode,
             salesChannelName,
+            deliveryDate,
+            deliveryPartner,
             customerId,
             customerName,
             phoneNumber,
             address,
-            deliveryPartner,
-            deliveryDate,
             commission,
             orderDiscountAmount,
             note
