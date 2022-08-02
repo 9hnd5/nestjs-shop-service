@@ -62,13 +62,13 @@ export const SalesOrderSchema = new EntitySchema<SalesOrder>({
         },
         customerName: {
             name: 'customer_name',
-            nullable: false,
+            nullable: true,
             type: String,
             length: 50,
         },
         phoneNumber: {
             name: 'phone_number',
-            nullable: false,
+            nullable: true,
             type: String,
             length: 11,
         },
