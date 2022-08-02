@@ -1,30 +1,76 @@
 {
   "openapi": "3.0.2",
   "info": {
-    "title": "be-application-template",
+    "title": "shop-service",
     "version": "0.0.1",
     "description": ""
   },
   "apis": [
-    "/Users/hnd/Projects/saaspiens/nestjs-shop-service/src/modules/**/**.swagger.yaml",
-    "/Users/hnd/Projects/saaspiens/nestjs-shop-service/src/modules/slug.swagger.yaml"
+    "D:\\Documents\\Programming\\comantic code\\nestjs-shop-service\\src\\modules\\**\\**.swagger.yaml",
+    "D:\\Documents\\Programming\\comantic code\\nestjs-shop-service\\src\\modules\\slug.swagger.yaml"
   ],
   "paths": {
+    "shop/v1/sales-order/{id}": {
+      "get": {
+        "tags": [
+          "SalesOrder"
+        ],
+        "summary": "Get sales order by id",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer",
+              "example": 1
+            },
+            "required": true
+          },
+          {
+            "$ref": "#/components/parameters/accessToken"
+          },
+          {
+            "$ref": "#/components/parameters/tenantCode"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sales order by id",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "result": {
+                      "type": "number",
+                      "description": "Show result code (0: success, others: error)"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/salesOrderGetById"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "shop/v1/sales-order": {
       "get": {
         "tags": [
           "SalesOrder"
         ],
-        "description": "Get all sales order with pagination",
+        "summary": "Get sales orders with pagination",
         "parameters": [
           {
             "in": "query",
             "name": "pageIndex",
             "schema": {
               "type": "integer",
-              "default": 1
+              "example": 1
             },
-            "required": false,
+            "required": true,
             "description": "The current page"
           },
           {
@@ -32,29 +78,30 @@
             "name": "pageSize",
             "schema": {
               "type": "integer",
-              "default": 10
+              "example": 10
             },
-            "required": false,
-            "description": "The total item that server return"
+            "required": true,
+            "description": "The total items that server returns"
           },
           {
             "in": "query",
             "name": "status",
             "schema": {
               "type": "string",
-              "example": "draft"
+              "example": "Draft"
             },
             "required": false,
-            "description": "Search by the status sales order"
+            "description": "Search by the status of sales order"
           },
           {
             "in": "query",
             "name": "searchText",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "example": "SO20227219"
             },
             "required": false,
-            "description": "Search either by code or customer"
+            "description": "Search either by code or customer name"
           },
           {
             "in": "query",
@@ -65,7 +112,7 @@
               "example": "2022-07-10"
             },
             "required": false,
-            "description": "Search by create date greater than or equal fromDate"
+            "description": "Search by create dated greater than or equal to fromDate"
           },
           {
             "in": "query",
@@ -76,25 +123,29 @@
               "example": "2022-07-03"
             },
             "required": false,
-            "description": "Search by create date less than toDate"
+            "description": "Search by create date less than or equal to toDate"
+          },
+          {
+            "$ref": "#/components/parameters/accessToken"
+          },
+          {
+            "$ref": "#/components/parameters/tenantCode"
           }
         ],
         "responses": {
           "200": {
-            "description": "The list of sales order",
+            "description": "The list of sales orders",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
                   "properties": {
                     "result": {
-                      "type": "number"
+                      "type": "number",
+                      "description": "Show result code (0: success, others: error)"
                     },
                     "data": {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/components/schemas/a"
-                      }
+                      "$ref": "#/components/schemas/pagingResult"
                     }
                   }
                 }
@@ -107,16 +158,244 @@
   },
   "components": {
     "schemas": {
-      "a": {
+      "salesOrderStatus": {
+        "type": "string",
+        "enum": [
+          "Draft",
+          "New",
+          "Confirmed",
+          "OrderPreparation",
+          "WaitingDelivery",
+          "Delivered",
+          "Canceled",
+          "Returned"
+        ]
+      },
+      "pagingResult": {
+        "type": "object",
+        "properties": {
+          "pageIndex": {
+            "type": "integer",
+            "example": 1
+          },
+          "pageSize": {
+            "type": "integer",
+            "example": 10
+          },
+          "totalRow": {
+            "type": "integer",
+            "example": 10,
+            "description": "Count the number of sales orders by filter"
+          },
+          "dataSource": {
+            "type": "array",
+            "description": "Result",
+            "items": {
+              "$ref": "#/components/schemas/salesOrderGet"
+            }
+          }
+        }
+      },
+      "salesOrderGet": {
         "type": "object",
         "properties": {
           "id": {
             "type": "integer"
           },
           "code": {
+            "type": "string",
+            "example": "SO20227219"
+          },
+          "status": {
+            "$ref": "#/components/schemas/salesOrderStatus"
+          },
+          "postingDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "address": {
+            "type": "string",
+            "nullable": true
+          },
+          "contactPerson": {
             "type": "string"
+          },
+          "contactPhone": {
+            "type": "string",
+            "example": "0901234567"
+          },
+          "shipAddress": {
+            "type": "string"
+          },
+          "customerId": {
+            "type": "integer",
+            "nullable": true,
+            "description": "If null, order did not originate from this server"
+          },
+          "customerName": {
+            "type": "string",
+            "nullable": true
+          },
+          "phoneNumber": {
+            "type": "string",
+            "nullable": true,
+            "example": "0901234567"
+          },
+          "salesChannelCode": {
+            "type": "string",
+            "example": "TELESALE"
+          },
+          "salesChannelName": {
+            "type": "string",
+            "example": "Telesale"
+          },
+          "deliveryPartner": {
+            "type": "string",
+            "nullable": true,
+            "example": "GHTK"
+          },
+          "deliveryDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "createdDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "totalAmount": {
+            "type": "number",
+            "description": "Sum of line total, promotion, shipping fee, commission, etc..."
           }
         }
+      },
+      "salesOrderGetById": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/salesOrderGet"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "paymentMethodId": {
+                "type": "integer"
+              },
+              "paymentMethodName": {
+                "type": "string",
+                "nullable": true,
+                "example": "Cash"
+              },
+              "note": {
+                "type": "string",
+                "nullable": true
+              },
+              "orderDiscountAmount": {
+                "type": "number",
+                "description": "Subtract directly on order"
+              },
+              "totalBeforeDiscount": {
+                "type": "number",
+                "description": "Sum only lines"
+              },
+              "totalLineDiscount": {
+                "type": "number",
+                "description": "Sum only lines' discount amount"
+              },
+              "items": {
+                "type": "array",
+                "description": "Order lines",
+                "items": {
+                  "$ref": "#/components/schemas/salesOrderGetByIdItem"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "salesOrderGetByIdItem": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "itemId": {
+            "type": "integer"
+          },
+          "itemName": {
+            "type": "string"
+          },
+          "uomId": {
+            "type": "integer"
+          },
+          "uomName": {
+            "type": "string"
+          },
+          "unitPrice": {
+            "type": "number",
+            "description": "Price per 1 item"
+          },
+          "quantity": {
+            "type": "number"
+          },
+          "lineTotal": {
+            "type": "number",
+            "description": "unitPrice * quantity"
+          },
+          "priceListDetails": {
+            "type": "array",
+            "description": "For displaying various unit and price for Frontend",
+            "items": {
+              "$ref": "#/components/schemas/salesOrderGetByIdPriceListDetail"
+            }
+          }
+        }
+      },
+      "salesOrderGetByIdPriceListDetail": {
+        "type": "object",
+        "properties": {
+          "uomId": {
+            "type": "integer"
+          },
+          "uomName": {
+            "type": "string"
+          },
+          "price": {
+            "type": "number",
+            "nullable": true
+          },
+          "maxPrice": {
+            "type": "number",
+            "nullable": true
+          },
+          "promotionPrice": {
+            "type": "number",
+            "nullable": true
+          },
+          "commissionPercent": {
+            "type": "number",
+            "nullable": true,
+            "description": "For calculation commission"
+          }
+        }
+      }
+    },
+    "parameters": {
+      "accessToken": {
+        "in": "header",
+        "name": "accessToken",
+        "schema": {
+          "type": "string"
+        },
+        "required": false,
+        "description": "Access token of user"
+      },
+      "tenantCode": {
+        "in": "header",
+        "name": "tenantCode",
+        "schema": {
+          "type": "string"
+        },
+        "required": true,
+        "description": "Tenant code of company"
       }
     }
   },
