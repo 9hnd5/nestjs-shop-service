@@ -46,7 +46,7 @@ export const SalesOrderSchema = new EntitySchema<SalesOrder>({
             name: 'address',
             nullable: true,
             type: String,
-            length: 50,
+            length: 255,
         },
         contactPerson: {
             name: 'contact_person',

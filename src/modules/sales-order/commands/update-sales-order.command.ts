@@ -1,7 +1,8 @@
 import { SalesOrderSchema } from '@modules/sales-order/config/sales-order.config';
 import { SalesOrderItem } from '@modules/sales-order/entities/sales-order-item.entity';
 import { SalesOrder } from '@modules/sales-order/entities/sales-order.entity';
-import { BaseCommand, BaseCommandHandler, NotFoundException, RequestHandler } from 'be-core';
+import { BaseCommand, BaseCommandHandler, RequestHandler } from 'be-core';
+import { NotFoundException } from '@nestjs/common';
 import { Type } from 'class-transformer';
 import { Allow, ArrayNotEmpty, IsDateString, IsNotEmpty, ValidateNested } from 'class-validator';
 import { DataSource, Repository } from 'typeorm';

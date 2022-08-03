@@ -71,8 +71,7 @@ export class SalesOrderQuery {
         if (salesOrder && salesOrder.items.length > 0) {
             const itemIds = salesOrder.items.map((t) => t.itemId);
             const customerId = salesOrder.customerId ?? 0;
-            const itemsRs = await this.salesOrderService.getItemByIds(itemIds, customerId);
-            const itemsWithPrice = itemsRs.data;
+            const itemsWithPrice = await this.salesOrderService.getItemByIds(itemIds, customerId);
             for (const line of response.items) {
                 const item = itemsWithPrice.find((t) => t.id === line.itemId);
                 if (item) {
