@@ -1,77 +1,13 @@
+import { AddSalesOrderDto } from '@modules/sales-order/dtos/add-sales-order.dto';
 import { SalesOrderItem } from '@modules/sales-order/entities/sales-order-item.entity';
 import { SalesOrder } from '@modules/sales-order/entities/sales-order.entity';
 import { InternalServerErrorException } from '@nestjs/common';
 import { BaseCommand, BaseCommandHandler, RequestHandler } from 'be-core';
-import { Type } from 'class-transformer';
-import { Allow, ArrayNotEmpty, IsDate, IsNotEmpty, ValidateNested } from 'class-validator';
 import { DataSource, QueryRunner } from 'typeorm';
 import { SalesOrderStatus } from '../enums/sales-order-status.enum';
 
-class Item {
-    @IsNotEmpty()
-    itemId: number;
-
-    @IsNotEmpty()
-    uomId: number;
-
-    @IsNotEmpty()
-    unitPrice: number;
-
-    @IsNotEmpty()
-    quantity: number;
-
-    tax?: number;
-}
 export class AddSalesOrderCommand extends BaseCommand<SalesOrder> {
-    @Allow()
-    customerId?: number;
-    @Allow()
-    customerName?: string;
-    @Allow()
-    phoneNumber?: string;
-    @Allow()
-    address?: string;
-    @IsNotEmpty()
-    contactPerson: string;
-    @IsNotEmpty()
-    contactNumber: string;
-    @IsNotEmpty()
-    shipAddress: string;
-    @IsNotEmpty()
-    salesChannelCode: string;
-    @IsNotEmpty()
-    salesChannelName: string;
-    @IsNotEmpty()
-    deliveryPartner: string;
-    @Type(() => Date)
-    @IsDate()
-    deliveryDate: Date;
-    @IsDate()
-    @Type(() => Date)
-    postingDate: Date;
-    @IsNotEmpty()
-    shippingFee: number;
-    @IsNotEmpty()
-    paymentMethodId: number;
-    @IsNotEmpty()
-    paymentMethodName: string;
-    @Allow()
-    commission?: number;
-    @Allow()
-    tax?: number;
-    @Allow()
-    note?: string;
-    @Allow()
-    orderDiscountAmount?: number;
-    @Allow()
-    isDraft: boolean;
-
-    status?: string;
-
-    @ArrayNotEmpty()
-    @ValidateNested()
-    @Type(() => Item)
-    items: Item[];
+    data: AddSalesOrderDto;
 }
 
 @RequestHandler(AddSalesOrderCommand)
@@ -82,54 +18,34 @@ export class AddSalesOrderCommandHandler extends BaseCommandHandler<AddSalesOrde
         this.queryRunner = dataSource.createQueryRunner();
     }
     async apply(command: AddSalesOrderCommand) {
-        const {
-            status = command.isDraft ? SalesOrderStatus.Draft : SalesOrderStatus.New,
-            contactPerson,
-            contactNumber,
-            shipAddress,
-            shippingFee,
-            paymentMethodId,
-            paymentMethodName,
-            salesChannelCode,
-            salesChannelName,
-            customerId,
-            customerName,
-            phoneNumber,
-            address,
-            deliveryPartner,
-            deliveryDate,
-            postingDate,
-            items,
-            commission,
-            orderDiscountAmount,
-            note,
-        } = command;
+        const { data } = command;
+        const status = data.isDraft ? SalesOrderStatus.Draft : SalesOrderStatus.New;
         let order = new SalesOrder(
             status,
-            contactPerson,
-            contactNumber,
-            shipAddress,
-            shippingFee,
-            paymentMethodId,
-            paymentMethodName,
-            salesChannelCode,
-            salesChannelName,
-            deliveryDate,
-            deliveryPartner,
-            postingDate,
-            customerId,
-            customerName,
-            phoneNumber,
-            address,
-            commission,
-            orderDiscountAmount,
-            note
+            data.contactPerson,
+            data.contactNumber,
+            data.shipAddress,
+            data.shippingFee,
+            data.paymentMethodId,
+            data.paymentMethodName,
+            data.salesChannelCode,
+            data.salesChannelName,
+            data.deliveryDate,
+            data.deliveryPartner,
+            data.postingDate,
+            data.customerId,
+            data.customerName,
+            data.phoneNumber,
+            data.address,
+            data.commission,
+            data.orderDiscountAmount,
+            data.note
         );
         try {
             this.queryRunner.connect();
             this.queryRunner.startTransaction();
 
-            for (const item of items) {
+            for (const item of data.items) {
                 let newItem = new SalesOrderItem(
                     item.itemId,
                     item.uomId,

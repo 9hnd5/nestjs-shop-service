@@ -1,97 +1,13 @@
 import { SalesOrderSchema } from '@modules/sales-order/config/sales-order.config';
+import { UpdateSalesOrderDto } from '@modules/sales-order/dtos/update-sales-order.dto';
 import { SalesOrderItem } from '@modules/sales-order/entities/sales-order-item.entity';
 import { SalesOrder } from '@modules/sales-order/entities/sales-order.entity';
 import { NotFoundException } from '@nestjs/common';
 import { BaseCommand, BaseCommandHandler, RequestHandler } from 'be-core';
-import { Type } from 'class-transformer';
-import { Allow, ArrayNotEmpty, IsDate, IsNotEmpty, ValidateNested } from 'class-validator';
 import { DataSource, Repository } from 'typeorm';
 
-class Item {
-    id?: number;
-
-    @IsNotEmpty()
-    itemId: number;
-
-    @IsNotEmpty()
-    uomId: number;
-
-    @IsNotEmpty()
-    unitPrice: number;
-
-    @IsNotEmpty()
-    quantity: number;
-
-    tax?: number;
-}
-
 export class UpdateSalesOrderCommand extends BaseCommand<SalesOrder> {
-    id: number;
-    @Allow()
-    code?: string;
-
-    @Allow()
-    customerId?: number;
-
-    @Allow()
-    customerName?: string;
-
-    @Allow()
-    phoneNumber?: string;
-
-    @Allow()
-    address?: string;
-
-    @IsNotEmpty()
-    contactPerson: string;
-
-    @IsNotEmpty()
-    contactNumber: string;
-
-    @IsNotEmpty()
-    shipAddress: string;
-
-    @IsNotEmpty()
-    salesChannelCode: string;
-
-    @IsNotEmpty()
-    salesChannelName: string;
-
-    @IsNotEmpty()
-    deliveryPartner: string;
-
-    @Type(() => Date)
-    @IsDate()
-    deliveryDate: Date;
-
-    @Type(() => Date)
-    postingDate?: Date;
-
-    @IsNotEmpty()
-    shippingFee: number;
-
-    @IsNotEmpty()
-    paymentMethodId: number;
-
-    @IsNotEmpty()
-    paymentMethodName: string;
-
-    @Allow()
-    commission?: number;
-
-    @Allow()
-    tax?: number;
-
-    @Allow()
-    note?: string;
-
-    @Allow()
-    orderDiscountAmount?: number;
-
-    @ArrayNotEmpty()
-    @ValidateNested()
-    @Type(() => Item)
-    items: Item[];
+    data: UpdateSalesOrderDto;
 }
 
 @RequestHandler(UpdateSalesOrderCommand)
@@ -105,30 +21,9 @@ export class UpdateSalesOrderCommandHanlder extends BaseCommandHandler<
         this.salesOrderRepo = dataSource.getRepository<SalesOrder>(SalesOrderSchema);
     }
     async apply(command: UpdateSalesOrderCommand) {
-        const {
-            id,
-            contactPerson,
-            contactNumber,
-            shipAddress,
-            shippingFee,
-            paymentMethodId,
-            paymentMethodName,
-            salesChannelCode,
-            salesChannelName,
-            customerId,
-            customerName,
-            phoneNumber,
-            address,
-            deliveryPartner,
-            deliveryDate,
-            postingDate,
-            items,
-            commission,
-            orderDiscountAmount,
-            note,
-        } = command;
+        const { data } = command;
         let salesOrder = await this.salesOrderRepo.findOne({
-            where: { id },
+            where: { id: data.id },
             relations: {
                 items: true,
             },
@@ -138,35 +33,35 @@ export class UpdateSalesOrderCommandHanlder extends BaseCommandHandler<
             throw new NotFoundException('Entity not found');
         }
 
-        salesOrder.contactPerson = contactPerson;
-        salesOrder.contactNumber = contactNumber;
-        salesOrder.shipAddress = shipAddress;
-        salesOrder.salesChannelCode = salesChannelCode;
-        salesOrder.salesChannelName = salesChannelName;
-        salesOrder.commission = commission ?? 0;
-        salesOrder.shippingFee = shippingFee;
-        salesOrder.paymentMethodId = paymentMethodId;
-        salesOrder.paymentMethodName = paymentMethodName;
-        salesOrder.customerId = customerId;
-        salesOrder.customerName = customerName;
-        salesOrder.phoneNumber = phoneNumber;
-        salesOrder.address = address;
-        salesOrder.deliveryPartner = deliveryPartner;
-        salesOrder.orderDiscountAmount = orderDiscountAmount ?? 0;
-        salesOrder.note = note;
-        salesOrder.changeDeliveryDate(deliveryDate);
-        postingDate && salesOrder.changePostingDate(postingDate);
+        salesOrder.contactPerson = data.contactPerson;
+        salesOrder.contactNumber = data.contactNumber;
+        salesOrder.shipAddress = data.shipAddress;
+        salesOrder.salesChannelCode = data.salesChannelCode;
+        salesOrder.salesChannelName = data.salesChannelName;
+        salesOrder.commission = data.commission ?? 0;
+        salesOrder.shippingFee = data.shippingFee;
+        salesOrder.paymentMethodId = data.paymentMethodId;
+        salesOrder.paymentMethodName = data.paymentMethodName;
+        salesOrder.customerId = data.customerId;
+        salesOrder.customerName = data.customerName;
+        salesOrder.phoneNumber = data.phoneNumber;
+        salesOrder.address = data.address;
+        salesOrder.deliveryPartner = data.deliveryPartner;
+        salesOrder.orderDiscountAmount = data.orderDiscountAmount ?? 0;
+        salesOrder.note = data.note;
+        salesOrder.changeDeliveryDate(data.deliveryDate);
+        data.postingDate && salesOrder.changePostingDate(data.postingDate);
         salesOrder = this.updateBuild(salesOrder, command.session);
 
         const orderItems = [...salesOrder.items];
         for (const item of orderItems) {
-            const index = items.findIndex((x) => x.id === item.id);
+            const index = data.items.findIndex((x) => x.id === item.id);
             if (index < 0) {
                 salesOrder.removeItem(item.id);
             }
         }
 
-        for (const item of command.items) {
+        for (const item of data.items) {
             //update
             if (item.id) {
                 const index = salesOrder.items.findIndex((x) => x.id == item.id);
