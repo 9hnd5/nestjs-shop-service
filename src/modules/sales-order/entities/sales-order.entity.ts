@@ -50,18 +50,20 @@ export class SalesOrder extends TenantBase {
     code?: string;
 
     private _deliveryDate: Date;
-
     get deliveryDate() {
         return this._deliveryDate;
     }
-    set deliveryDate(value) {
-        if (value < this.postingDate)
-            throw new BusinessException('Delivery date cannot be less than the posting date');
+    private set deliveryDate(value) {
         this._deliveryDate = value;
     }
 
-    private _status: string;
+    setDeliveryDate(value: Date) {
+        if (value < this.postingDate)
+            throw new BusinessException('Delivery date cannot be less than the posting date');
+        this.deliveryDate = value;
+    }
 
+    private _status: string;
     get status() {
         return this._status;
     }

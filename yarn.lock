@@ -734,6 +734,11 @@
     "@types/jsonwebtoken" "8.5.8"
     jsonwebtoken "8.5.1"
 
+"@nestjs/mapped-types@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@nestjs/mapped-types/-/mapped-types-1.1.0.tgz#54a9fa61079635dd6c3c75fd9593f20b2302a55b"
+  integrity sha512-+2kSly4P1QI+9eGt+/uGyPdEG1hVz7nbpqPHWZVYgoqz8eOHljpXPag+UCVRw9zo2XCu4sgNUIGe8Uk0+OvUQg==
+
 "@nestjs/passport@^9.0.0":
   version "9.0.0"
   resolved "https://registry.yarnpkg.com/@nestjs/passport/-/passport-9.0.0.tgz#0571bb08f8043456bc6df44cd4f59ca5f10c9b9f"
@@ -1576,15 +1581,16 @@ base64-js@^1.3.1:
   resolved "https://registry.yarnpkg.com/base64-js/-/base64-js-1.5.1.tgz#1b1b440160a5bf7ad40b650f095963481903930a"
   integrity sha512-AKpaYlHn8t4SVbOHCy+b5+KKgvR4vrsD8vbvrbiQJps7fKDTkjkDry6ji0rUJjC0kzbNePLwzxq8iypo41qeWA==
 
-be-core@^1.0.14:
-  version "1.0.14"
-  resolved "https://registry.yarnpkg.com/be-core/-/be-core-1.0.14.tgz#04d2c190172d1a10fbc6d03ebba9efe5d20d9302"
-  integrity sha512-/5sxxMIHlCwS2O3KwWr5dHu2A77Fxpu5obzMPBxYHtkfdPuqqDBsfHh5iaXaBVGWzOxrstjMOSJp+3gEvG6Uzw==
+be-core@^1.0.18:
+  version "1.0.18"
+  resolved "https://registry.yarnpkg.com/be-core/-/be-core-1.0.18.tgz#1ce589f00d52c630c620171170bd271b7c32d600"
+  integrity sha512-Ptmp5oC1g2rDjRlnGuYoxXtWqftygxzpffRzbRdTDm/pd894Mp99UgR3pdg7fCZBBV95+3UQ58yYoEjuBjzpRQ==
   dependencies:
     "@nestjs/common" "^9.0.7"
     "@nestjs/config" "^2.2.0"
     "@nestjs/core" "^9.0.7"
     "@nestjs/jwt" "^9.0.0"
+    "@nestjs/mapped-types" "^1.1.0"
     "@nestjs/passport" "^9.0.0"
     "@nestjs/platform-express" "^9.0.7"
     "@types/ioredis" "^4.28.10"

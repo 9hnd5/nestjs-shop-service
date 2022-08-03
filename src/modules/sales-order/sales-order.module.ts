@@ -2,6 +2,7 @@ import { AddSalesOrderCommandHandler } from '@modules/sales-order/commands/add-s
 import { UpdateSalesOrderCommandHanlder } from '@modules/sales-order/commands/update-sales-order.command';
 import { SalesOrderController } from '@modules/sales-order/sales-order.controller';
 import { SalesOrderQuery } from '@modules/sales-order/sales-order.query';
+import { SalesOrderService } from '@modules/sales-order/sales-order.service';
 import { Module } from '@nestjs/common';
 import { CQRSModule, HttpModule } from 'be-core';
 import { UpdateStatusSalesOrderCommandHanlder } from './commands/update-status-sales-order.command';
@@ -13,6 +14,7 @@ import { UpdateStatusSalesOrderCommandHanlder } from './commands/update-status-s
         UpdateSalesOrderCommandHanlder,
         UpdateStatusSalesOrderCommandHanlder,
         SalesOrderQuery,
+        SalesOrderService,
     ],
     controllers: [SalesOrderController],
 })

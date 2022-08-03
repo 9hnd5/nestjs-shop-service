@@ -6,7 +6,7 @@ import { SalesOrderStatus } from '../enums/sales-order-status.enum';
 
 export class UpdateStatusSalesOrderCommand extends BaseCommand<SalesOrder> {
     id: number;
-    status: string;
+    status: SalesOrderStatus;
 }
 
 @RequestHandler(UpdateStatusSalesOrderCommand)

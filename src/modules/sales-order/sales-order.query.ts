@@ -2,20 +2,18 @@ import { SalesOrderSchema } from '@modules/sales-order/config/sales-order.config
 import { GetByIdResponse } from '@modules/sales-order/dtos/get-by-id-response.dto';
 import { GetQuery } from '@modules/sales-order/dtos/get-query.dto';
 import { GetResponse } from '@modules/sales-order/dtos/get-response.dto';
-import { SummaryResponse, CountStatus } from '@modules/sales-order/dtos/summary-response.dto';
+import { CountStatus, SummaryResponse } from '@modules/sales-order/dtos/summary-response.dto';
 import { SalesOrder } from '@modules/sales-order/entities/sales-order.entity';
+import { SalesOrderService } from '@modules/sales-order/sales-order.service';
 import { Injectable } from '@nestjs/common';
-import { HttpService, Paginated } from 'be-core';
+import { Paginated } from 'be-core';
 import { plainToInstance } from 'class-transformer';
 import { Brackets, DataSource, Repository } from 'typeorm';
-import { get as getConfig } from '../../config';
-
-const externalServiceConfig = getConfig('externalService');
 
 @Injectable()
 export class SalesOrderQuery {
     private salesOrderRepo: Repository<SalesOrder>;
-    constructor(dataSource: DataSource, private httpClient: HttpService) {
+    constructor(dataSource: DataSource, private salesOrderService: SalesOrderService) {
         this.salesOrderRepo = dataSource.getRepository<SalesOrder>(SalesOrderSchema);
     }
 
@@ -70,40 +68,23 @@ export class SalesOrderQuery {
         let response = plainToInstance(GetByIdResponse, salesOrder, {
             excludeExtraneousValues: true,
         });
-        if (salesOrder) {
-            if (salesOrder.items.length > 0) {
-                try {
-                    const itemsRs = await this.httpClient.post(
-                        `internal/ecommerce-shop/v1/item/by-ids`,
-                        {
-                            itemIds: salesOrder.items.map((t) => t.itemId),
-                            customerId: salesOrder.customerId ?? 0,
-                        },
-                        {
-                            autoInject: true,
-                            config: {
-                                baseURL: externalServiceConfig.ecommerceShopService,
-                            },
-                        }
-                    );
-                    const itemsWithPrice = itemsRs.data;
-                    for (const line of response.items) {
-                        const item = itemsWithPrice.find((t) => t.id === line.itemId);
-                        if (item) {
-                            line.priceListDetails = item.priceListDetails;
-                            line.itemName = item.name;
-                            line.uomName =
-                                line.priceListDetails.find((t) => t.uomId === line.uomId)
-                                    ?.uomName || '';
-                        }
-                    }
-                    response = plainToInstance(GetByIdResponse, response, {
-                        excludeExtraneousValues: true,
-                    });
-                } catch (er) {
-                    throw new Error(er);
+        if (salesOrder && salesOrder.items.length > 0) {
+            const itemIds = salesOrder.items.map((t) => t.itemId);
+            const customerId = salesOrder.customerId ?? 0;
+            const itemsRs = await this.salesOrderService.getItemByIds(itemIds, customerId);
+            const itemsWithPrice = itemsRs.data;
+            for (const line of response.items) {
+                const item = itemsWithPrice.find((t) => t.id === line.itemId);
+                if (item) {
+                    line.priceListDetails = item.priceListDetails;
+                    line.itemName = item.name;
+                    line.uomName =
+                        line.priceListDetails.find((t) => t.uomId === line.uomId)?.uomName || '';
                 }
             }
+            response = plainToInstance(GetByIdResponse, response, {
+                excludeExtraneousValues: true,
+            });
         }
         return response;
     }

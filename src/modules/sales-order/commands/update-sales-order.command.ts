@@ -128,7 +128,7 @@ export class UpdateSalesOrderCommandHanlder extends BaseCommandHandler<
         salesOrder.phoneNumber = phoneNumber;
         salesOrder.address = address;
         salesOrder.deliveryPartner = deliveryPartner;
-        salesOrder.deliveryDate = deliveryDate;
+        salesOrder.setDeliveryDate(deliveryDate);
         salesOrder.orderDiscountAmount = orderDiscountAmount ?? 0;
         salesOrder.note = note;
         salesOrder = this.updateBuild(salesOrder, command.session);
