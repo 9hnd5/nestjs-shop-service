@@ -54,4 +54,8 @@ export class GetResponse {
     @Expose()
     @Type(() => Date)
     deliveryDate: Date;
+
+    @Expose()
+    @Type(() => Date)
+    postingDate: Date;
 }
