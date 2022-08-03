@@ -147,11 +147,11 @@ export class SalesOrder extends TenantBase {
     }
 
     changeDeliveryDate(deliveryDate: Date) {
-        if (this.status !== SalesOrderStatus.Draft) {
-            throw new BusinessException(
-                "Can't change the Delivery Date because its status is not draft"
-            );
-        }
+        // if (this.status !== SalesOrderStatus.Draft) {
+        //     throw new BusinessException(
+        //         "Can't change the Delivery Date because its status is not draft"
+        //     );
+        // }
         if (this.isValidPostingDeliveryDate(this.postingDate, deliveryDate))
             this._deliveryDate = deliveryDate;
     }
