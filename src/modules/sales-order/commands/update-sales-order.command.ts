@@ -1,10 +1,10 @@
 import { SalesOrderSchema } from '@modules/sales-order/config/sales-order.config';
 import { SalesOrderItem } from '@modules/sales-order/entities/sales-order-item.entity';
 import { SalesOrder } from '@modules/sales-order/entities/sales-order.entity';
-import { BaseCommand, BaseCommandHandler, RequestHandler } from 'be-core';
 import { NotFoundException } from '@nestjs/common';
+import { BaseCommand, BaseCommandHandler, RequestHandler } from 'be-core';
 import { Type } from 'class-transformer';
-import { Allow, ArrayNotEmpty, IsDateString, IsNotEmpty, ValidateNested } from 'class-validator';
+import { Allow, ArrayNotEmpty, IsDate, IsNotEmpty, ValidateNested } from 'class-validator';
 import { DataSource, Repository } from 'typeorm';
 
 class Item {
@@ -49,8 +49,15 @@ export class UpdateSalesOrderCommand extends BaseCommand<SalesOrder> {
     salesChannelName: string;
     @IsNotEmpty()
     deliveryPartner: string;
-    @IsDateString()
+
+    @Type(() => Date)
+    @IsDate()
     deliveryDate: Date;
+
+    @Type(() => Date)
+    @IsDate()
+    postingDate: Date;
+
     @IsNotEmpty()
     shippingFee: number;
     @IsNotEmpty()
@@ -99,6 +106,7 @@ export class UpdateSalesOrderCommandHanlder extends BaseCommandHandler<
             address,
             deliveryPartner,
             deliveryDate,
+            postingDate,
             items,
             commission,
             orderDiscountAmount,
@@ -129,9 +137,10 @@ export class UpdateSalesOrderCommandHanlder extends BaseCommandHandler<
         salesOrder.phoneNumber = phoneNumber;
         salesOrder.address = address;
         salesOrder.deliveryPartner = deliveryPartner;
-        salesOrder.setDeliveryDate(deliveryDate);
         salesOrder.orderDiscountAmount = orderDiscountAmount ?? 0;
         salesOrder.note = note;
+        salesOrder.changeDeliveryDate(deliveryDate);
+        salesOrder.changePostingDate(postingDate);
         salesOrder = this.updateBuild(salesOrder, command.session);
 
         const orderItems = [...salesOrder.items];

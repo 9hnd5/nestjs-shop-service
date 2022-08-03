@@ -50,7 +50,7 @@ export class UpdateStatusSalesOrderCommandHanlder extends BaseCommandHandler<
                 salesOrder.changeStatusToWaitingDelivery(status);
                 break;
             case SalesOrderStatus.Delivered:
-                salesOrder.changeStatusToWaitingDelivery(status);
+                salesOrder.changeStatusToDeliveried(status);
                 break;
             case SalesOrderStatus.Returned:
                 salesOrder.changeStatusToReturned(status);

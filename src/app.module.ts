@@ -36,6 +36,7 @@ const dataSource = new DataSource({
                     synchronize: false,
                     retryAttempts: 3,
                     retryDelay: 1000,
+                    entitySkipConstructor: true,
                 };
             },
             inject: [REQUEST],

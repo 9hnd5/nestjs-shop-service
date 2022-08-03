@@ -1,8 +1,9 @@
 import { SalesOrderItem } from '@modules/sales-order/entities/sales-order-item.entity';
 import { SalesOrder } from '@modules/sales-order/entities/sales-order.entity';
+import { InternalServerErrorException } from '@nestjs/common';
 import { BaseCommand, BaseCommandHandler, RequestHandler } from 'be-core';
 import { Type } from 'class-transformer';
-import { Allow, ArrayNotEmpty, IsNotEmpty, ValidateNested, IsDateString } from 'class-validator';
+import { Allow, ArrayNotEmpty, IsDate, IsNotEmpty, ValidateNested } from 'class-validator';
 import { DataSource, QueryRunner } from 'typeorm';
 import { SalesOrderStatus } from '../enums/sales-order-status.enum';
 
@@ -42,8 +43,12 @@ export class AddSalesOrderCommand extends BaseCommand<SalesOrder> {
     salesChannelName: string;
     @IsNotEmpty()
     deliveryPartner: string;
-    @IsDateString()
+    @Type(() => Date)
+    @IsDate()
     deliveryDate: Date;
+    @IsDate()
+    @Type(() => Date)
+    postingDate: Date;
     @IsNotEmpty()
     shippingFee: number;
     @IsNotEmpty()
@@ -93,6 +98,7 @@ export class AddSalesOrderCommandHandler extends BaseCommandHandler<AddSalesOrde
             address,
             deliveryPartner,
             deliveryDate,
+            postingDate,
             items,
             commission,
             orderDiscountAmount,
@@ -110,6 +116,7 @@ export class AddSalesOrderCommandHandler extends BaseCommandHandler<AddSalesOrde
             salesChannelName,
             deliveryDate,
             deliveryPartner,
+            postingDate,
             customerId,
             customerName,
             phoneNumber,
@@ -143,7 +150,7 @@ export class AddSalesOrderCommandHandler extends BaseCommandHandler<AddSalesOrde
             return result.id;
         } catch (error) {
             this.queryRunner.rollbackTransaction();
-            throw error;
+            throw new InternalServerErrorException(error);
         }
     }
 }

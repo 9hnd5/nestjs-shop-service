@@ -35,7 +35,8 @@ export const SalesOrderSchema = new EntitySchema<SalesOrder>({
         },
         postingDate: {
             name: 'posting_date',
-            type: Date,
+            nullable: false,
+            type: 'date',
         },
         customerId: {
             name: 'customer_id',
@@ -87,7 +88,7 @@ export const SalesOrderSchema = new EntitySchema<SalesOrder>({
         deliveryDate: {
             name: 'delivery_date',
             nullable: false,
-            type: Date,
+            type: 'date',
         },
         shippingFee: {
             name: 'shipping_fee',
@@ -120,12 +121,6 @@ export const SalesOrderSchema = new EntitySchema<SalesOrder>({
         },
         commission: {
             name: 'commission',
-            nullable: false,
-            type: 'double',
-            default: 0,
-        },
-        tax: {
-            name: 'tax',
             nullable: false,
             type: 'double',
             default: 0,
