@@ -3,7 +3,7 @@ import { SalesOrderItem } from '@modules/sales-order/entities/sales-order-item.e
 import { SalesOrder } from '@modules/sales-order/entities/sales-order.entity';
 import { BaseCommand, BaseCommandHandler, NotFoundException, RequestHandler } from 'be-core';
 import { Type } from 'class-transformer';
-import { ArrayNotEmpty, IsNotEmpty, ValidateNested } from 'class-validator';
+import { Allow, ArrayNotEmpty, IsDateString, IsNotEmpty, ValidateNested } from 'class-validator';
 import { DataSource, Repository } from 'typeorm';
 
 class Item {
@@ -26,10 +26,15 @@ class Item {
 
 export class UpdateSalesOrderCommand extends BaseCommand<SalesOrder> {
     id: number;
+    @Allow()
     code?: string;
+    @Allow()
     customerId?: number;
+    @Allow()
     customerName?: string;
+    @Allow()
     phoneNumber?: string;
+    @Allow()
     address?: string;
     @IsNotEmpty()
     contactPerson: string;
@@ -43,7 +48,7 @@ export class UpdateSalesOrderCommand extends BaseCommand<SalesOrder> {
     salesChannelName: string;
     @IsNotEmpty()
     deliveryPartner: string;
-    @IsNotEmpty()
+    @IsDateString()
     deliveryDate: Date;
     @IsNotEmpty()
     shippingFee: number;
@@ -51,9 +56,13 @@ export class UpdateSalesOrderCommand extends BaseCommand<SalesOrder> {
     paymentMethodId: number;
     @IsNotEmpty()
     paymentMethodName: string;
+    @Allow()
     commission?: number;
+    @Allow()
     tax?: number;
+    @Allow()
     note?: string;
+    @Allow()
     orderDiscountAmount?: number;
 
     @ArrayNotEmpty()

@@ -1,10 +1,11 @@
 import { SalesOrderItem } from '@modules/sales-order/entities/sales-order-item.entity';
 import { SalesOrderStatus } from '@modules/sales-order/enums/sales-order-status.enum';
-import { TenantBase } from 'be-core';
+import { BusinessException, TenantBase } from 'be-core';
 import { isArray, remove } from 'lodash';
 
 export class SalesOrder extends TenantBase {
     constructor(
+        status: string,
         contactPerson: string,
         contactNumber: string,
         shipAddress: string,
@@ -13,12 +14,12 @@ export class SalesOrder extends TenantBase {
         paymentMethodName: string,
         salesChannelCode: string,
         salesChannelName: string,
+        deliveryDate: Date,
+        deliveryPartner: string,
         customerId?: number,
         customerName?: string,
         phoneNumber?: string,
         address?: string,
-        deliveryPartner?: string,
-        deliveryDate?: Date,
         commission?: number,
         orderDiscountAmount?: number,
         note?: string
@@ -40,14 +41,109 @@ export class SalesOrder extends TenantBase {
         this.shippingFee = shippingFee;
         this.paymentMethodId = paymentMethodId;
         this.orderDiscountAmount = orderDiscountAmount ?? 0;
-        this.status = SalesOrderStatus.New;
+        this.status = status;
         this.paymentMethodName = paymentMethodName;
         this.note = note;
     }
 
     id: number;
     code?: string;
-    status: string;
+
+    private _deliveryDate: Date;
+
+    get deliveryDate() {
+        return this._deliveryDate;
+    }
+    set deliveryDate(value) {
+        if (value < this.postingDate)
+            throw new BusinessException('Delivery date cannot be less than the posting date');
+        this._deliveryDate = value;
+    }
+
+    private _status: string;
+
+    get status() {
+        return this._status;
+    }
+    private set status(value) {
+        this._status = value;
+    }
+
+    changeStatusToNew(newStatus: string) {
+        const oldStatus = this.status;
+        if (oldStatus == SalesOrderStatus.Draft && newStatus == SalesOrderStatus.New) {
+            this.status = newStatus;
+        } else {
+            throw new BusinessException('Status Invalid');
+        }
+    }
+
+    changeStatusToConfirmed(newStatus: string) {
+        const oldStatus = this.status;
+        if (oldStatus == SalesOrderStatus.New && newStatus == SalesOrderStatus.Confirmed) {
+            this.status = newStatus;
+        } else {
+            throw new BusinessException('Status Invalid');
+        }
+    }
+
+    changeStatusToCanceled(newStatus: string) {
+        const oldStatus = this.status;
+        if (
+            (oldStatus == SalesOrderStatus.Draft && newStatus == SalesOrderStatus.Canceled) ||
+            (oldStatus == SalesOrderStatus.New && newStatus == SalesOrderStatus.Canceled)
+        ) {
+            this.status = newStatus;
+        } else {
+            throw new BusinessException('Status Invalid');
+        }
+    }
+
+    changeStatusToOrderPreparation(newStatus: string) {
+        const oldStatus = this.status;
+        if (
+            oldStatus == SalesOrderStatus.Confirmed &&
+            newStatus == SalesOrderStatus.OrderPreparation
+        ) {
+            this.status = newStatus;
+        } else {
+            throw new BusinessException('Status Invalid');
+        }
+    }
+
+    changeStatusToWaitingDelivery(newStatus: string) {
+        const oldStatus = this.status;
+        if (
+            oldStatus == SalesOrderStatus.OrderPreparation &&
+            newStatus == SalesOrderStatus.WaitingDelivery
+        ) {
+            this.status = newStatus;
+        } else {
+            throw new BusinessException('Status Invalid');
+        }
+    }
+
+    changeStatusToDeliveried(newStatus: string) {
+        const oldStatus = this.status;
+        if (
+            oldStatus == SalesOrderStatus.WaitingDelivery &&
+            newStatus == SalesOrderStatus.Delivered
+        ) {
+            this.status = newStatus;
+        } else {
+            throw new BusinessException('Status Invalid');
+        }
+    }
+
+    changeStatusToReturned(newStatus: string) {
+        const oldStatus = this.status;
+        if (oldStatus == SalesOrderStatus.Delivered && newStatus == SalesOrderStatus.Returned) {
+            this.status = newStatus;
+        } else {
+            throw new BusinessException('Status Invalid');
+        }
+    }
+
     postingDate: Date;
     address?: string;
     contactPerson: string;
@@ -58,8 +154,7 @@ export class SalesOrder extends TenantBase {
     phoneNumber?: string;
     salesChannelCode: string;
     salesChannelName: string;
-    deliveryPartner?: string;
-    deliveryDate?: Date;
+    deliveryPartner: string;
     shippingFee: number;
     paymentMethodId: number;
     paymentMethodName: string;
@@ -121,9 +216,7 @@ export class SalesOrder extends TenantBase {
             this.tax +
             this.shippingFee;
     }
-    checkStatus(status: string) {
-        return (<any>Object).values(SalesOrderStatus).includes(status);
-    }
+
     generateCode(orderId: number) {
         const currentDate = new Date();
         return 'SO'.concat(
