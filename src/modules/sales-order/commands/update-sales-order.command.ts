@@ -29,24 +29,34 @@ export class UpdateSalesOrderCommand extends BaseCommand<SalesOrder> {
     id: number;
     @Allow()
     code?: string;
+
     @Allow()
     customerId?: number;
+
     @Allow()
     customerName?: string;
+
     @Allow()
     phoneNumber?: string;
+
     @Allow()
     address?: string;
+
     @IsNotEmpty()
     contactPerson: string;
+
     @IsNotEmpty()
     contactNumber: string;
+
     @IsNotEmpty()
     shipAddress: string;
+
     @IsNotEmpty()
     salesChannelCode: string;
+
     @IsNotEmpty()
     salesChannelName: string;
+
     @IsNotEmpty()
     deliveryPartner: string;
 
@@ -55,21 +65,26 @@ export class UpdateSalesOrderCommand extends BaseCommand<SalesOrder> {
     deliveryDate: Date;
 
     @Type(() => Date)
-    @IsDate()
-    postingDate: Date;
+    postingDate?: Date;
 
     @IsNotEmpty()
     shippingFee: number;
+
     @IsNotEmpty()
     paymentMethodId: number;
+
     @IsNotEmpty()
     paymentMethodName: string;
+
     @Allow()
     commission?: number;
+
     @Allow()
     tax?: number;
+
     @Allow()
     note?: string;
+
     @Allow()
     orderDiscountAmount?: number;
 
@@ -140,7 +155,7 @@ export class UpdateSalesOrderCommandHanlder extends BaseCommandHandler<
         salesOrder.orderDiscountAmount = orderDiscountAmount ?? 0;
         salesOrder.note = note;
         salesOrder.changeDeliveryDate(deliveryDate);
-        salesOrder.changePostingDate(postingDate);
+        postingDate && salesOrder.changePostingDate(postingDate);
         salesOrder = this.updateBuild(salesOrder, command.session);
 
         const orderItems = [...salesOrder.items];

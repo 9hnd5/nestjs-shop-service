@@ -24,10 +24,10 @@ export class SalesOrderQuery {
         let cond = this.salesOrderRepo
             .createQueryBuilder('s')
             .where('s.is_deleted = :isDeleted', { isDeleted: false })
-            .andWhere('s.created_date >= :fromDate', {
+            .andWhere('s.posting_date >= :fromDate', {
                 fromDate: fromDate.toISOString(),
             })
-            .andWhere('s.created_date <= :toDate', { toDate: toDate.toISOString() })
+            .andWhere('s.posting_date <= :toDate', { toDate: toDate.toISOString() })
             .take(pageSize)
             .skip(pageSize * (pageIndex - 1));
 
