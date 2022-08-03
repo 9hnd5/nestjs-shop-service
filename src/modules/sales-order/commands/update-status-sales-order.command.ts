@@ -1,6 +1,7 @@
 import { SalesOrderSchema } from '@modules/sales-order/config/sales-order.config';
 import { SalesOrder } from '@modules/sales-order/entities/sales-order.entity';
-import { BaseCommand, BaseCommandHandler, NotFoundException, RequestHandler } from 'be-core';
+import { BaseCommand, BaseCommandHandler, RequestHandler } from 'be-core';
+import { NotFoundException } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 import { SalesOrderStatus } from '../enums/sales-order-status.enum';
 

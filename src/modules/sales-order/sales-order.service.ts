@@ -3,6 +3,19 @@ import { HttpService } from 'be-core';
 import { get as getConfig } from '../../config';
 
 const externalServiceConfig = getConfig('externalService');
+interface Item {
+    id: number;
+    name: string;
+    priceListDetails: PriceListDetail[];
+}
+interface PriceListDetail {
+    uomId: number;
+    uomName: string;
+    price?: number;
+    maxPrice?: number;
+    promotionPrice?: number;
+    commissionPercent: number;
+}
 
 @Injectable()
 export class SalesOrderService {
@@ -10,7 +23,7 @@ export class SalesOrderService {
 
     async getItemByIds(itemIds: number[], customerId: number) {
         try {
-            const itemsRs = await this.httpClient.post(
+            const itemsRs = await this.httpClient.post<Item[]>(
                 `internal/ecommerce-shop/v1/item/by-ids`,
                 {
                     itemIds,
@@ -23,7 +36,7 @@ export class SalesOrderService {
                     },
                 }
             );
-            return itemsRs;
+            return itemsRs.data;
         } catch (er) {
             throw new BadRequestException(er);
         }
