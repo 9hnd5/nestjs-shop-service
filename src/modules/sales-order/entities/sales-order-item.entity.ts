@@ -26,7 +26,11 @@ export class SalesOrderItem extends TenantBase {
     get unitPrice() {
         return this._unitPrice;
     }
-    set unitPrice(unitPrice: number) {
+    private set unitPrice(unitPrice: number) {
+        this._unitPrice = unitPrice;
+        this._lineTotal = this._quantity * this._unitPrice;
+    }
+    changeUnitPrice(unitPrice: number) {
         this._unitPrice = unitPrice;
         this._lineTotal = this._quantity * this._unitPrice;
     }
@@ -35,7 +39,11 @@ export class SalesOrderItem extends TenantBase {
     get quantity() {
         return this._quantity;
     }
-    set quantity(quantity: number) {
+    private set quantity(quantity: number) {
+        this._quantity = quantity;
+        this._lineTotal = this._quantity * this._unitPrice;
+    }
+    changeQuantity(quantity: number) {
         this._quantity = quantity;
         this._lineTotal = this._quantity * this._unitPrice;
     }

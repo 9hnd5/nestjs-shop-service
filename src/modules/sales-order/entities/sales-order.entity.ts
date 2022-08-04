@@ -120,7 +120,7 @@ export class SalesOrder extends TenantBase {
         this.calcTotalAmount();
     }
 
-    private calcTotalAmount() {
+    calcTotalAmount() {
         this.totalAmount =
             this.totalBeforeDiscount -
             this.totalLineDiscount -

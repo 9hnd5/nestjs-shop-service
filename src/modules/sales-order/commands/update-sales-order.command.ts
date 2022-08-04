@@ -68,8 +68,8 @@ export class UpdateSalesOrderCommandHanlder extends BaseCommandHandler<
                 if (index >= 0) {
                     salesOrder.items[index].itemId = item.itemId;
                     salesOrder.items[index].uomId = item.uomId;
-                    salesOrder.items[index].quantity = item.quantity;
-                    salesOrder.items[index].unitPrice = item.unitPrice;
+                    salesOrder.items[index].changeQuantity(item.quantity);
+                    salesOrder.items[index].changeUnitPrice(item.unitPrice);
                 }
                 //insert
             } else {
@@ -84,6 +84,7 @@ export class UpdateSalesOrderCommandHanlder extends BaseCommandHandler<
                 salesOrder.addItem(newItem);
             }
         }
+        salesOrder.calcTotalAmount();
         const result = await this.salesOrderRepo.save(salesOrder);
         return result.id;
     }
