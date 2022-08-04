@@ -54,7 +54,7 @@ export class SalesOrder extends TenantBase {
     code?: string;
     private _deliveryDate: Date;
     get deliveryDate() {
-        return new Date(this._deliveryDate);
+        return this._deliveryDate;
     }
     private set deliveryDate(value) {
         this._deliveryDate = value;
@@ -69,7 +69,7 @@ export class SalesOrder extends TenantBase {
 
     private _postingDate: Date;
     get postingDate() {
-        return new Date(this._postingDate);
+        return this._postingDate;
     }
     private set postingDate(value) {
         this._postingDate = value;

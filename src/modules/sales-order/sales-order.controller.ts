@@ -6,7 +6,7 @@ import { UpdateSalesOrderDto } from '@modules/sales-order/dtos/update-sales-orde
 import { SalesOrderQuery } from '@modules/sales-order/sales-order.query';
 import { Body, Controller, Get, Param, Post, Put, Query } from '@nestjs/common';
 import { Mediator } from 'be-core';
-import { UpdateStatusSalesOrderCommand } from './commands/update-status-sales-order.command';
+import { UpdateSalesOrderStatusCommand } from './commands/update-sales-order-status.command';
 import { SalesOrderStatus } from './enums/sales-order-status.enum';
 
 @Controller('sales-order')
@@ -44,7 +44,7 @@ export class SalesOrderController {
 
     @Put(':id/new')
     updateStatusToNew(@Param('id') id: number) {
-        const command = new UpdateStatusSalesOrderCommand();
+        const command = new UpdateSalesOrderStatusCommand();
         command.id = id;
         command.status = SalesOrderStatus.New;
         return this.mediator.send(command);
@@ -52,7 +52,7 @@ export class SalesOrderController {
 
     @Put(':id/confirmed')
     updateStatusConfirmed(@Param('id') id: number) {
-        const command = new UpdateStatusSalesOrderCommand();
+        const command = new UpdateSalesOrderStatusCommand();
         command.id = id;
         command.status = SalesOrderStatus.Confirmed;
         return this.mediator.send(command);
@@ -60,7 +60,7 @@ export class SalesOrderController {
 
     @Put(':id/order-preparation')
     updateStatusToOrderPreparation(@Param('id') id: number) {
-        const command = new UpdateStatusSalesOrderCommand();
+        const command = new UpdateSalesOrderStatusCommand();
         command.id = id;
         command.status = SalesOrderStatus.OrderPreparation;
         return this.mediator.send(command);
@@ -68,7 +68,7 @@ export class SalesOrderController {
 
     @Put(':id/waiting-delivery')
     updateStatusToWaitingDelivery(@Param('id') id: number) {
-        const command = new UpdateStatusSalesOrderCommand();
+        const command = new UpdateSalesOrderStatusCommand();
         command.id = id;
         command.status = SalesOrderStatus.WaitingDelivery;
         return this.mediator.send(command);
@@ -76,7 +76,7 @@ export class SalesOrderController {
 
     @Put(':id/delivered')
     updateStatusToDelivered(@Param('id') id: number) {
-        const command = new UpdateStatusSalesOrderCommand();
+        const command = new UpdateSalesOrderStatusCommand();
         command.id = id;
         command.status = SalesOrderStatus.Delivered;
         return this.mediator.send(command);
@@ -84,7 +84,7 @@ export class SalesOrderController {
 
     @Put(':id/canceled')
     updateStatusToCanceled(@Param('id') id: number) {
-        const command = new UpdateStatusSalesOrderCommand();
+        const command = new UpdateSalesOrderStatusCommand();
         command.id = id;
         command.status = SalesOrderStatus.Canceled;
         return this.mediator.send(command);
@@ -92,7 +92,7 @@ export class SalesOrderController {
 
     @Put(':id/returned')
     updateStatusToReturned(@Param('id') id: number) {
-        const command = new UpdateStatusSalesOrderCommand();
+        const command = new UpdateSalesOrderStatusCommand();
         command.id = id;
         command.status = SalesOrderStatus.Returned;
         return this.mediator.send(command);

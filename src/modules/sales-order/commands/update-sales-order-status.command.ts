@@ -5,14 +5,14 @@ import { NotFoundException } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 import { SalesOrderStatus } from '../enums/sales-order-status.enum';
 
-export class UpdateStatusSalesOrderCommand extends BaseCommand<SalesOrder> {
+export class UpdateSalesOrderStatusCommand extends BaseCommand<SalesOrder> {
     id: number;
     status: SalesOrderStatus;
 }
 
-@RequestHandler(UpdateStatusSalesOrderCommand)
-export class UpdateStatusSalesOrderCommandHanlder extends BaseCommandHandler<
-    UpdateStatusSalesOrderCommand,
+@RequestHandler(UpdateSalesOrderStatusCommand)
+export class UpdateSalesOrderStatusCommandHanlder extends BaseCommandHandler<
+    UpdateSalesOrderStatusCommand,
     any
 > {
     private salesOrderRepo: Repository<SalesOrder>;
@@ -20,7 +20,7 @@ export class UpdateStatusSalesOrderCommandHanlder extends BaseCommandHandler<
         super();
         this.salesOrderRepo = dataSource.getRepository<SalesOrder>(SalesOrderSchema);
     }
-    async apply(command: UpdateStatusSalesOrderCommand) {
+    async apply(command: UpdateSalesOrderStatusCommand) {
         const { id, status } = command;
         let salesOrder = await this.salesOrderRepo.findOne({
             where: { id },

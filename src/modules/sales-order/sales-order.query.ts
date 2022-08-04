@@ -20,7 +20,6 @@ export class SalesOrderQuery {
     async get(query: GetQuery) {
         const { pageIndex, pageSize, status, searchText, salesChannelCode, fromDate, toDate } =
             query;
-
         let cond = this.salesOrderRepo
             .createQueryBuilder('s')
             .where('s.is_deleted = :isDeleted', { isDeleted: false })
@@ -47,7 +46,6 @@ export class SalesOrderQuery {
                 })
             );
         }
-
         const [dataSource, totalRow] = await cond.getManyAndCount();
         const result = plainToInstance(GetResponse, dataSource, { excludeExtraneousValues: true });
         const response: Paginated<GetResponse> = {

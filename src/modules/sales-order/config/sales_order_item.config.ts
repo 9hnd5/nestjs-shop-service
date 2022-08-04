@@ -1,5 +1,6 @@
 import { SalesOrderItem } from '@modules/sales-order/entities/sales-order-item.entity';
 import { EntitySchema } from 'typeorm';
+import { TenantBaseSchema } from 'be-core';
 
 export const SalesOrderItemSchema = new EntitySchema<SalesOrderItem>({
     name: 'SalesOrderItem',
@@ -60,38 +61,7 @@ export const SalesOrderItemSchema = new EntitySchema<SalesOrderItem>({
             type: 'double',
             nullable: false,
         },
-        isDeleted: {
-            name: 'is_deleted',
-            type: Boolean,
-            nullable: false,
-            default: false,
-        },
-        createdDate: {
-            name: 'created_date',
-            type: 'date',
-            nullable: false,
-        },
-        createdBy: {
-            name: 'created_by',
-            type: Number,
-            nullable: false,
-            default: -1,
-        },
-        modifiedDate: {
-            name: 'modified_date',
-            type: 'date',
-            nullable: true,
-        },
-        modifiedBy: {
-            name: 'modified_by',
-            type: Number,
-            nullable: true,
-        },
-        companyId: {
-            name: 'company_id',
-            type: Number,
-            default: 0,
-        },
+        ...TenantBaseSchema,
     },
     relations: {
         order: {

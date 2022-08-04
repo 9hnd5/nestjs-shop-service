@@ -5,14 +5,14 @@ import { SalesOrderQuery } from '@modules/sales-order/sales-order.query';
 import { SalesOrderService } from '@modules/sales-order/sales-order.service';
 import { Module } from '@nestjs/common';
 import { CQRSModule, HttpModule } from 'be-core';
-import { UpdateStatusSalesOrderCommandHanlder } from './commands/update-status-sales-order.command';
+import { UpdateSalesOrderStatusCommandHanlder } from './commands/update-sales-order-status.command';
 
 @Module({
     imports: [CQRSModule, HttpModule.register({})],
     providers: [
         AddSalesOrderCommandHandler,
         UpdateSalesOrderCommandHanlder,
-        UpdateStatusSalesOrderCommandHanlder,
+        UpdateSalesOrderStatusCommandHanlder,
         SalesOrderQuery,
         SalesOrderService,
     ],

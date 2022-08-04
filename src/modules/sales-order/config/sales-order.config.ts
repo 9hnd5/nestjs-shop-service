@@ -1,5 +1,7 @@
 import { SalesOrder } from '@modules/sales-order/entities/sales-order.entity';
 import { EntitySchema } from 'typeorm';
+import { format } from 'date-fns';
+import { TenantBaseSchema } from 'be-core';
 
 export const SalesOrderSchema = new EntitySchema<SalesOrder>({
     name: 'SalesOrder',
@@ -37,6 +39,14 @@ export const SalesOrderSchema = new EntitySchema<SalesOrder>({
             name: 'posting_date',
             nullable: false,
             type: 'date',
+            transformer: {
+                from(value: string) {
+                    return new Date(value);
+                },
+                to(value: Date) {
+                    return format(value, 'yyyy-MM-dd');
+                },
+            },
         },
         customerId: {
             name: 'customer_id',
@@ -89,6 +99,14 @@ export const SalesOrderSchema = new EntitySchema<SalesOrder>({
             name: 'delivery_date',
             nullable: false,
             type: 'date',
+            transformer: {
+                from(value: string) {
+                    return new Date(value);
+                },
+                to(value: Date) {
+                    return format(value, 'yyyy-MM-dd');
+                },
+            },
         },
         shippingFee: {
             name: 'shipping_fee',
@@ -131,38 +149,7 @@ export const SalesOrderSchema = new EntitySchema<SalesOrder>({
             type: String,
             length: 500,
         },
-        isDeleted: {
-            name: 'is_deleted',
-            type: Boolean,
-            nullable: false,
-            default: false,
-        },
-        createdDate: {
-            name: 'created_date',
-            type: 'date',
-            nullable: false,
-        },
-        createdBy: {
-            name: 'created_by',
-            type: Number,
-            nullable: false,
-            default: -1,
-        },
-        modifiedDate: {
-            name: 'modified_date',
-            type: 'date',
-            nullable: true,
-        },
-        modifiedBy: {
-            name: 'modified_by',
-            type: Number,
-            nullable: true,
-        },
-        companyId: {
-            name: 'company_id',
-            type: Number,
-            default: 0,
-        },
+        ...TenantBaseSchema,
     },
     relations: {
         items: {
