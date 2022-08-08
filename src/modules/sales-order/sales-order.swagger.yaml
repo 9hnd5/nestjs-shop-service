@@ -25,6 +25,38 @@ paths:
                                         description: 'Show result code (0: success, others: error)'
                                     data:
                                         $ref: '#/components/schemas/salesOrderGetById'
+        put:
+            tags: [SalesOrder]
+            summary: Update sales-order by id
+            parameters:
+                - in: path
+                  name: id
+                  schema:
+                    type: integer
+                    example: 1
+                  required: true
+                - $ref: '#/components/parameters/accessToken'
+                - $ref: '#/components/parameters/tenantCode'
+            requestBody: 
+                description: sales-order request body 
+                required: true
+                content: 
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/salesOrder'
+            responses:
+                '200':
+                    description: sales-order responses
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    result:
+                                        type: number
+                                        description: 'Show result code (0: success, others: error)'
+                                    data:
+                                        type: number
     shop/v1/sales-order:
         get:
             tags: [SalesOrder]
@@ -89,6 +121,214 @@ paths:
                                         description: 'Show result code (0: success, others: error)'
                                     data:
                                         $ref: '#/components/schemas/pagingResult'
+        post:
+            tags: [SalesOrder]
+            summary: Creates a new sales-order 
+            parameters:
+                - $ref: '#/components/parameters/accessToken'
+                - $ref: '#/components/parameters/tenantCode'
+            requestBody: 
+                description: sales-order request body 
+                required: true
+                content: 
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/salesOrder'
+            responses:
+                '200':
+                    description: sales-order responses
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    result:
+                                        type: number
+                                        description: 'Show result code (0: success, others: error)'
+                                    data:
+                                        type: number
+    shop/v1/sales-order/{id}/new:
+        put:
+            tags: [SalesOrder]
+            summary: Update status new by id
+            parameters:
+                - in: path
+                  name: id
+                  schema:
+                    type: integer
+                    example: 1
+                  required: true
+                - $ref: '#/components/parameters/accessToken'
+                - $ref: '#/components/parameters/tenantCode'
+            responses:
+                '200':
+                    description: sales-order responses
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    result:
+                                        type: number
+                                        description: 'Show result code (0: success, others: error)'
+                                    data:
+                                        type: number
+    shop/v1/sales-order/{id}/confirmed:
+        put:
+            tags: [SalesOrder]
+            summary: Update status confirmed by id
+            parameters:
+                - in: path
+                  name: id
+                  schema:
+                    type: integer
+                    example: 1
+                  required: true
+                - $ref: '#/components/parameters/accessToken'
+                - $ref: '#/components/parameters/tenantCode'
+            responses:
+                '200':
+                    description: sales-order responses
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    result:
+                                        type: number
+                                        description: 'Show result code (0: success, others: error)'
+                                    data:
+                                        type: number
+    shop/v1/sales-order/{id}/order-preparation:
+        put:
+            tags: [SalesOrder]
+            summary: Update status order-preparation by id
+            parameters:
+                - in: path
+                  name: id
+                  schema:
+                    type: integer
+                    example: 1
+                  required: true
+                - $ref: '#/components/parameters/accessToken'
+                - $ref: '#/components/parameters/tenantCode'
+            responses:
+                '200':
+                    description: sales-order responses
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    result:
+                                        type: number
+                                        description: 'Show result code (0: success, others: error)'
+                                    data:
+                                        type: number
+    shop/v1/sales-order/{id}/waiting-delivery:
+        put:
+            tags: [SalesOrder]
+            summary: Update status waiting-delivery by id
+            parameters:
+                - in: path
+                  name: id
+                  schema:
+                    type: integer
+                    example: 1
+                  required: true
+                - $ref: '#/components/parameters/accessToken'
+                - $ref: '#/components/parameters/tenantCode'
+            responses:
+                '200':
+                    description: sales-order responses
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    result:
+                                        type: number
+                                        description: 'Show result code (0: success, others: error)'
+                                    data:
+                                        type: number
+    shop/v1/sales-order/{id}/delivered:
+        put:
+            tags: [SalesOrder]
+            summary: Update status delivered by id
+            parameters:
+                - in: path
+                  name: id
+                  schema:
+                    type: integer
+                    example: 1
+                  required: true
+                - $ref: '#/components/parameters/accessToken'
+                - $ref: '#/components/parameters/tenantCode'
+            responses:
+                '200':
+                    description: sales-order responses
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    result:
+                                        type: number
+                                        description: 'Show result code (0: success, others: error)'
+                                    data:
+                                        type: number
+    shop/v1/sales-order/{id}/canceled:
+        put:
+            tags: [SalesOrder]
+            summary: Update status canceled by id
+            parameters:
+                - in: path
+                  name: id
+                  schema:
+                    type: integer
+                    example: 1
+                  required: true
+                - $ref: '#/components/parameters/accessToken'
+                - $ref: '#/components/parameters/tenantCode'
+            responses:
+                '200':
+                    description: sales-order responses
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    result:
+                                        type: number
+                                        description: 'Show result code (0: success, others: error)'
+                                    data:
+                                        type: number
+    shop/v1/sales-order/{id}/returned:
+        put:
+            tags: [SalesOrder]
+            summary: Update status returned by id
+            parameters:
+                - in: path
+                  name: id
+                  schema:
+                    type: integer
+                    example: 1
+                  required: true
+                - $ref: '#/components/parameters/accessToken'
+                - $ref: '#/components/parameters/tenantCode'
+            responses:
+                '200':
+                    description: sales-order responses
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    result:
+                                        type: number
+                                        description: 'Show result code (0: success, others: error)'
+                                    data:
+                                        type: number
 
 components:
     schemas:
@@ -248,6 +488,70 @@ components:
                         type: number
                         nullable: true
                         description: For calculation commission
+        salesOrderItem:
+            type: object
+            properties: 
+                itemId:
+                    type: integer
+                uomId:
+                    type: integer
+                unitPrice:
+                    type: number
+                quantity:
+                    type: integer
+        salesOrder:
+            type: object
+            properties:
+                contactPerson:
+                    type: string
+                contactNumber:
+                    type: string
+                shipAddress:
+                    type: string
+                salesChannel:
+                    type: string
+                deliveryPartner:
+                    type: string
+                deliveryDate:
+                    type: string
+                    format: date-time
+                postingDate: 
+                    type: string
+                    format: date-time
+                customerId:
+                    type: integer
+                    nullable: true
+                customerName:
+                    type: string
+                    nullable: true
+                address:
+                    type: string
+                    nullable: true
+                phoneNumber:
+                    type: string
+                    nullable: true
+                paymentMethodId:
+                    type: integer
+                shippingFee:
+                    type: number
+                orderDiscountAmount:
+                    type: number
+                salesChannelCode:
+                    type: string
+                salesChannelName:
+                    type: string
+                paymentMethodName:
+                    type: string
+                note:
+                    type: string
+                    nullable: true
+                commission:
+                    type: number
+                    nullable: true
+                items:
+                    type: array
+                    items: 
+                        $ref: '#/components/schemas/salesOrderItem'
     parameters:
         accessToken:
             in: header
