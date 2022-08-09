@@ -657,8 +657,8 @@
             "example": 100
           },
           "countStatus": {
-            "type": "object",
-            "properties": {
+            "type": "array",
+            "items": {
               "status": {
                 "type": "string",
                 "example": "Draft"
