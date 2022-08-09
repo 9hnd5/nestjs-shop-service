@@ -6,8 +6,8 @@
     "description": ""
   },
   "apis": [
-    "D:\\Documents\\Programming\\comantic code\\nestjs-shop-service\\src\\modules\\**\\**.swagger.yaml",
-    "D:\\Documents\\Programming\\comantic code\\nestjs-shop-service\\src\\modules\\slug.swagger.yaml"
+    "/Users/hnd/Projects/saaspiens/nestjs-shop-service/src/modules/**/**.swagger.yaml",
+    "/Users/hnd/Projects/saaspiens/nestjs-shop-service/src/modules/slug.swagger.yaml"
   ],
   "paths": {
     "shop/v1/sales-order/{id}": {
@@ -102,6 +102,74 @@
                     },
                     "data": {
                       "type": "number"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "shop/v1/sales-order/summary": {
+      "get": {
+        "tags": [
+          "SalesOrder"
+        ],
+        "summary": "Get sales order summary",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "salesChannelCode",
+            "schema": {
+              "type": "string",
+              "example": "TELESALE"
+            }
+          },
+          {
+            "in": "query",
+            "name": "salesmanCode",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "fromDate",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "in": "query",
+            "name": "toDate",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/accessToken"
+          },
+          {
+            "$ref": "#/components/parameters/tenantCode"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Summary sales order",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "result": {
+                      "type": "number",
+                      "description": "Show result code (0: success, others: error)"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/summary-response"
                     }
                   }
                 }
@@ -581,6 +649,28 @@
   },
   "components": {
     "schemas": {
+      "summary-response": {
+        "type": "object",
+        "properties": {
+          "total": {
+            "type": "integer",
+            "example": 100
+          },
+          "countStatus": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "string",
+                "example": "Draft"
+              },
+              "count": {
+                "type": "integer",
+                "example": 10
+              }
+            }
+          }
+        }
+      },
       "salesOrderStatus": {
         "type": "string",
         "enum": [
@@ -671,6 +761,14 @@
           "salesChannelName": {
             "type": "string",
             "example": "Telesale"
+          },
+          "salesmanCode": {
+            "type": "number",
+            "example": 1
+          },
+          "salesmanName": {
+            "type": "string",
+            "example": "Nguyễn Thị Loan"
           },
           "deliveryPartner": {
             "type": "string",
@@ -820,6 +918,12 @@
       "salesOrder": {
         "type": "object",
         "properties": {
+          "salesmanCode": {
+            "type": "number"
+          },
+          "salesmanName": {
+            "type": "string"
+          },
           "contactPerson": {
             "type": "string"
           },
