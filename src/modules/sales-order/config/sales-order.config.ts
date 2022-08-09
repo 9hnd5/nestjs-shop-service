@@ -1,4 +1,5 @@
 import { SalesOrder } from '@modules/sales-order/entities/sales-order.entity';
+import { PaymentStatus } from '@modules/sales-order/enums/payment-status.enum';
 import { TenantBaseSchema } from 'be-core';
 import { format } from 'date-fns';
 import { EntitySchema } from 'typeorm';
@@ -159,6 +160,12 @@ export const SalesOrderSchema = new EntitySchema<SalesOrder>({
             nullable: false,
             type: String,
             length: 255,
+        },
+        paymentStatus: {
+            name: 'payment_status',
+            nullable: false,
+            type: 'enum',
+            enum: PaymentStatus,
         },
         ...TenantBaseSchema,
     },

@@ -1,4 +1,5 @@
 import { SalesOrderItem } from '@modules/sales-order/entities/sales-order-item.entity';
+import { PaymentStatus } from '@modules/sales-order/enums/payment-status.enum';
 import { SalesOrderStatus } from '@modules/sales-order/enums/sales-order-status.enum';
 import { BusinessException, TenantBase } from 'be-core';
 import { isAfter } from 'date-fns';
@@ -48,6 +49,7 @@ export class SalesOrder extends TenantBase {
         this.salesmanCode = salesmanCode;
         this.salesmanName = salesmanName;
         this.note = note;
+        this.paymentStatus = PaymentStatus.Unpaid;
         if (this.isValidPostingDeliveryDate(postingDate, deliveryDate)) {
             this.postingDate = postingDate;
             this.deliveryDate = deliveryDate;
@@ -87,6 +89,7 @@ export class SalesOrder extends TenantBase {
     phoneNumber?: string;
     salesChannelCode: string;
     salesChannelName: string;
+
     deliveryPartner: string;
     shippingFee: number;
     paymentMethodId: number;
@@ -97,6 +100,15 @@ export class SalesOrder extends TenantBase {
     salesmanCode: number;
     salesmanName: string;
     note?: string;
+
+    _paymentStatus: PaymentStatus;
+    get paymentStatus() {
+        return this._paymentStatus;
+    }
+    private set paymentStatus(value) {
+        this._paymentStatus = value;
+    }
+
     get totalBeforeDiscount() {
         return this.items.reduce((value, current) => {
             return value + current.quantity * current.unitPrice;

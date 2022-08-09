@@ -58,4 +58,13 @@ export class GetResponse {
     @Expose()
     @Type(() => Date)
     postingDate: Date;
+
+    @Expose()
+    salesmanCode: number;
+
+    @Expose()
+    salesmanName: string;
+
+    @Expose()
+    paymentStatus: string;
 }
