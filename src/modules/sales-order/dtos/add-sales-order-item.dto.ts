@@ -1,6 +1,6 @@
 import { Allow, IsNotEmpty } from 'class-validator';
 
-export class AddSalesOrderItemDto {
+export default class AddSalesOrderItem {
     @IsNotEmpty()
     itemId: number;
 

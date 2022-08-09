@@ -1,5 +1,5 @@
 import { SalesOrderSchema } from '@modules/sales-order/config/sales-order.config';
-import { UpdateSalesOrderDto } from '@modules/sales-order/dtos/update-sales-order.dto';
+import UpdateSalesOrder from '@modules/sales-order/dtos/update-sales-order.dto';
 import { SalesOrderItem } from '@modules/sales-order/entities/sales-order-item.entity';
 import { SalesOrder } from '@modules/sales-order/entities/sales-order.entity';
 import { NotFoundException } from '@nestjs/common';
@@ -7,7 +7,7 @@ import { BaseCommand, BaseCommandHandler, RequestHandler } from 'be-core';
 import { DataSource, Repository } from 'typeorm';
 
 export class UpdateSalesOrderCommand extends BaseCommand<SalesOrder> {
-    data: UpdateSalesOrderDto;
+    data: UpdateSalesOrder;
 }
 
 @RequestHandler(UpdateSalesOrderCommand)
@@ -49,6 +49,8 @@ export class UpdateSalesOrderCommandHanlder extends BaseCommandHandler<
         salesOrder.deliveryPartner = data.deliveryPartner;
         salesOrder.orderDiscountAmount = data.orderDiscountAmount ?? 0;
         salesOrder.note = data.note;
+        salesOrder.salesmanCode = data.salesmanCode;
+        salesOrder.salesmanName = data.salesmanName;
         salesOrder.changeDeliveryDate(data.deliveryDate);
         data.postingDate && salesOrder.changePostingDate(data.postingDate);
         salesOrder = this.updateBuild(salesOrder, command.session);

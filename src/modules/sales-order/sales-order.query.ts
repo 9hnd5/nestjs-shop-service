@@ -2,12 +2,14 @@ import { SalesOrderSchema } from '@modules/sales-order/config/sales-order.config
 import { GetByIdResponse } from '@modules/sales-order/dtos/get-by-id-response.dto';
 import { GetQuery } from '@modules/sales-order/dtos/get-query.dto';
 import { GetResponse } from '@modules/sales-order/dtos/get-response.dto';
+import SummaryQuery from '@modules/sales-order/dtos/summary-query.dto';
 import { CountStatus, SummaryResponse } from '@modules/sales-order/dtos/summary-response.dto';
 import { SalesOrder } from '@modules/sales-order/entities/sales-order.entity';
 import { SalesOrderService } from '@modules/sales-order/sales-order.service';
 import { Injectable } from '@nestjs/common';
 import { Paginated } from 'be-core';
 import { plainToInstance } from 'class-transformer';
+import { subDays } from 'date-fns';
 import { Brackets, DataSource, Repository } from 'typeorm';
 
 @Injectable()
@@ -18,8 +20,15 @@ export class SalesOrderQuery {
     }
 
     async get(query: GetQuery) {
-        const { pageIndex, pageSize, status, searchText, salesChannelCode, fromDate, toDate } =
-            query;
+        const {
+            pageIndex,
+            pageSize,
+            status,
+            searchText,
+            salesChannelCode,
+            fromDate = subDays(new Date(), 7),
+            toDate = new Date(),
+        } = query;
         let cond = this.salesOrderRepo
             .createQueryBuilder('s')
             .where('s.is_deleted = :isDeleted', { isDeleted: false })
@@ -86,10 +95,30 @@ export class SalesOrderQuery {
         return response;
     }
 
-    async getStatusSummary() {
-        const countStatus = await this.salesOrderRepo
+    async getStatusSummary(query: SummaryQuery) {
+        const { salesChannelCode, fromDate, toDate, salesmanCode } = query;
+        const condition = this.salesOrderRepo
             .createQueryBuilder('s')
-            .where('is_deleted = :isDeleted', { isDeleted: false })
+            .where('is_deleted = :isDeleted', { isDeleted: false });
+
+        if (salesChannelCode) {
+            condition.andWhere('sales_channel_code = :salesChannelCode', {
+                salesChannelCode,
+            });
+        }
+        if (salesmanCode) {
+            condition.andWhere('salesman_code = :salesmanCode', {
+                salesmanCode,
+            });
+        }
+        if (fromDate) {
+            condition.andWhere('posting_date >= :fromDate', { fromDate });
+        }
+        if (toDate) {
+            condition.andWhere('posting_date <= :toDate', { toDate });
+        }
+
+        const countStatus = await condition
             .groupBy('s.status')
             .select(['count(s.status) as count', 's.status as status'])
             .getRawMany<CountStatus>();

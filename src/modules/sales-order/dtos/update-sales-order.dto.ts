@@ -1,10 +1,10 @@
-import { AddSalesOrderDto } from '@modules/sales-order/dtos/add-sales-order.dto';
-import { UpdateSalesOrderItemDto } from '@modules/sales-order/dtos/update-sales-order-item.dto';
+import AddSalesOrder from '@modules/sales-order/dtos/add-sales-order.dto';
+import UpdateSalesOrderItem from '@modules/sales-order/dtos/update-sales-order-item.dto';
 import { OmitType } from '@nestjs/mapped-types';
 import { Type } from 'class-transformer';
 import { Allow, ArrayNotEmpty, ValidateNested } from 'class-validator';
 
-export class UpdateSalesOrderDto extends OmitType(AddSalesOrderDto, [
+export default class UpdateSalesOrder extends OmitType(AddSalesOrder, [
     'postingDate',
     'items',
     'isDraft',
@@ -20,6 +20,6 @@ export class UpdateSalesOrderDto extends OmitType(AddSalesOrderDto, [
 
     @ArrayNotEmpty()
     @ValidateNested()
-    @Type(() => UpdateSalesOrderItemDto)
-    items: UpdateSalesOrderItemDto[];
+    @Type(() => UpdateSalesOrderItem)
+    items: UpdateSalesOrderItem[];
 }

@@ -1,17 +1,8 @@
-import { QueryModel } from 'be-core';
 import { Exclude, Expose, Type } from 'class-transformer';
 import { Allow, IsDate, IsOptional } from 'class-validator';
 
 @Exclude()
-export class GetQuery extends QueryModel {
-    @Expose()
-    @Allow()
-    status?: string;
-
-    @Expose()
-    @Allow()
-    searchText?: string;
-
+export default class SummaryQuery {
     @Expose()
     @Allow()
     salesChannelCode?: string;
@@ -27,4 +18,8 @@ export class GetQuery extends QueryModel {
     @IsDate()
     @IsOptional()
     toDate?: Date;
+
+    @Expose()
+    @Allow()
+    salesmanCode?: string;
 }

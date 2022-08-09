@@ -1,7 +1,7 @@
-import { AddSalesOrderItemDto } from '@modules/sales-order/dtos/add-sales-order-item.dto';
+import AddSalesOrderItem from '@modules/sales-order/dtos/add-sales-order-item.dto';
 import { Allow } from 'class-validator';
 
-export class UpdateSalesOrderItemDto extends AddSalesOrderItemDto {
+export default class UpdateSalesOrderItem extends AddSalesOrderItem {
     @Allow()
     id?: number;
 }

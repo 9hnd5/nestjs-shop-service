@@ -1,7 +1,7 @@
 import { SalesOrder } from '@modules/sales-order/entities/sales-order.entity';
-import { EntitySchema } from 'typeorm';
-import { format } from 'date-fns';
 import { TenantBaseSchema } from 'be-core';
+import { format } from 'date-fns';
+import { EntitySchema } from 'typeorm';
 
 export const SalesOrderSchema = new EntitySchema<SalesOrder>({
     name: 'SalesOrder',
@@ -148,6 +148,17 @@ export const SalesOrderSchema = new EntitySchema<SalesOrder>({
             nullable: true,
             type: String,
             length: 500,
+        },
+        salesmanCode: {
+            name: 'salesman_code',
+            nullable: false,
+            type: Number,
+        },
+        salesmanName: {
+            name: 'salesman_name',
+            nullable: false,
+            type: String,
+            length: 255,
         },
         ...TenantBaseSchema,
     },

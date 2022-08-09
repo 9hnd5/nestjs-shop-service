@@ -1,8 +1,9 @@
 import { AddSalesOrderCommand } from '@modules/sales-order/commands/add-sales-order.command';
 import { UpdateSalesOrderCommand } from '@modules/sales-order/commands/update-sales-order.command';
-import { AddSalesOrderDto } from '@modules/sales-order/dtos/add-sales-order.dto';
+import AddSalesOrder from '@modules/sales-order/dtos/add-sales-order.dto';
 import { GetQuery } from '@modules/sales-order/dtos/get-query.dto';
-import { UpdateSalesOrderDto } from '@modules/sales-order/dtos/update-sales-order.dto';
+import SummaryQuery from '@modules/sales-order/dtos/summary-query.dto';
+import UpdateSalesOrder from '@modules/sales-order/dtos/update-sales-order.dto';
 import { SalesOrderQuery } from '@modules/sales-order/sales-order.query';
 import { Body, Controller, Get, Param, Post, Put, Query } from '@nestjs/common';
 import { Mediator } from 'be-core';
@@ -18,8 +19,8 @@ export class SalesOrderController {
     }
 
     @Get('/summary')
-    analyze() {
-        return this.salesOrderQuery.getStatusSummary();
+    analyze(@Query() query: SummaryQuery) {
+        return this.salesOrderQuery.getStatusSummary(query);
     }
 
     @Get(':id')
@@ -28,14 +29,14 @@ export class SalesOrderController {
     }
 
     @Post()
-    post(@Body() data: AddSalesOrderDto) {
+    post(@Body() data: AddSalesOrder) {
         const command = new AddSalesOrderCommand();
         command.data = data;
         return this.mediator.send(command);
     }
 
     @Put(':id')
-    put(@Param('id') id: number, @Body() data: UpdateSalesOrderDto) {
+    put(@Param('id') id: number, @Body() data: UpdateSalesOrder) {
         data.id = id;
         const command = new UpdateSalesOrderCommand();
         command.data = data;

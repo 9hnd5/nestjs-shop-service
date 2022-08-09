@@ -1,4 +1,4 @@
-import { AddSalesOrderDto } from '@modules/sales-order/dtos/add-sales-order.dto';
+import AddSalesOrder from '@modules/sales-order/dtos/add-sales-order.dto';
 import { SalesOrderItem } from '@modules/sales-order/entities/sales-order-item.entity';
 import { SalesOrder } from '@modules/sales-order/entities/sales-order.entity';
 import { InternalServerErrorException } from '@nestjs/common';
@@ -7,7 +7,7 @@ import { DataSource, QueryRunner } from 'typeorm';
 import { SalesOrderStatus } from '../enums/sales-order-status.enum';
 
 export class AddSalesOrderCommand extends BaseCommand<SalesOrder> {
-    data: AddSalesOrderDto;
+    data: AddSalesOrder;
 }
 
 @RequestHandler(AddSalesOrderCommand)
@@ -33,6 +33,8 @@ export class AddSalesOrderCommandHandler extends BaseCommandHandler<AddSalesOrde
             data.deliveryDate,
             data.deliveryPartner,
             data.postingDate,
+            data.salesmanCode,
+            data.salesmanName,
             data.customerId,
             data.customerName,
             data.phoneNumber,

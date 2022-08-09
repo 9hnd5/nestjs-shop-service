@@ -18,6 +18,8 @@ export class SalesOrder extends TenantBase {
         deliveryDate: Date,
         deliveryPartner: string,
         postingDate: Date,
+        salesmanCode: number,
+        salesmanName: string,
         customerId?: number,
         customerName?: string,
         phoneNumber?: string,
@@ -43,6 +45,8 @@ export class SalesOrder extends TenantBase {
         this.orderDiscountAmount = orderDiscountAmount ?? 0;
         this.status = status;
         this.paymentMethodName = paymentMethodName;
+        this.salesmanCode = salesmanCode;
+        this.salesmanName = salesmanName;
         this.note = note;
         if (this.isValidPostingDeliveryDate(postingDate, deliveryDate)) {
             this.postingDate = postingDate;
@@ -90,6 +94,8 @@ export class SalesOrder extends TenantBase {
     totalAmount: number;
     orderDiscountAmount: number;
     commission: number;
+    salesmanCode: number;
+    salesmanName: string;
     note?: string;
     get totalBeforeDiscount() {
         return this.items.reduce((value, current) => {

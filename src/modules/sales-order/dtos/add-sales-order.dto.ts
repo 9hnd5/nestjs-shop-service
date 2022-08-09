@@ -1,8 +1,8 @@
-import { AddSalesOrderItemDto } from '@modules/sales-order/dtos/add-sales-order-item.dto';
+import AddSalesOrderItem from '@modules/sales-order/dtos/add-sales-order-item.dto';
 import { Type } from 'class-transformer';
 import { Allow, ArrayNotEmpty, IsDate, IsNotEmpty, ValidateNested } from 'class-validator';
 
-export class AddSalesOrderDto {
+export default class AddSalesOrder {
     @Allow()
     customerId?: number;
 
@@ -14,6 +14,12 @@ export class AddSalesOrderDto {
 
     @Allow()
     address?: string;
+
+    @IsNotEmpty()
+    salesmanCode: number;
+
+    @IsNotEmpty()
+    salesmanName: string;
 
     @IsNotEmpty()
     contactPerson: string;
@@ -64,6 +70,6 @@ export class AddSalesOrderDto {
 
     @ArrayNotEmpty()
     @ValidateNested()
-    @Type(() => AddSalesOrderItemDto)
-    items: AddSalesOrderItemDto[];
+    @Type(() => AddSalesOrderItem)
+    items: AddSalesOrderItem[];
 }
