@@ -32,6 +32,10 @@ export class SalesOrderQuery {
         let cond = this.salesOrderRepo
             .createQueryBuilder('s')
             .where('s.is_deleted = :isDeleted', { isDeleted: false })
+            .orderBy({
+                's.modified_date': 'DESC',
+                's.posting_date': 'DESC',
+            })
             .andWhere('s.posting_date >= :fromDate', {
                 fromDate: fromDate.toISOString(),
             })
