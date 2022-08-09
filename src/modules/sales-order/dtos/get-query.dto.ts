@@ -1,9 +1,9 @@
-import { QueryModel } from 'be-core';
+import { QueryBase } from 'be-core';
 import { Exclude, Expose, Type } from 'class-transformer';
 import { Allow, IsDate, IsOptional } from 'class-validator';
 
 @Exclude()
-export class GetQuery extends QueryModel {
+export class GetQuery extends QueryBase {
     @Expose()
     @Allow()
     status?: string;

@@ -21,8 +21,8 @@ export class SalesOrderQuery {
 
     async get(query: GetQuery) {
         const {
-            pageIndex,
-            pageSize,
+            pageIndex = 1,
+            pageSize = 10,
             status,
             searchText,
             salesChannelCode,
