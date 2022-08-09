@@ -1,72 +1,121 @@
 import AddSalesOrderItem from '@modules/sales-order/dtos/add-sales-order-item.dto';
-import { Type } from 'class-transformer';
-import { Allow, ArrayNotEmpty, IsDate, IsNotEmpty, ValidateNested } from 'class-validator';
+import { Expose, Type } from 'class-transformer';
+import {
+    ArrayNotEmpty,
+    IsBoolean,
+    IsDate,
+    IsNotEmpty,
+    IsNumber,
+    IsOptional,
+    IsString,
+    ValidateNested,
+} from 'class-validator';
 
 export default class AddSalesOrder {
-    @Allow()
+    @Expose()
+    @IsNumber()
+    @IsOptional()
     customerId?: number;
 
-    @Allow()
+    @Expose()
+    @IsString()
+    @IsOptional()
     customerName?: string;
 
-    @Allow()
+    @Expose()
+    @IsString()
+    @IsOptional()
     phoneNumber?: string;
 
-    @Allow()
+    @Expose()
+    @IsString()
+    @IsOptional()
     address?: string;
 
+    @Expose()
     @IsNotEmpty()
+    @IsNumber()
     salesmanCode: number;
 
+    @Expose()
     @IsNotEmpty()
+    @IsString()
     salesmanName: string;
 
+    @Expose()
     @IsNotEmpty()
+    @IsString()
     contactPerson: string;
 
+    @Expose()
     @IsNotEmpty()
+    @IsString()
     contactNumber: string;
 
+    @Expose()
     @IsNotEmpty()
+    @IsString()
     shipAddress: string;
 
+    @Expose()
     @IsNotEmpty()
+    @IsString()
     salesChannelCode: string;
 
+    @Expose()
     @IsNotEmpty()
+    @IsString()
     salesChannelName: string;
 
+    @Expose()
     @IsNotEmpty()
+    @IsString()
     deliveryPartner: string;
 
+    @Expose()
     @Type(() => Date)
     @IsDate()
     deliveryDate: Date;
 
+    @Expose()
     @IsDate()
     @Type(() => Date)
     postingDate: Date;
 
+    @Expose()
     @IsNotEmpty()
+    @IsNumber()
     shippingFee: number;
 
+    @Expose()
     @IsNotEmpty()
+    @IsNumber()
     paymentMethodId: number;
 
+    @Expose()
     @IsNotEmpty()
+    @IsString()
     paymentMethodName: string;
 
-    @Allow()
+    @Expose()
+    @IsNumber()
+    @IsOptional()
     commission?: number;
 
-    @Allow()
+    @Expose()
+    @IsString()
+    @IsOptional()
     note?: string;
 
-    @Allow()
+    @Expose()
+    @IsNumber()
+    @IsOptional()
     orderDiscountAmount?: number;
 
-    @Allow()
-    isDraft: boolean;
+    @Expose()
+    @IsBoolean()
+    @IsOptional()
+    isDraft?: boolean;
 
     @ArrayNotEmpty()
     @ValidateNested()

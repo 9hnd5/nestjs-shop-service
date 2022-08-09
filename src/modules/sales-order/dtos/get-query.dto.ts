@@ -1,20 +1,27 @@
 import { QueryBase } from 'be-core';
-import { Exclude, Expose, Type } from 'class-transformer';
-import { Allow, IsDate, IsOptional } from 'class-validator';
+import { Expose, Type } from 'class-transformer';
+import { IsDate, IsNumber, IsOptional, IsString } from 'class-validator';
 
-@Exclude()
 export class GetQuery extends QueryBase {
     @Expose()
-    @Allow()
+    @IsString()
+    @IsOptional()
     status?: string;
 
     @Expose()
-    @Allow()
+    @IsString()
+    @IsOptional()
     searchText?: string;
 
     @Expose()
-    @Allow()
+    @IsString()
+    @IsOptional()
     salesChannelCode?: string;
+
+    @Expose()
+    @IsNumber()
+    @IsOptional()
+    salesmanCode?: number;
 
     @Expose()
     @Type(() => Date)

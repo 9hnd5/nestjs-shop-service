@@ -2,7 +2,7 @@ import AddSalesOrder from '@modules/sales-order/dtos/add-sales-order.dto';
 import UpdateSalesOrderItem from '@modules/sales-order/dtos/update-sales-order-item.dto';
 import { OmitType } from '@nestjs/mapped-types';
 import { Type } from 'class-transformer';
-import { Allow, ArrayNotEmpty, ValidateNested } from 'class-validator';
+import { ArrayNotEmpty, IsDate, IsNumber, IsOptional, ValidateNested } from 'class-validator';
 
 export default class UpdateSalesOrder extends OmitType(AddSalesOrder, [
     'postingDate',
@@ -11,11 +11,13 @@ export default class UpdateSalesOrder extends OmitType(AddSalesOrder, [
 ] as const) {
     id: number;
 
-    @Allow()
+    @IsNumber()
+    @IsOptional()
     code?: string;
 
     @Type(() => Date)
-    @Allow()
+    @IsDate()
+    @IsOptional()
     postingDate?: Date;
 
     @ArrayNotEmpty()

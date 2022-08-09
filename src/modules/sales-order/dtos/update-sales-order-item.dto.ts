@@ -1,7 +1,8 @@
 import AddSalesOrderItem from '@modules/sales-order/dtos/add-sales-order-item.dto';
-import { Allow } from 'class-validator';
+import { IsNumber, IsOptional } from 'class-validator';
 
 export default class UpdateSalesOrderItem extends AddSalesOrderItem {
-    @Allow()
+    @IsNumber()
+    @IsOptional()
     id?: number;
 }

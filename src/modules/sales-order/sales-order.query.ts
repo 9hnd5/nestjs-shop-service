@@ -21,36 +21,31 @@ export class SalesOrderQuery {
 
     async get(query: GetQuery) {
         const {
-            pageIndex = 1,
-            pageSize = 10,
+            pageIndex,
+            pageSize,
             status,
             searchText,
             salesChannelCode,
+            salesmanCode,
             fromDate = subDays(new Date(), 7),
             toDate = new Date(),
         } = query;
-        let cond = this.salesOrderRepo
+        const condition = this.salesOrderRepo
             .createQueryBuilder('s')
             .where('s.is_deleted = :isDeleted', { isDeleted: false })
-            .orderBy({
-                's.modified_date': 'DESC',
-                's.posting_date': 'DESC',
-            })
             .andWhere('s.posting_date >= :fromDate', {
                 fromDate: fromDate.toISOString(),
             })
-            .andWhere('s.posting_date <= :toDate', { toDate: toDate.toISOString() })
-            .take(pageSize)
-            .skip(pageSize * (pageIndex - 1));
+            .andWhere('s.posting_date <= :toDate', { toDate: toDate.toISOString() });
 
         if (status) {
-            cond = cond.andWhere('s.status = :status', { status });
+            condition.andWhere('s.status = :status', { status });
         }
         if (salesChannelCode) {
-            cond = cond.andWhere('s.sales_channel_code = :salesChannelCode', { salesChannelCode });
+            condition.andWhere('s.sales_channel_code = :salesChannelCode', { salesChannelCode });
         }
         if (searchText) {
-            cond = cond.andWhere(
+            condition.andWhere(
                 new Brackets((qb) => {
                     qb.where('s.code = :searchCode', { searchCode: searchText }).orWhere(
                         's.customer_name like :searchText',
@@ -59,7 +54,18 @@ export class SalesOrderQuery {
                 })
             );
         }
-        const [dataSource, totalRow] = await cond.getManyAndCount();
+        if (salesmanCode) {
+            condition.andWhere('s.salesman_code= :salesmanCode', { salesmanCode });
+        }
+        const [dataSource, totalRow] = await condition
+            .orderBy({
+                's.modified_date': 'DESC',
+                's.posting_date': 'DESC',
+            })
+            .take(pageSize)
+            .skip(pageSize * (pageIndex - 1))
+            .getManyAndCount();
+
         const result = plainToInstance(GetResponse, dataSource, { excludeExtraneousValues: true });
         const response: Paginated<GetResponse> = {
             pageIndex,
