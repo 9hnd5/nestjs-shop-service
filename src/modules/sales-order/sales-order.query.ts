@@ -141,6 +141,6 @@ export class SalesOrderQuery {
         result.countStatus = countStatus;
         result.total = total;
 
-        return condition.getQueryAndParameters();
+        return result;
     }
 }
