@@ -34,8 +34,8 @@ export default class AddSalesOrder {
 
     @Expose()
     @IsNotEmpty()
-    @IsNumber()
-    salesmanCode: number;
+    @IsString()
+    salesmanCode: string;
 
     @Expose()
     @IsNotEmpty()

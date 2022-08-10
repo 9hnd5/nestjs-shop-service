@@ -19,7 +19,7 @@ export class SalesOrder extends TenantBase {
         deliveryDate: Date,
         deliveryPartner: string,
         postingDate: Date,
-        salesmanCode: number,
+        salesmanCode: string,
         salesmanName: string,
         customerId?: number,
         customerName?: string,
@@ -97,7 +97,7 @@ export class SalesOrder extends TenantBase {
     totalAmount: number;
     orderDiscountAmount: number;
     commission: number;
-    salesmanCode: number;
+    salesmanCode: string;
     salesmanName: string;
     note?: string;
 

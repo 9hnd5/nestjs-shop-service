@@ -9,7 +9,6 @@ import { SalesOrderService } from '@modules/sales-order/sales-order.service';
 import { Injectable } from '@nestjs/common';
 import { Paginated } from 'be-core';
 import { plainToInstance } from 'class-transformer';
-import { subDays } from 'date-fns';
 import { Brackets, DataSource, Repository } from 'typeorm';
 
 @Injectable()
@@ -27,17 +26,21 @@ export class SalesOrderQuery {
             searchText,
             salesChannelCode,
             salesmanCode,
-            fromDate = subDays(new Date(), 7),
-            toDate = new Date(),
+            fromDate,
+            toDate,
         } = query;
         const condition = this.salesOrderRepo
             .createQueryBuilder('s')
-            .where('s.is_deleted = :isDeleted', { isDeleted: false })
-            .andWhere('s.posting_date >= :fromDate', {
-                fromDate: fromDate.toISOString(),
-            })
-            .andWhere('s.posting_date <= :toDate', { toDate: toDate.toISOString() });
+            .where('s.is_deleted = :isDeleted', { isDeleted: false });
 
+        if (fromDate) {
+            condition.andWhere('s.posting_date >= :fromDate', {
+                fromDate,
+            });
+        }
+        if (toDate) {
+            condition.andWhere('s.posting_date <= :toDate', { toDate });
+        }
         if (status) {
             condition.andWhere('s.status = :status', { status });
         }
@@ -128,16 +131,16 @@ export class SalesOrderQuery {
             condition.andWhere('posting_date <= :toDate', { toDate });
         }
 
+        const total = await condition.getCount();
         const countStatus = await condition
             .groupBy('s.status')
             .select(['count(s.status) as count', 's.status as status'])
             .getRawMany<CountStatus>();
 
-        const total = await this.salesOrderRepo.count({ where: { isDeleted: false } });
         const result = new SummaryResponse();
         result.countStatus = countStatus;
         result.total = total;
 
-        return result;
+        return condition.getQueryAndParameters();
     }
 }

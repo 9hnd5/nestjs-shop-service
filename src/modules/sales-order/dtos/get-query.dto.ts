@@ -1,6 +1,6 @@
 import { QueryBase } from 'be-core';
 import { Expose, Type } from 'class-transformer';
-import { IsDate, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsDate, IsOptional, IsString } from 'class-validator';
 
 export class GetQuery extends QueryBase {
     @Expose()
@@ -19,9 +19,9 @@ export class GetQuery extends QueryBase {
     salesChannelCode?: string;
 
     @Expose()
-    @IsNumber()
+    @IsString()
     @IsOptional()
-    salesmanCode?: number;
+    salesmanCode?: string;
 
     @Expose()
     @Type(() => Date)

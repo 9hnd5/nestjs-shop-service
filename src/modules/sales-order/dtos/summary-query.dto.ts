@@ -1,5 +1,5 @@
 import { Exclude, Expose, Type } from 'class-transformer';
-import { IsDate, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsDate, IsOptional, IsString } from 'class-validator';
 
 @Exclude()
 export default class SummaryQuery {
@@ -9,9 +9,9 @@ export default class SummaryQuery {
     salesChannelCode?: string;
 
     @Expose()
-    @IsNumber()
+    @IsString()
     @IsOptional()
-    salesmanCode?: number;
+    salesmanCode?: string;
 
     @Expose()
     @Type(() => Date)

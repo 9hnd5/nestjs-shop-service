@@ -153,7 +153,8 @@ export const SalesOrderSchema = new EntitySchema<SalesOrder>({
         salesmanCode: {
             name: 'salesman_code',
             nullable: false,
-            type: Number,
+            type: String,
+            length: 50,
         },
         salesmanName: {
             name: 'salesman_name',
