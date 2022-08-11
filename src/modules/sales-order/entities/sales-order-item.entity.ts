@@ -1,6 +1,5 @@
 import { SalesOrderProps } from '@modules/sales-order/entities/sales-order.entity';
-import { DeepMutable } from '@modules/shared/shared.type';
-import { TenantBase } from 'be-core';
+import { TenantBase, DeepMutable } from 'be-core';
 
 export class SalesOrderItemProps extends TenantBase {
     readonly id: number;

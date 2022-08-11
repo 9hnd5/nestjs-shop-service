@@ -4,8 +4,7 @@ import {
 } from '@modules/sales-order/entities/sales-order-item.entity';
 import { PaymentStatus } from '@modules/sales-order/enums/payment-status.enum';
 import { SalesOrderStatus } from '@modules/sales-order/enums/sales-order-status.enum';
-import { DeepMutable } from '@modules/shared/shared.type';
-import { BusinessException, TenantBase } from 'be-core';
+import { BusinessException, TenantBase, DeepMutable } from 'be-core';
 import { isAfter } from 'date-fns';
 import { isArray, remove } from 'lodash';
 
