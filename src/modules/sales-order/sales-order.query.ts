@@ -2,7 +2,11 @@ import { GetByIdResponse } from '@modules/sales-order/dtos/get-by-id-response.dt
 import { GetQuery } from '@modules/sales-order/dtos/get-query.dto';
 import { GetResponse } from '@modules/sales-order/dtos/get-response.dto';
 import SummaryQuery from '@modules/sales-order/dtos/summary-query.dto';
-import { CountStatus, SummaryResponse } from '@modules/sales-order/dtos/summary-response.dto';
+import {
+    CountStatus,
+    PaymentStatus,
+    SummaryResponse,
+} from '@modules/sales-order/dtos/summary-response.dto';
 import SalesOrderRepo from '@modules/sales-order/sales-order.repo';
 import { SalesOrderService } from '@modules/sales-order/sales-order.service';
 import { Injectable } from '@nestjs/common';
@@ -141,9 +145,16 @@ export class SalesOrderQuery {
             .select(['count(s.status) as count', 's.status as status'])
             .getRawMany<CountStatus>();
 
+        const paymentStatus = await this.salesOrderRepo.repository
+            .createQueryBuilder('s')
+            .groupBy('s.paymentStatus')
+            .select(['count(s.paymentStatus) as count', 's.paymentStatus as status'])
+            .getRawMany<PaymentStatus>();
+
         const result = new SummaryResponse();
         result.countStatus = countStatus;
         result.total = total;
+        result.paymentStatus = paymentStatus;
 
         return result;
     }

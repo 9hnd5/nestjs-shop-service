@@ -1,6 +1,5 @@
 import { Exclude, Expose, Transform } from 'class-transformer';
 
-@Exclude()
 export class CountStatus {
     @Expose()
     status: string;
@@ -10,10 +9,18 @@ export class CountStatus {
     count: number;
 }
 
+export class PaymentStatus {
+    count: number;
+    status: string;
+}
+
 @Exclude()
 export class SummaryResponse {
     @Expose()
     total: number;
+
+    @Expose()
+    paymentStatus: PaymentStatus[];
 
     @Expose()
     countStatus: CountStatus[];
