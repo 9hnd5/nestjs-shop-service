@@ -1,6 +1,7 @@
+import { PaymentStatus } from '@modules/sales-order/enums/payment-status.enum';
 import { QueryBase } from 'be-core';
 import { Expose, Type } from 'class-transformer';
-import { IsDate, IsOptional, IsString } from 'class-validator';
+import { IsDate, IsEnum, IsOptional, IsString } from 'class-validator';
 
 export class GetQuery extends QueryBase {
     @Expose()
@@ -34,4 +35,9 @@ export class GetQuery extends QueryBase {
     @IsDate()
     @IsOptional()
     toDate?: Date;
+
+    @Expose()
+    @IsEnum(PaymentStatus)
+    @IsOptional()
+    paymentStatus?: string;
 }

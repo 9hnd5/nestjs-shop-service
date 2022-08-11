@@ -34,7 +34,7 @@
         "@nestjs/platform-express": "^9.0.7",
         "@nestjs/typeorm": "^9.0.0",
         "@types/ioredis": "^4.28.10",
-        "be-core": "^1.1.2",
+        "be-core": "^1.1.3",
         "class-transformer": "^0.5.1",
         "class-validator": "^0.13.2",
         "date-fns": "^2.29.1",

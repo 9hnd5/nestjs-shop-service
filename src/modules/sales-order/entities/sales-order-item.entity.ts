@@ -1,60 +1,69 @@
-import { SalesOrder } from '@modules/sales-order/entities/sales-order.entity';
+import { SalesOrderProps } from '@modules/sales-order/entities/sales-order.entity';
+import { DeepMutable } from '@modules/shared/shared.type';
 import { TenantBase } from 'be-core';
 
-export class SalesOrderItem extends TenantBase {
-    constructor(itemId: number, uomId: number, unitPrice: number, quantity: number, tax?: number) {
-        super();
-        this.itemId = itemId;
-        this.uomId = uomId;
-        this.unitPrice = unitPrice;
-        this.quantity = quantity;
-        this.tax = tax ?? 0;
-        this.lineTotal = this.quantity * this.unitPrice;
-        this.discountAmount = 0;
+export class SalesOrderItemProps extends TenantBase {
+    readonly id: number;
+    readonly orderId: number;
+    readonly itemId: number;
+    readonly uomId: number;
+    readonly tax: number;
+    readonly percentageDiscount: number;
+    readonly discountAmount: number;
+    readonly unitPrice: number;
+    readonly quantity: number;
+    readonly lineTotal: number;
+    readonly order: SalesOrderProps;
+    readonly itemType?: number;
+}
+type AddProps = Pick<
+    DeepMutable<SalesOrderItemProps>,
+    'itemId' | 'uomId' | 'unitPrice' | 'quantity' | 'tax'
+>;
+
+type UpdateProps = Omit<AddProps, 'tax'>;
+export class SalesOrderItem {
+    private props: DeepMutable<SalesOrderItemProps>;
+    constructor(props: DeepMutable<SalesOrderItemProps | AddProps>) {
+        if ('id' in props) {
+            this.props = props;
+        } else {
+            this.props = { ...this.props, ...props };
+        }
     }
 
-    id: number;
-    orderId: number;
-    itemId: number;
-    itemType?: number;
-    uomId: number;
-    tax: number;
-    percentageDiscount: number;
-    discountAmount: number;
-
-    private _unitPrice: number;
-    get unitPrice() {
-        return this._unitPrice;
-    }
-    private set unitPrice(unitPrice: number) {
-        this._unitPrice = unitPrice;
-        this._lineTotal = this._quantity * this._unitPrice;
-    }
-    changeUnitPrice(unitPrice: number) {
-        this._unitPrice = unitPrice;
-        this._lineTotal = this._quantity * this._unitPrice;
+    get id() {
+        return this.props.id;
     }
 
-    private _quantity: number;
-    get quantity() {
-        return this._quantity;
+    get entity() {
+        return this.props;
     }
-    private set quantity(quantity: number) {
-        this._quantity = quantity;
-        this._lineTotal = this._quantity * this._unitPrice;
+    set itemId(value: number) {
+        this.props.itemId = value;
     }
-    changeQuantity(quantity: number) {
-        this._quantity = quantity;
-        this._lineTotal = this._quantity * this._unitPrice;
+    set uomId(value: number) {
+        this.props.uomId = value;
     }
 
-    private _lineTotal: number;
-    get lineTotal() {
-        return this._lineTotal;
-    }
-    private set lineTotal(value: number) {
-        this._lineTotal = value;
+    update(data: UpdateProps) {
+        this.itemId = data.itemId;
+        this.uomId = data.uomId;
+        this.props.quantity = data.quantity;
+        this.props.unitPrice = data.unitPrice;
+        this.props.lineTotal = data.quantity * data.unitPrice;
     }
 
-    readonly order: SalesOrder;
+    static create(props: AddProps) {
+        return new SalesOrderItem({
+            ...props,
+            discountAmount: 0,
+            createdDate: new Date(),
+            createdBy: 0,
+            lineTotal: props.quantity * props.unitPrice,
+        });
+    }
+    static createFromPersistence(props: SalesOrderItemProps) {
+        return new SalesOrderItem(props);
+    }
 }

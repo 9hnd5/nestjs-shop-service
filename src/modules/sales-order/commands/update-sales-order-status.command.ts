@@ -1,8 +1,7 @@
-import { SalesOrderSchema } from '@modules/sales-order/config/sales-order.config';
 import { SalesOrder } from '@modules/sales-order/entities/sales-order.entity';
-import { BaseCommand, BaseCommandHandler, RequestHandler } from 'be-core';
+import SalesOrderRepo from '@modules/sales-order/sales-order.repo';
 import { NotFoundException } from '@nestjs/common';
-import { DataSource, Repository } from 'typeorm';
+import { BaseCommand, BaseCommandHandler, RequestHandler } from 'be-core';
 import { SalesOrderStatus } from '../enums/sales-order-status.enum';
 
 export class UpdateSalesOrderStatusCommand extends BaseCommand<SalesOrder> {
@@ -15,14 +14,12 @@ export class UpdateSalesOrderStatusCommandHanlder extends BaseCommandHandler<
     UpdateSalesOrderStatusCommand,
     any
 > {
-    private salesOrderRepo: Repository<SalesOrder>;
-    constructor(dataSource: DataSource) {
+    constructor(private salesOrderRepo: SalesOrderRepo) {
         super();
-        this.salesOrderRepo = dataSource.getRepository<SalesOrder>(SalesOrderSchema);
     }
     async apply(command: UpdateSalesOrderStatusCommand) {
         const { id, status } = command;
-        let salesOrder = await this.salesOrderRepo.findOne({
+        const salesOrder = await this.salesOrderRepo.repository.findOne({
             where: { id },
             relations: {
                 items: true,
@@ -59,9 +56,7 @@ export class UpdateSalesOrderStatusCommandHanlder extends BaseCommandHandler<
                 break;
         }
 
-        salesOrder = this.updateBuild(salesOrder, command.session);
-
-        const result = await this.salesOrderRepo.save(salesOrder);
-        return result.id;
+        const result = await this.salesOrderRepo.repository.save(salesOrder);
+        return result.entity.id;
     }
 }

@@ -1,151 +1,141 @@
-import { SalesOrderItem } from '@modules/sales-order/entities/sales-order-item.entity';
+import {
+    SalesOrderItem,
+    SalesOrderItemProps,
+} from '@modules/sales-order/entities/sales-order-item.entity';
 import { PaymentStatus } from '@modules/sales-order/enums/payment-status.enum';
 import { SalesOrderStatus } from '@modules/sales-order/enums/sales-order-status.enum';
+import { DeepMutable } from '@modules/shared/shared.type';
 import { BusinessException, TenantBase } from 'be-core';
 import { isAfter } from 'date-fns';
 import { isArray, remove } from 'lodash';
 
-export class SalesOrder extends TenantBase {
-    constructor(
-        status: string,
-        contactPerson: string,
-        contactNumber: string,
-        shipAddress: string,
-        shippingFee: number,
-        paymentMethodId: number,
-        paymentMethodName: string,
-        salesChannelCode: string,
-        salesChannelName: string,
-        deliveryDate: Date,
-        deliveryPartner: string,
-        postingDate: Date,
-        salesmanCode: string,
-        salesmanName: string,
-        customerId?: number,
-        customerName?: string,
-        phoneNumber?: string,
-        address?: string,
-        commission?: number,
-        orderDiscountAmount?: number,
-        note?: string
-    ) {
-        super();
-        this.customerId = customerId;
-        this.customerName = customerName;
-        this.phoneNumber = phoneNumber;
-        this.address = address;
-        this.contactPerson = contactPerson;
-        this.contactNumber = contactNumber;
-        this.salesChannelCode = salesChannelCode;
-        this.salesChannelName = salesChannelName;
-        this.shipAddress = shipAddress;
-        this.deliveryPartner = deliveryPartner;
-        this.commission = commission ?? 0;
-        this.shippingFee = shippingFee;
-        this.paymentMethodId = paymentMethodId;
-        this.orderDiscountAmount = orderDiscountAmount ?? 0;
-        this.status = status;
-        this.paymentMethodName = paymentMethodName;
-        this.salesmanCode = salesmanCode;
-        this.salesmanName = salesmanName;
-        this.note = note;
-        this.paymentStatus = PaymentStatus.Unpaid;
-        if (this.isValidPostingDeliveryDate(postingDate, deliveryDate)) {
-            this.postingDate = postingDate;
-            this.deliveryDate = deliveryDate;
+export class SalesOrderProps extends TenantBase {
+    readonly id: number;
+    readonly code: string;
+    readonly deliveryDate: Date;
+    readonly status: string;
+    readonly postingDate: Date;
+    readonly contactPerson: string;
+    readonly contactNumber: string;
+    readonly shipAddress: string;
+    readonly salesChannelCode: string;
+    readonly salesChannelName: string;
+    readonly deliveryPartner: string;
+    readonly shippingFee: number;
+    readonly paymentMethodId: number;
+    readonly paymentMethodName: string;
+    readonly totalAmount: number;
+    readonly orderDiscountAmount: number;
+    readonly commission: number;
+    readonly salesmanCode: string;
+    readonly salesmanName: string;
+    readonly paymentStatus: PaymentStatus;
+    readonly items: SalesOrderItemProps[];
+    readonly customerId?: number;
+    readonly customerName?: string;
+    readonly phoneNumber?: string;
+    readonly address?: string;
+    readonly note?: string;
+}
+type AddProps = Omit<
+    DeepMutable<SalesOrderProps>,
+    | 'paymentStatus'
+    | 'items'
+    | 'code'
+    | 'id'
+    | 'totalAmount'
+    | 'createdDate'
+    | 'createdBy'
+    | 'modifiedDate'
+    | 'modifiedBy'
+    | 'companyId'
+    | 'isDeleted'
+>;
+type UpdateProps = Omit<AddProps, 'status' | 'postingDate'>;
+
+export class SalesOrder {
+    private props: DeepMutable<SalesOrderProps>;
+
+    private constructor(props: DeepMutable<AddProps> | DeepMutable<SalesOrderProps>) {
+        if ('id' in props) {
+            this.props = props;
+        } else {
+            this.props = { ...this.props, ...props };
         }
     }
 
-    id: number;
-    code?: string;
-    private _deliveryDate: Date;
-    get deliveryDate() {
-        return this._deliveryDate;
-    }
-    private set deliveryDate(value) {
-        this._deliveryDate = value;
-    }
-    private _status: string;
-    get status() {
-        return this._status;
-    }
-    private set status(value) {
-        this._status = value;
+    get id() {
+        return this.props.id;
     }
 
-    private _postingDate: Date;
-    get postingDate() {
-        return this._postingDate;
+    get entity() {
+        return this.props;
     }
-    private set postingDate(value) {
-        this._postingDate = value;
-    }
-    address?: string;
-    contactPerson: string;
-    contactNumber: string;
-    shipAddress: string;
-    customerId?: number;
-    customerName?: string;
-    phoneNumber?: string;
-    salesChannelCode: string;
-    salesChannelName: string;
-
-    deliveryPartner: string;
-    shippingFee: number;
-    paymentMethodId: number;
-    paymentMethodName: string;
-    totalAmount: number;
-    orderDiscountAmount: number;
-    commission: number;
-    salesmanCode: string;
-    salesmanName: string;
-    note?: string;
-
-    _paymentStatus: PaymentStatus;
-    get paymentStatus() {
-        return this._paymentStatus;
-    }
-    private set paymentStatus(value) {
-        this._paymentStatus = value;
-    }
-
     get totalBeforeDiscount() {
-        return this.items.reduce((value, current) => {
+        return this.props.items.reduce((value, current) => {
             return value + current.quantity * current.unitPrice;
         }, 0);
     }
     get totalLineDiscount() {
-        return this.items.reduce((value, current) => {
+        return this.props.items.reduce((value, current) => {
             return value + current.discountAmount;
         }, 0);
     }
     get tax() {
-        return this.items.reduce((value, current) => {
+        return this.props.items.reduce((value, current) => {
             return value + current.tax;
         }, 0);
     }
-    items: SalesOrderItem[];
+    get items() {
+        return this.props.items.map((x) => new SalesOrderItem(x));
+    }
+
+    set code(value: string) {
+        this.props.code = value;
+    }
+
+    static create(props: AddProps) {
+        return new SalesOrder({
+            ...props,
+            createdDate: new Date(),
+            createdBy: 0,
+            paymentStatus: PaymentStatus.Unpaid,
+        });
+    }
+
+    static createFromPersistence(props: SalesOrderProps) {
+        return new SalesOrder(props);
+    }
+
+    update(data: UpdateProps) {
+        if (isAfter(this.props.postingDate, data.deliveryDate)) {
+            throw new BusinessException('Posting Date is not allow before Delivery Date');
+        }
+        this.props = { ...this.props, ...data };
+    }
 
     addItem(item: SalesOrderItem) {
-        this.initItems();
-        this.items.push(item);
-        this.calcTotalAmount();
+        if (!isArray(this.props.items)) {
+            this.props.items = [];
+        }
+        this.props.items.push(item.entity);
+        this.#calcTotalAmount();
+    }
+
+    updateItem(id: number, item: SalesOrderItem) {
+        const index = this.props.items.findIndex((x) => x.id === id);
+        if (index >= 0) {
+            this.props.items[index] = item.entity;
+        }
+        this.#calcTotalAmount();
     }
 
     removeItem(id: number) {
-        this.initItems();
-        remove(this.items, (x) => x.id === id);
-        this.calcTotalAmount();
-    }
-
-    calcTotalAmount() {
-        this.totalAmount =
-            this.totalBeforeDiscount -
-            this.totalLineDiscount -
-            this.orderDiscountAmount -
-            this.commission +
-            this.tax +
-            this.shippingFee;
+        if (!isArray(this.props.items)) {
+            this.props.items = [];
+        }
+        remove(this.props.items, (x) => x.id === id);
+        this.#calcTotalAmount();
     }
 
     generateCode(orderId: number) {
@@ -158,111 +148,101 @@ export class SalesOrder extends TenantBase {
         );
     }
 
-    private initItems() {
-        if (!isArray(this.items)) {
-            this.items = [];
-        }
-    }
-
-    changeDeliveryDate(deliveryDate: Date) {
-        // if (this.status !== SalesOrderStatus.Draft) {
-        //     throw new BusinessException(
-        //         "Can't change the Delivery Date because its status is not draft"
-        //     );
-        // }
-        if (this.isValidPostingDeliveryDate(this.postingDate, deliveryDate))
-            this._deliveryDate = deliveryDate;
-    }
-
     changeStatusToNew(newStatus: string) {
-        const oldStatus = this.status;
+        const oldStatus = this.props.status;
         if (oldStatus == SalesOrderStatus.Draft && newStatus == SalesOrderStatus.New) {
-            this.status = newStatus;
+            this.props.status = newStatus;
         } else {
             throw new BusinessException('Status Invalid');
         }
     }
 
     changeStatusToConfirmed(newStatus: string) {
-        const oldStatus = this.status;
+        const oldStatus = this.props.status;
         if (oldStatus == SalesOrderStatus.New && newStatus == SalesOrderStatus.Confirmed) {
-            this.status = newStatus;
+            this.props.status = newStatus;
         } else {
             throw new BusinessException('Status Invalid');
         }
     }
 
     changeStatusToCanceled(newStatus: string) {
-        const oldStatus = this.status;
+        const oldStatus = this.props.status;
         if (
             (oldStatus == SalesOrderStatus.Draft && newStatus == SalesOrderStatus.Canceled) ||
             (oldStatus == SalesOrderStatus.New && newStatus == SalesOrderStatus.Canceled)
         ) {
-            this.status = newStatus;
+            this.props.status = newStatus;
         } else {
             throw new BusinessException('Status Invalid');
         }
     }
 
     changeStatusToOrderPreparation(newStatus: string) {
-        const oldStatus = this.status;
+        const oldStatus = this.props.status;
         if (
             oldStatus == SalesOrderStatus.Confirmed &&
             newStatus == SalesOrderStatus.OrderPreparation
         ) {
-            this.status = newStatus;
+            this.props.status = newStatus;
         } else {
             throw new BusinessException('Status Invalid');
         }
     }
 
     changeStatusToWaitingDelivery(newStatus: string) {
-        const oldStatus = this.status;
+        const oldStatus = this.props.status;
         if (
             oldStatus == SalesOrderStatus.OrderPreparation &&
             newStatus == SalesOrderStatus.WaitingDelivery
         ) {
-            this.status = newStatus;
+            this.props.status = newStatus;
         } else {
             throw new BusinessException('Status Invalid');
         }
     }
 
     changeStatusToDeliveried(newStatus: string) {
-        const oldStatus = this.status;
+        const oldStatus = this.props.status;
         if (
             oldStatus == SalesOrderStatus.WaitingDelivery &&
             newStatus == SalesOrderStatus.Delivered
         ) {
-            this.status = newStatus;
+            this.props.status = newStatus;
         } else {
             throw new BusinessException('Status Invalid');
         }
     }
 
     changeStatusToReturned(newStatus: string) {
-        const oldStatus = this.status;
+        const oldStatus = this.props.status;
         if (oldStatus == SalesOrderStatus.Delivered && newStatus == SalesOrderStatus.Returned) {
-            this.status = newStatus;
+            this.props.status = newStatus;
         } else {
             throw new BusinessException('Status Invalid');
         }
     }
 
     changePostingDate(postingDate: Date) {
-        if (this.status !== SalesOrderStatus.Draft) {
+        if (this.props.status !== SalesOrderStatus.Draft) {
             throw new BusinessException(
                 "Can't change the Posting Date because its status is not draft"
             );
         }
-        if (this.isValidPostingDeliveryDate(postingDate, this.deliveryDate))
-            this._postingDate = postingDate;
-    }
 
-    private isValidPostingDeliveryDate(postingDate: Date, deliveryDate: Date) {
-        if (isAfter(postingDate, deliveryDate)) {
+        if (isAfter(postingDate, this.props.deliveryDate)) {
             throw new BusinessException('Posting Date is not allow before Delivery Date');
         }
-        return true;
+        this.props.postingDate = postingDate;
+    }
+
+    #calcTotalAmount() {
+        this.props.totalAmount =
+            this.totalBeforeDiscount -
+            this.totalLineDiscount -
+            this.props.orderDiscountAmount -
+            this.props.commission +
+            this.tax +
+            this.props.shippingFee;
     }
 }

@@ -1,13 +1,13 @@
-import { SalesOrder } from '@modules/sales-order/entities/sales-order.entity';
+import { SalesOrderProps } from '@modules/sales-order/entities/sales-order.entity';
 import { PaymentStatus } from '@modules/sales-order/enums/payment-status.enum';
 import { TenantBaseSchema } from 'be-core';
 import { format } from 'date-fns';
 import { EntitySchema } from 'typeorm';
 
-export const SalesOrderSchema = new EntitySchema<SalesOrder>({
-    name: 'SalesOrder',
+export const SalesOrderSchema = new EntitySchema<SalesOrderProps>({
+    name: 'SalesOrderProps',
     tableName: 'sales_order',
-    target: SalesOrder,
+    target: SalesOrderProps,
     columns: {
         id: {
             name: 'id',
@@ -173,7 +173,7 @@ export const SalesOrderSchema = new EntitySchema<SalesOrder>({
     relations: {
         items: {
             type: 'one-to-many',
-            target: 'SalesOrderItem',
+            target: 'SalesOrderItemProps',
             cascade: true,
             inverseSide: 'order',
         },

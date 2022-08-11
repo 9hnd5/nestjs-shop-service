@@ -1,11 +1,11 @@
-import { SalesOrderItem } from '@modules/sales-order/entities/sales-order-item.entity';
+import { SalesOrderItemProps } from '@modules/sales-order/entities/sales-order-item.entity';
 import { EntitySchema } from 'typeorm';
 import { TenantBaseSchema } from 'be-core';
 
-export const SalesOrderItemSchema = new EntitySchema<SalesOrderItem>({
-    name: 'SalesOrderItem',
+export const SalesOrderItemSchema = new EntitySchema<SalesOrderItemProps>({
+    name: 'SalesOrderItemProps',
     tableName: 'sales_order_item',
-    target: SalesOrderItem,
+    target: SalesOrderItemProps,
     columns: {
         id: {
             type: Number,
@@ -65,7 +65,7 @@ export const SalesOrderItemSchema = new EntitySchema<SalesOrderItem>({
     },
     relations: {
         order: {
-            target: 'SalesOrder',
+            target: 'SalesOrderProps',
             type: 'many-to-one',
             onDelete: 'CASCADE',
             orphanedRowAction: 'delete',

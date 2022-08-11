@@ -1,6 +1,7 @@
 import AddSalesOrder from '@modules/sales-order/dtos/add-sales-order.dto';
 import { SalesOrderItem } from '@modules/sales-order/entities/sales-order-item.entity';
 import { SalesOrder } from '@modules/sales-order/entities/sales-order.entity';
+import SalesOrderRepo from '@modules/sales-order/sales-order.repo';
 import { InternalServerErrorException } from '@nestjs/common';
 import { BaseCommand, BaseCommandHandler, RequestHandler } from 'be-core';
 import { DataSource, QueryRunner } from 'typeorm';
@@ -13,56 +14,55 @@ export class AddSalesOrderCommand extends BaseCommand<SalesOrder> {
 @RequestHandler(AddSalesOrderCommand)
 export class AddSalesOrderCommandHandler extends BaseCommandHandler<AddSalesOrderCommand, any> {
     private queryRunner: QueryRunner;
-    constructor(dataSource: DataSource) {
+    constructor(dataSource: DataSource, private salesOrderRepo: SalesOrderRepo) {
         super();
         this.queryRunner = dataSource.createQueryRunner();
     }
     async apply(command: AddSalesOrderCommand) {
         const { data } = command;
         const status = data.isDraft ? SalesOrderStatus.Draft : SalesOrderStatus.New;
-        let order = new SalesOrder(
+        const order = SalesOrder.create({
             status,
-            data.contactPerson,
-            data.contactNumber,
-            data.shipAddress,
-            data.shippingFee,
-            data.paymentMethodId,
-            data.paymentMethodName,
-            data.salesChannelCode,
-            data.salesChannelName,
-            data.deliveryDate,
-            data.deliveryPartner,
-            data.postingDate,
-            data.salesmanCode,
-            data.salesmanName,
-            data.customerId,
-            data.customerName,
-            data.phoneNumber,
-            data.address,
-            data.commission,
-            data.orderDiscountAmount,
-            data.note
-        );
+            contactPerson: data.contactPerson,
+            contactNumber: data.contactNumber,
+            shipAddress: data.shipAddress,
+            salesChannelCode: data.salesChannelCode,
+            salesChannelName: data.salesChannelName,
+            commission: data.commission ?? 0,
+            shippingFee: data.shippingFee,
+            paymentMethodId: data.paymentMethodId,
+            paymentMethodName: data.paymentMethodName,
+            customerId: data.customerId,
+            customerName: data.customerName,
+            phoneNumber: data.phoneNumber,
+            address: data.address,
+            deliveryPartner: data.deliveryPartner,
+            orderDiscountAmount: data.orderDiscountAmount ?? 0,
+            note: data.note,
+            salesmanCode: data.salesmanCode,
+            salesmanName: data.salesmanName,
+            postingDate: data.postingDate,
+            deliveryDate: data.deliveryDate,
+        });
         try {
             this.queryRunner.connect();
             this.queryRunner.startTransaction();
+            const repo = this.queryRunner.manager.withRepository(this.salesOrderRepo.repository);
 
             for (const item of data.items) {
-                let newItem = new SalesOrderItem(
-                    item.itemId,
-                    item.uomId,
-                    item.unitPrice,
-                    item.quantity,
-                    item.tax
+                order.addItem(
+                    SalesOrderItem.create({
+                        itemId: item.itemId,
+                        uomId: item.uomId,
+                        unitPrice: item.unitPrice,
+                        quantity: item.quantity,
+                        tax: item.tax ?? 0,
+                    })
                 );
-                newItem = this.createBuild(newItem, command.session);
-                order.addItem(newItem);
             }
-            order = this.createBuild(order, command.session);
-            const result = await this.queryRunner.manager.save(order);
-
-            result.code = result.generateCode(result.id);
-            await this.queryRunner.manager.save(result);
+            const result = await repo.save(order);
+            result.code = result.generateCode(result.entity.id);
+            await repo.save(result);
             this.queryRunner.commitTransaction();
 
             return result.id;

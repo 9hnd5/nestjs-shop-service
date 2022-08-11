@@ -1,22 +1,21 @@
-import { SalesOrderSchema } from '@modules/sales-order/config/sales-order.config';
 import { GetByIdResponse } from '@modules/sales-order/dtos/get-by-id-response.dto';
 import { GetQuery } from '@modules/sales-order/dtos/get-query.dto';
 import { GetResponse } from '@modules/sales-order/dtos/get-response.dto';
 import SummaryQuery from '@modules/sales-order/dtos/summary-query.dto';
 import { CountStatus, SummaryResponse } from '@modules/sales-order/dtos/summary-response.dto';
-import { SalesOrder } from '@modules/sales-order/entities/sales-order.entity';
+import SalesOrderRepo from '@modules/sales-order/sales-order.repo';
 import { SalesOrderService } from '@modules/sales-order/sales-order.service';
 import { Injectable } from '@nestjs/common';
 import { Paginated } from 'be-core';
 import { plainToInstance } from 'class-transformer';
-import { Brackets, DataSource, Repository } from 'typeorm';
+import { Brackets } from 'typeorm';
 
 @Injectable()
 export class SalesOrderQuery {
-    private salesOrderRepo: Repository<SalesOrder>;
-    constructor(dataSource: DataSource, private salesOrderService: SalesOrderService) {
-        this.salesOrderRepo = dataSource.getRepository<SalesOrder>(SalesOrderSchema);
-    }
+    constructor(
+        private salesOrderRepo: SalesOrderRepo,
+        private salesOrderService: SalesOrderService
+    ) {}
 
     async get(query: GetQuery) {
         const {
@@ -28,10 +27,15 @@ export class SalesOrderQuery {
             salesmanCode,
             fromDate,
             toDate,
+            paymentStatus,
         } = query;
-        const condition = this.salesOrderRepo
+        const condition = this.salesOrderRepo.repository
             .createQueryBuilder('s')
             .where('s.is_deleted = :isDeleted', { isDeleted: false });
+
+        if (paymentStatus) {
+            condition.andWhere('s.payment_status = :paymentStatus', { paymentStatus });
+        }
 
         if (fromDate) {
             condition.andWhere('s.posting_date >= :fromDate', {
@@ -81,7 +85,7 @@ export class SalesOrderQuery {
     }
 
     async getById(id: number) {
-        const salesOrder = await this.salesOrderRepo.findOne({
+        const salesOrder = await this.salesOrderRepo.repository.findOne({
             where: { id, isDeleted: false },
             relations: { items: true },
         });
@@ -90,7 +94,7 @@ export class SalesOrderQuery {
         });
         if (salesOrder && salesOrder.items.length > 0) {
             const itemIds = salesOrder.items.map((t) => t.itemId);
-            const customerId = salesOrder.customerId ?? 0;
+            const customerId = salesOrder.entity.customerId ?? 0;
             const itemsWithPrice = await this.salesOrderService.getItemByIds(itemIds, customerId);
             for (const line of response.items) {
                 const item = itemsWithPrice.find((t) => t.id === line.itemId);
@@ -110,7 +114,7 @@ export class SalesOrderQuery {
 
     async getStatusSummary(query: SummaryQuery) {
         const { salesChannelCode, fromDate, toDate, salesmanCode } = query;
-        const condition = this.salesOrderRepo
+        const condition = this.salesOrderRepo.repository
             .createQueryBuilder('s')
             .where('is_deleted = :isDeleted', { isDeleted: false });
 

@@ -1,10 +1,9 @@
-import { SalesOrderSchema } from '@modules/sales-order/config/sales-order.config';
 import UpdateSalesOrder from '@modules/sales-order/dtos/update-sales-order.dto';
 import { SalesOrderItem } from '@modules/sales-order/entities/sales-order-item.entity';
 import { SalesOrder } from '@modules/sales-order/entities/sales-order.entity';
+import SalesOrderRepo from '@modules/sales-order/sales-order.repo';
 import { NotFoundException } from '@nestjs/common';
 import { BaseCommand, BaseCommandHandler, RequestHandler } from 'be-core';
-import { DataSource, Repository } from 'typeorm';
 
 export class UpdateSalesOrderCommand extends BaseCommand<SalesOrder> {
     data: UpdateSalesOrder;
@@ -15,14 +14,12 @@ export class UpdateSalesOrderCommandHanlder extends BaseCommandHandler<
     UpdateSalesOrderCommand,
     any
 > {
-    private salesOrderRepo: Repository<SalesOrder>;
-    constructor(dataSource: DataSource) {
+    constructor(private salesOrderRepo: SalesOrderRepo) {
         super();
-        this.salesOrderRepo = dataSource.getRepository<SalesOrder>(SalesOrderSchema);
     }
     async apply(command: UpdateSalesOrderCommand) {
         const { data } = command;
-        let salesOrder = await this.salesOrderRepo.findOne({
+        const salesOrder = await this.salesOrderRepo.repository.findOne({
             where: { id: data.id },
             relations: {
                 items: true,
@@ -32,62 +29,65 @@ export class UpdateSalesOrderCommandHanlder extends BaseCommandHandler<
         if (!salesOrder) {
             throw new NotFoundException('Entity not found');
         }
-
-        salesOrder.contactPerson = data.contactPerson;
-        salesOrder.contactNumber = data.contactNumber;
-        salesOrder.shipAddress = data.shipAddress;
-        salesOrder.salesChannelCode = data.salesChannelCode;
-        salesOrder.salesChannelName = data.salesChannelName;
-        salesOrder.commission = data.commission ?? 0;
-        salesOrder.shippingFee = data.shippingFee;
-        salesOrder.paymentMethodId = data.paymentMethodId;
-        salesOrder.paymentMethodName = data.paymentMethodName;
-        salesOrder.customerId = data.customerId;
-        salesOrder.customerName = data.customerName;
-        salesOrder.phoneNumber = data.phoneNumber;
-        salesOrder.address = data.address;
-        salesOrder.deliveryPartner = data.deliveryPartner;
-        salesOrder.orderDiscountAmount = data.orderDiscountAmount ?? 0;
-        salesOrder.note = data.note;
-        salesOrder.salesmanCode = data.salesmanCode;
-        salesOrder.salesmanName = data.salesmanName;
-        salesOrder.changeDeliveryDate(data.deliveryDate);
+        salesOrder.update({
+            contactPerson: data.contactPerson,
+            contactNumber: data.contactNumber,
+            shipAddress: data.shipAddress,
+            salesChannelCode: data.salesChannelCode,
+            salesChannelName: data.salesChannelName,
+            commission: data.commission ?? 0,
+            shippingFee: data.shippingFee,
+            paymentMethodId: data.paymentMethodId,
+            paymentMethodName: data.paymentMethodName,
+            customerId: data.customerId,
+            customerName: data.customerName,
+            phoneNumber: data.phoneNumber,
+            address: data.address,
+            deliveryPartner: data.deliveryPartner,
+            orderDiscountAmount: data.orderDiscountAmount ?? 0,
+            note: data.note,
+            salesmanCode: data.salesmanCode,
+            salesmanName: data.salesmanName,
+            deliveryDate: data.deliveryDate,
+        });
         data.postingDate && salesOrder.changePostingDate(data.postingDate);
-        salesOrder = this.updateBuild(salesOrder, command.session);
 
         const orderItems = [...salesOrder.items];
         for (const item of orderItems) {
             const index = data.items.findIndex((x) => x.id === item.id);
             if (index < 0) {
-                salesOrder.removeItem(item.id);
+                salesOrder.removeItem(item.entity.id);
             }
         }
 
         for (const item of data.items) {
             //update
             if (item.id) {
-                const index = salesOrder.items.findIndex((x) => x.id == item.id);
-                if (index >= 0) {
-                    salesOrder.items[index].itemId = item.itemId;
-                    salesOrder.items[index].uomId = item.uomId;
-                    salesOrder.items[index].changeQuantity(item.quantity);
-                    salesOrder.items[index].changeUnitPrice(item.unitPrice);
+                const existItem = salesOrder.items.find((x) => x.entity.id == item.id);
+                if (existItem) {
+                    existItem.update({
+                        itemId: item.itemId,
+                        uomId: item.uomId,
+                        quantity: item.quantity,
+                        unitPrice: item.unitPrice,
+                    });
+                    salesOrder.updateItem(item.id, existItem);
                 }
                 //insert
             } else {
-                let newItem = new SalesOrderItem(
-                    item.itemId,
-                    item.uomId,
-                    item.unitPrice,
-                    item.quantity,
-                    item.tax
+                salesOrder.addItem(
+                    SalesOrderItem.create({
+                        itemId: item.itemId,
+                        uomId: item.uomId,
+                        unitPrice: item.unitPrice,
+                        quantity: item.quantity,
+                        tax: item.tax ?? 0,
+                    })
                 );
-                newItem = this.createBuild(newItem, command.session);
-                salesOrder.addItem(newItem);
             }
         }
-        salesOrder.calcTotalAmount();
-        const result = await this.salesOrderRepo.save(salesOrder);
-        return result.id;
+        // salesOrder.calcTotalAmount();
+        const result = await this.salesOrderRepo.repository.save(salesOrder);
+        return result.entity.id;
     }
 }
