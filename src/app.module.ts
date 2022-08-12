@@ -3,7 +3,7 @@ import { Module, Scope } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_INTERCEPTOR, REQUEST } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AuthModule, CacheModule, CoreResponseInterceptor, InitialModule } from 'be-core';
+import { AuthModule, CacheModule, CoreResInterceptor, InitialModule } from 'be-core';
 import { DataSource } from 'typeorm';
 import { load } from './config';
 const dataSource = new DataSource({
@@ -49,7 +49,7 @@ const dataSource = new DataSource({
     providers: [
         {
             provide: APP_INTERCEPTOR,
-            useClass: CoreResponseInterceptor,
+            useClass: CoreResInterceptor,
             scope: Scope.REQUEST,
         },
     ],

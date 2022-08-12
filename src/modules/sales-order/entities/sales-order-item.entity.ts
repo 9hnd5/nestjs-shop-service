@@ -38,6 +38,9 @@ export class SalesOrderItem {
     get entity() {
         return this.props;
     }
+    get itemId() {
+        return this.props.itemId;
+    }
     set itemId(value: number) {
         this.props.itemId = value;
     }
