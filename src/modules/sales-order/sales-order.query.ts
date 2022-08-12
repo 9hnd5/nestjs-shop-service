@@ -3,13 +3,13 @@ import { GetQuery } from '@modules/sales-order/dtos/get-query.dto';
 import { GetResponse } from '@modules/sales-order/dtos/get-response.dto';
 import SummaryQuery from '@modules/sales-order/dtos/summary-query.dto';
 import {
-    CountStatus,
+    OrderStatus,
     PaymentStatus,
     SummaryResponse,
 } from '@modules/sales-order/dtos/summary-response.dto';
 import SalesOrderRepo from '@modules/sales-order/sales-order.repo';
 import { SalesOrderService } from '@modules/sales-order/sales-order.service';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Paginated } from 'be-core';
 import { plainToInstance } from 'class-transformer';
 import { Brackets } from 'typeorm';
@@ -93,7 +93,10 @@ export class SalesOrderQuery {
             where: { id, isDeleted: false },
             relations: { items: true },
         });
-        let response = plainToInstance(GetByIdResponse, salesOrder, {
+        if (!salesOrder) {
+            throw new NotFoundException('Not Found');
+        }
+        let response = plainToInstance(GetByIdResponse, salesOrder.entity, {
             excludeExtraneousValues: true,
         });
         if (salesOrder && salesOrder.items.length > 0) {
@@ -139,22 +142,21 @@ export class SalesOrderQuery {
             condition.andWhere('posting_date <= :toDate', { toDate });
         }
 
-        const total = await condition.getCount();
-        const countStatus = await condition
+        const totalCount = await condition.getCount();
+        const orderStatuses = await condition
             .groupBy('s.status')
             .select(['count(s.status) as count', 's.status as status'])
-            .getRawMany<CountStatus>();
+            .getRawMany<OrderStatus>();
 
-        const paymentStatus = await this.salesOrderRepo.repository
-            .createQueryBuilder('s')
+        const paymentStatuses = await condition
             .groupBy('s.paymentStatus')
             .select(['count(s.paymentStatus) as count', 's.paymentStatus as status'])
             .getRawMany<PaymentStatus>();
 
         const result = new SummaryResponse();
-        result.countStatus = countStatus;
-        result.total = total;
-        result.paymentStatus = paymentStatus;
+        result.orderStatuses = orderStatuses;
+        result.paymentStatuses = paymentStatuses;
+        result.totalCount = totalCount;
 
         return result;
     }
