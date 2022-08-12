@@ -23,6 +23,12 @@ export class SalesOrderService {
 
     async getItemByIds(itemIds: number[], customerId: number) {
         try {
+            console.log('call api', itemIds, customerId);
+            console.log(
+                'url',
+                (externalServiceConfig.ecommerceShopService as string) +
+                    '/internal/ecommerce-shop/v1/item/by-ids'
+            );
             const itemsRs = await this.httpClient.post<Item[]>(
                 `internal/ecommerce-shop/v1/item/by-ids`,
                 {
@@ -38,6 +44,7 @@ export class SalesOrderService {
             );
             return itemsRs.data;
         } catch (er) {
+            console.log('er', er);
             throw new BadRequestException(er);
         }
     }
