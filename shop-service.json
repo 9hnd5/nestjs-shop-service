@@ -6,10 +6,48 @@
     "description": ""
   },
   "apis": [
-    "/Users/hnd/Projects/saaspiens/nestjs-shop-service/src/modules/**/**.swagger.yaml",
-    "/Users/hnd/Projects/saaspiens/nestjs-shop-service/src/modules/slug.swagger.yaml"
+    "D:\\Documents\\Programming\\comantic code\\nestjs-shop-service\\src\\modules\\**\\**.swagger.yaml",
+    "D:\\Documents\\Programming\\comantic code\\nestjs-shop-service\\src\\modules\\slug.swagger.yaml"
   ],
   "paths": {
+    "shop/v1/deliveries/partners": {
+      "post": {
+        "tags": [
+          "Delivery"
+        ],
+        "summary": "Get available delivery partners with price",
+        "requestBody": {
+          "description": "request price with from and to destinations",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/getAvailablePartnersQuery"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "result": {
+                      "type": "number",
+                      "description": "Show result code (0: success, others: error)"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/deliveryPartner"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "shop/v1/sales-order/{id}": {
       "get": {
         "tags": [
@@ -649,6 +687,137 @@
   },
   "components": {
     "schemas": {
+      "deliveryLocationQuery": {
+        "type": "object",
+        "properties": {
+          "countryCode": {
+            "type": "string",
+            "example": "01"
+          },
+          "provinceCode": {
+            "type": "string",
+            "example": "HCM79"
+          },
+          "districtCode": {
+            "type": "string",
+            "example": "QH760"
+          },
+          "wardCode": {
+            "type": "string",
+            "example": "PX26734"
+          },
+          "street": {
+            "type": "string"
+          },
+          "phoneNumber": {
+            "type": "string",
+            "example": "0900001234"
+          },
+          "fullName": {
+            "type": "string"
+          },
+          "postCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "email": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "getAvailablePartnersQuery": {
+        "type": "object",
+        "properties": {
+          "from": {
+            "$ref": "#/components/schemas/deliveryLocationQuery"
+          },
+          "to": {
+            "$ref": "#/components/schemas/deliveryLocationQuery"
+          }
+        }
+      },
+      "deliveryPartner": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "integer"
+          },
+          "code": {
+            "type": "string",
+            "example": "GHTK"
+          },
+          "name": {
+            "type": "string",
+            "example": "GHTK"
+          },
+          "description": {
+            "type": "string"
+          },
+          "isActive": {
+            "type": "boolean",
+            "example": true
+          },
+          "price": {
+            "description": "Calculate using from and to destinations",
+            "type": "number"
+          },
+          "partnerInformation": {
+            "description": "All fields is either null or data",
+            "$ref": "#/components/schemas/deliveryPartnerInformation"
+          }
+        }
+      },
+      "deliveryPartnerInformation": {
+        "type": "object",
+        "properties": {
+          "host": {
+            "$ref": "#/components/schemas/deliveryFormField"
+          },
+          "countryCode": {
+            "$ref": "#/components/schemas/deliveryFormField"
+          },
+          "version": {
+            "$ref": "#/components/schemas/deliveryFormField"
+          },
+          "protocol": {
+            "$ref": "#/components/schemas/deliveryFormField"
+          },
+          "accessToken": {
+            "$ref": "#/components/schemas/deliveryFormField"
+          },
+          "isUseStore": {
+            "$ref": "#/components/schemas/deliveryFormField"
+          },
+          "isUsePriceList": {
+            "$ref": "#/components/schemas/deliveryFormField"
+          },
+          "clientId": {
+            "$ref": "#/components/schemas/deliveryFormField"
+          },
+          "clientSecret": {
+            "$ref": "#/components/schemas/deliveryFormField"
+          },
+          "tokenExpiresTime": {
+            "$ref": "#/components/schemas/deliveryFormField"
+          }
+        }
+      },
+      "deliveryFormField": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "string"
+          },
+          "fieldName": {
+            "type": "string"
+          },
+          "value": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
       "summary-response": {
         "type": "object",
         "properties": {
@@ -999,6 +1168,24 @@
       }
     },
     "parameters": {
+      "API-KEY": {
+        "in": "header",
+        "name": "API-KEY",
+        "schema": {
+          "type": "string"
+        },
+        "required": true,
+        "description": "Api Key"
+      },
+      "API-SECRET": {
+        "in": "header",
+        "name": "API-SECRET",
+        "schema": {
+          "type": "string"
+        },
+        "required": true,
+        "description": "Api Secret, formed from hash"
+      },
       "accessToken": {
         "in": "header",
         "name": "accessToken",
@@ -1024,6 +1211,11 @@
       "name": "SalesOrder",
       "description": "API for Sales Order",
       "x-displayName": "Sales Order"
+    },
+    {
+      "name": "Delivery",
+      "description": "API for Delivery",
+      "x-displayName": "Delivery"
     }
   ]
 }

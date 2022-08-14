@@ -21,6 +21,7 @@
     },
     "externalService": {
         "paymentUrl": "http://localhost:6006",
-        "ecommerceShopService": "http://localhost:4010"
+        "ecommerceShopService": "http://localhost:4010",
+        "deliveryService": "http://localhost:3001"
     }
 }

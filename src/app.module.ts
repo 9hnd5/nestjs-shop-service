@@ -1,3 +1,4 @@
+import { DeliveryModule } from '@modules/delivery/delivery.module';
 import { SalesOrderModule } from '@modules/sales-order/sales-order.module';
 import { Module, Scope } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
@@ -42,6 +43,7 @@ const dataSource = new DataSource({
             inject: [REQUEST],
         }),
         SalesOrderModule,
+        DeliveryModule,
         CacheModule,
         InitialModule,
         AuthModule,
