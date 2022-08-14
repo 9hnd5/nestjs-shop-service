@@ -1,5 +1,6 @@
 import { SalesOrderProps } from '@modules/sales-order/entities/sales-order.entity';
 import { PaymentStatus } from '@modules/sales-order/enums/payment-status.enum';
+import { SalesOrderStatus } from '@modules/sales-order/enums/sales-order-status.enum';
 import { TenantBaseSchema } from 'be-core';
 import { format } from 'date-fns';
 import { EntitySchema } from 'typeorm';
@@ -17,14 +18,15 @@ export const SalesOrderSchema = new EntitySchema<SalesOrderProps>({
         },
         code: {
             name: 'code',
-            nullable: true,
+            nullable: false,
             type: String,
             length: 50,
         },
         status: {
             name: 'status',
-            type: String,
-            length: 50,
+            nullable: false,
+            type: 'enum',
+            enum: SalesOrderStatus,
         },
         salesChannelCode: {
             name: 'sales_channel_code',
@@ -164,7 +166,7 @@ export const SalesOrderSchema = new EntitySchema<SalesOrderProps>({
         },
         paymentStatus: {
             name: 'payment_status',
-            nullable: false,
+            nullable: true,
             type: 'enum',
             enum: PaymentStatus,
         },

@@ -1,3 +1,4 @@
+import { PaymentStatus } from '@modules/sales-order/dtos/summary-response.dto';
 import { Exclude, Expose, Type } from 'class-transformer';
 
 @Exclude()
@@ -53,6 +54,10 @@ export class GetResponse {
 
     @Expose()
     @Type(() => Date)
+    modifiedDate: Date;
+
+    @Expose()
+    @Type(() => Date)
     deliveryDate: Date;
 
     @Expose()
@@ -66,5 +71,5 @@ export class GetResponse {
     salesmanName: string;
 
     @Expose()
-    paymentStatus: string;
+    paymentStatus: PaymentStatus;
 }

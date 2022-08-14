@@ -29,6 +29,7 @@ export class UpdateSalesOrderCommandHanlder extends BaseCommandHandler<
         if (!salesOrder) {
             throw new NotFoundException('Entity not found');
         }
+
         salesOrder.update({
             contactPerson: data.contactPerson,
             contactNumber: data.contactNumber,
@@ -49,6 +50,7 @@ export class UpdateSalesOrderCommandHanlder extends BaseCommandHandler<
             salesmanCode: data.salesmanCode,
             salesmanName: data.salesmanName,
             deliveryDate: data.deliveryDate,
+            modifiedBy: command.session.userId,
         });
         data.postingDate && salesOrder.changePostingDate(data.postingDate);
 

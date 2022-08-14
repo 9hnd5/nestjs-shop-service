@@ -69,12 +69,10 @@ export class SalesOrderQuery {
             condition.andWhere('s.salesman_code= :salesmanCode', { salesmanCode });
         }
         const [dataSource, totalRow] = await condition
-            .orderBy({
-                's.modified_date': 'DESC',
-                's.posting_date': 'DESC',
-            })
-            .take(pageSize)
+            .orderBy('s.modified_date', 'DESC')
+            .addOrderBy('s.posting_date', 'DESC')
             .skip(pageSize * (pageIndex - 1))
+            .take(pageSize)
             .getManyAndCount();
 
         const result = plainToInstance(GetResponse, dataSource, { excludeExtraneousValues: true });
@@ -84,7 +82,6 @@ export class SalesOrderQuery {
             totalRow,
             dataSource: result,
         };
-
         return response;
     }
 

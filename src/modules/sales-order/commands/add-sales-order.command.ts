@@ -43,6 +43,7 @@ export class AddSalesOrderCommandHandler extends BaseCommandHandler<AddSalesOrde
             salesmanName: data.salesmanName,
             postingDate: data.postingDate,
             deliveryDate: data.deliveryDate,
+            createdBy: command.session.userId,
         });
         try {
             this.queryRunner.connect();
@@ -61,7 +62,7 @@ export class AddSalesOrderCommandHandler extends BaseCommandHandler<AddSalesOrde
                 );
             }
             const result = await repo.save(order);
-            result.code = result.generateCode(result.entity.id);
+            result.code = result.generateCode(result.id);
             await repo.save(result);
             this.queryRunner.commitTransaction();
 

@@ -4,7 +4,7 @@ import {
 } from '@modules/sales-order/entities/sales-order-item.entity';
 import { PaymentStatus } from '@modules/sales-order/enums/payment-status.enum';
 import { SalesOrderStatus } from '@modules/sales-order/enums/sales-order-status.enum';
-import { BusinessException, TenantBase, DeepMutable } from 'be-core';
+import { BusinessException, DeepMutable, TenantBase } from 'be-core';
 import { isAfter } from 'date-fns';
 import { isArray, remove } from 'lodash';
 
@@ -28,7 +28,7 @@ export class SalesOrderProps extends TenantBase {
     readonly commission: number;
     readonly salesmanCode: string;
     readonly salesmanName: string;
-    readonly paymentStatus: PaymentStatus;
+    readonly paymentStatus?: PaymentStatus;
     readonly items: SalesOrderItemProps[];
     readonly customerId?: number;
     readonly customerName?: string;
@@ -44,13 +44,13 @@ type AddProps = Omit<
     | 'id'
     | 'totalAmount'
     | 'createdDate'
-    | 'createdBy'
     | 'modifiedDate'
     | 'modifiedBy'
     | 'companyId'
     | 'isDeleted'
 >;
-type UpdateProps = Omit<AddProps, 'status' | 'postingDate'>;
+type UpdateProps = Omit<AddProps, 'status' | 'postingDate' | 'createdBy'> &
+    Required<Pick<DeepMutable<SalesOrderProps>, 'modifiedBy'>>;
 
 export class SalesOrder {
     private props: DeepMutable<SalesOrderProps>;
@@ -66,7 +66,6 @@ export class SalesOrder {
     get id() {
         return this.props.id;
     }
-
     get entity() {
         return this.props;
     }
@@ -98,7 +97,8 @@ export class SalesOrder {
             ...props,
             createdDate: new Date(),
             createdBy: 0,
-            paymentStatus: PaymentStatus.Unpaid,
+            paymentStatus:
+                props.status === SalesOrderStatus.Draft ? undefined : PaymentStatus.Unpaid,
         });
     }
 
@@ -110,7 +110,7 @@ export class SalesOrder {
         if (isAfter(this.props.postingDate, data.deliveryDate)) {
             throw new BusinessException('Posting Date is not allow before Delivery Date');
         }
-        this.props = { ...this.props, ...data };
+        this.props = { ...this.props, ...data, modifiedDate: new Date() };
     }
 
     addItem(item: SalesOrderItem) {
@@ -151,6 +151,7 @@ export class SalesOrder {
         const oldStatus = this.props.status;
         if (oldStatus == SalesOrderStatus.Draft && newStatus == SalesOrderStatus.New) {
             this.props.status = newStatus;
+            this.props.modifiedDate = new Date();
         } else {
             throw new BusinessException('Status Invalid');
         }
@@ -160,6 +161,7 @@ export class SalesOrder {
         const oldStatus = this.props.status;
         if (oldStatus == SalesOrderStatus.New && newStatus == SalesOrderStatus.Confirmed) {
             this.props.status = newStatus;
+            this.props.modifiedDate = new Date();
         } else {
             throw new BusinessException('Status Invalid');
         }
@@ -172,6 +174,7 @@ export class SalesOrder {
             (oldStatus == SalesOrderStatus.New && newStatus == SalesOrderStatus.Canceled)
         ) {
             this.props.status = newStatus;
+            this.props.modifiedDate = new Date();
         } else {
             throw new BusinessException('Status Invalid');
         }
@@ -184,6 +187,7 @@ export class SalesOrder {
             newStatus == SalesOrderStatus.OrderPreparation
         ) {
             this.props.status = newStatus;
+            this.props.modifiedDate = new Date();
         } else {
             throw new BusinessException('Status Invalid');
         }
@@ -196,6 +200,7 @@ export class SalesOrder {
             newStatus == SalesOrderStatus.WaitingDelivery
         ) {
             this.props.status = newStatus;
+            this.props.modifiedDate = new Date();
         } else {
             throw new BusinessException('Status Invalid');
         }
@@ -208,6 +213,7 @@ export class SalesOrder {
             newStatus == SalesOrderStatus.Delivered
         ) {
             this.props.status = newStatus;
+            this.props.modifiedDate = new Date();
         } else {
             throw new BusinessException('Status Invalid');
         }
@@ -217,6 +223,7 @@ export class SalesOrder {
         const oldStatus = this.props.status;
         if (oldStatus == SalesOrderStatus.Delivered && newStatus == SalesOrderStatus.Returned) {
             this.props.status = newStatus;
+            this.props.modifiedDate = new Date();
         } else {
             throw new BusinessException('Status Invalid');
         }
@@ -233,6 +240,7 @@ export class SalesOrder {
             throw new BusinessException('Posting Date is not allow before Delivery Date');
         }
         this.props.postingDate = postingDate;
+        this.props.modifiedDate = new Date();
     }
 
     #calcTotalAmount() {
