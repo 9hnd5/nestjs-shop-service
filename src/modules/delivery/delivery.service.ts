@@ -1,38 +1,9 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { HttpService } from 'be-core';
 import { get as getConfig } from '../../config';
-import { GetAvailablePartnersQuery } from './dtos';
+import { GetAvailablePartnersQuery, GetAvailablePartnersResponse } from './dtos';
 
 const externalServiceConfig = getConfig('externalService');
-
-interface FormField {
-    label: string;
-    value: string | number | null | undefined;
-    fieldName: string;
-}
-
-interface PartnerInformation {
-    host?: FormField;
-    countryCode?: FormField;
-    version?: FormField;
-    protocol?: FormField;
-    accessToken?: FormField;
-    isUseStore?: FormField;
-    isUsePriceList?: FormField;
-    clientId?: FormField;
-    clientSecret?: FormField;
-    tokenExpiresTime?: FormField;
-}
-
-export interface DeliveryPartner {
-    _id: string;
-    code: string;
-    name: string;
-    description: string;
-    partnerInformation: PartnerInformation;
-    isActive: boolean;
-    price: number;
-}
 
 @Injectable()
 export class DeliveryService {
@@ -40,7 +11,7 @@ export class DeliveryService {
 
     async getAvailablePartners(query: GetAvailablePartnersQuery) {
         try {
-            const deliveryRs = await this.httpClient.post<DeliveryPartner[]>(
+            const deliveryRs = await this.httpClient.post<GetAvailablePartnersResponse[]>(
                 `delivery/integration/v1/documents/partners/available`,
                 query,
                 {
