@@ -1,54 +1,100 @@
-import { Expose, Type } from 'class-transformer';
-import { IsNotEmpty, IsOptional, IsString, ValidateNested } from 'class-validator';
-
-export class DeliveryLocationQuery {
-    @Expose()
-    @IsString()
-    countryCode: string;
-
-    @Expose()
-    @IsString()
-    provinceCode: string;
-
-    @Expose()
-    @IsString()
-    districtCode: string;
-
-    @Expose()
-    @IsString()
-    wardCode: string;
-
-    @Expose()
-    @IsString()
-    street: string;
-
-    @Expose()
-    @IsOptional()
-    phoneNumber?: string;
-
-    @Expose()
-    @IsOptional()
-    fullName?: string;
-
-    @Expose()
-    @IsOptional()
-    postCode?: string;
-
-    @Expose()
-    @IsOptional()
-    email?: string;
-}
+import { Expose } from 'class-transformer';
+import { IsEmail, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class GetAvailablePartnersQuery {
     @Expose()
-    @ValidateNested()
+    @IsString()
     @IsNotEmpty()
-    @Type(() => DeliveryLocationQuery)
-    from: DeliveryLocationQuery;
+    fromCountryCode: string;
 
     @Expose()
-    @ValidateNested()
+    @IsString()
     @IsNotEmpty()
-    @Type(() => DeliveryLocationQuery)
-    to: DeliveryLocationQuery;
+    fromProvinceCode: string;
+
+    @Expose()
+    @IsString()
+    @IsNotEmpty()
+    fromDistrictCode: string;
+
+    @Expose()
+    @IsString()
+    @IsNotEmpty()
+    fromWardCode: string;
+
+    @Expose()
+    @IsString()
+    @IsNotEmpty()
+    fromStreet: string;
+
+    @Expose()
+    @IsOptional()
+    @IsString()
+    @IsNotEmpty()
+    fromPhoneNumber?: string;
+
+    @Expose()
+    @IsOptional()
+    @IsString()
+    @IsNotEmpty()
+    fromFullName?: string;
+
+    @Expose()
+    @IsOptional()
+    @IsString()
+    @IsNotEmpty()
+    fromPostCode?: string;
+
+    @Expose()
+    @IsOptional()
+    @IsEmail()
+    fromEmail?: string;
+
+    @Expose()
+    @IsString()
+    @IsNotEmpty()
+    toCountryCode: string;
+
+    @Expose()
+    @IsString()
+    @IsNotEmpty()
+    toProvinceCode: string;
+
+    @Expose()
+    @IsString()
+    @IsNotEmpty()
+    toDistrictCode: string;
+
+    @Expose()
+    @IsString()
+    @IsNotEmpty()
+    toWardCode: string;
+
+    @Expose()
+    @IsString()
+    @IsNotEmpty()
+    toStreet: string;
+
+    @Expose()
+    @IsOptional()
+    @IsString()
+    @IsNotEmpty()
+    toPhoneNumber?: string;
+
+    @Expose()
+    @IsOptional()
+    @IsString()
+    @IsNotEmpty()
+    toFullName?: string;
+
+    @Expose()
+    @IsOptional()
+    @IsString()
+    @IsNotEmpty()
+    toPostCode?: string;
+
+    @Expose()
+    @IsOptional()
+    @IsEmail()
+    toEmail?: string;
 }
