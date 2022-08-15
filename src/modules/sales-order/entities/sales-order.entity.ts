@@ -24,10 +24,13 @@ export class SalesOrderProps extends TenantBase {
     readonly paymentMethodId: number;
     readonly paymentMethodName: string;
     readonly totalAmount: number;
+    readonly totalBeforeDiscount: number;
+    readonly totalLineDiscount: number;
     readonly orderDiscountAmount: number;
     readonly commission: number;
     readonly salesmanCode: string;
     readonly salesmanName: string;
+    readonly tax: number;
     readonly paymentStatus?: PaymentStatus;
     readonly items: SalesOrderItemProps[];
     readonly customerId?: number;
@@ -48,9 +51,14 @@ type AddProps = Omit<
     | 'modifiedBy'
     | 'companyId'
     | 'isDeleted'
+    | 'totalLineDiscount'
+    | 'totalBeforeDiscount'
+    | 'tax'
 >;
-type UpdateProps = Omit<AddProps, 'status' | 'postingDate' | 'createdBy'> &
-    Required<Pick<DeepMutable<SalesOrderProps>, 'modifiedBy'>>;
+type UpdateProps = Omit<AddProps, 'status' | 'postingDate' | 'createdBy'> & {
+    modifiedBy: number;
+    postingDate?: Date;
+};
 
 export class SalesOrder {
     private props: DeepMutable<SalesOrderProps>;
@@ -69,25 +77,9 @@ export class SalesOrder {
     get entity() {
         return this.props;
     }
-    get totalBeforeDiscount() {
-        return this.props.items.reduce((value, current) => {
-            return value + current.quantity * current.unitPrice;
-        }, 0);
-    }
-    get totalLineDiscount() {
-        return this.props.items.reduce((value, current) => {
-            return value + current.discountAmount;
-        }, 0);
-    }
-    get tax() {
-        return this.props.items.reduce((value, current) => {
-            return value + current.tax;
-        }, 0);
-    }
     get items() {
         return this.props.items.map((x) => new SalesOrderItem(x));
     }
-
     set code(value: string) {
         this.props.code = value;
     }
@@ -96,7 +88,6 @@ export class SalesOrder {
         return new SalesOrder({
             ...props,
             createdDate: new Date(),
-            createdBy: 0,
             paymentStatus:
                 props.status === SalesOrderStatus.Draft ? undefined : PaymentStatus.Unpaid,
         });
@@ -110,6 +101,9 @@ export class SalesOrder {
         if (isAfter(this.props.postingDate, data.deliveryDate)) {
             throw new BusinessException('Posting Date is not allow before Delivery Date');
         }
+        if (data.postingDate) {
+            this.#changePostingDate(data.postingDate);
+        }
         this.props = { ...this.props, ...data, modifiedDate: new Date() };
     }
 
@@ -118,6 +112,9 @@ export class SalesOrder {
             this.props.items = [];
         }
         this.props.items.push(item.entity);
+        this.#calcTotalBeforeDiscount();
+        this.#calcTotalLineDiscount();
+        this.#calcTax();
         this.#calcTotalAmount();
     }
 
@@ -126,6 +123,9 @@ export class SalesOrder {
         if (index >= 0) {
             this.props.items[index] = item.entity;
         }
+        this.#calcTotalBeforeDiscount();
+        this.#calcTotalLineDiscount();
+        this.#calcTax();
         this.#calcTotalAmount();
     }
 
@@ -134,6 +134,9 @@ export class SalesOrder {
             this.props.items = [];
         }
         remove(this.props.items, (x) => x.id === id);
+        this.#calcTotalBeforeDiscount();
+        this.#calcTotalLineDiscount();
+        this.#calcTax();
         this.#calcTotalAmount();
     }
 
@@ -147,27 +150,29 @@ export class SalesOrder {
         );
     }
 
-    changeStatusToNew(newStatus: string) {
+    changeStatusToNew(newStatus: string, modifiedBy: number) {
         const oldStatus = this.props.status;
         if (oldStatus == SalesOrderStatus.Draft && newStatus == SalesOrderStatus.New) {
             this.props.status = newStatus;
             this.props.modifiedDate = new Date();
+            this.props.modifiedBy = modifiedBy;
         } else {
             throw new BusinessException('Status Invalid');
         }
     }
 
-    changeStatusToConfirmed(newStatus: string) {
+    changeStatusToConfirmed(newStatus: string, modifiedBy: number) {
         const oldStatus = this.props.status;
         if (oldStatus == SalesOrderStatus.New && newStatus == SalesOrderStatus.Confirmed) {
             this.props.status = newStatus;
             this.props.modifiedDate = new Date();
+            this.props.modifiedBy = modifiedBy;
         } else {
             throw new BusinessException('Status Invalid');
         }
     }
 
-    changeStatusToCanceled(newStatus: string) {
+    changeStatusToCanceled(newStatus: string, modifiedBy: number) {
         const oldStatus = this.props.status;
         if (
             (oldStatus == SalesOrderStatus.Draft && newStatus == SalesOrderStatus.Canceled) ||
@@ -175,12 +180,13 @@ export class SalesOrder {
         ) {
             this.props.status = newStatus;
             this.props.modifiedDate = new Date();
+            this.props.modifiedBy = modifiedBy;
         } else {
             throw new BusinessException('Status Invalid');
         }
     }
 
-    changeStatusToOrderPreparation(newStatus: string) {
+    changeStatusToOrderPreparation(newStatus: string, modifiedBy: number) {
         const oldStatus = this.props.status;
         if (
             oldStatus == SalesOrderStatus.Confirmed &&
@@ -188,12 +194,13 @@ export class SalesOrder {
         ) {
             this.props.status = newStatus;
             this.props.modifiedDate = new Date();
+            this.props.modifiedBy = modifiedBy;
         } else {
             throw new BusinessException('Status Invalid');
         }
     }
 
-    changeStatusToWaitingDelivery(newStatus: string) {
+    changeStatusToWaitingDelivery(newStatus: string, modifiedBy: number) {
         const oldStatus = this.props.status;
         if (
             oldStatus == SalesOrderStatus.OrderPreparation &&
@@ -201,12 +208,13 @@ export class SalesOrder {
         ) {
             this.props.status = newStatus;
             this.props.modifiedDate = new Date();
+            this.props.modifiedBy = modifiedBy;
         } else {
             throw new BusinessException('Status Invalid');
         }
     }
 
-    changeStatusToDeliveried(newStatus: string) {
+    changeStatusToDeliveried(newStatus: string, modifiedBy: number) {
         const oldStatus = this.props.status;
         if (
             oldStatus == SalesOrderStatus.WaitingDelivery &&
@@ -214,22 +222,24 @@ export class SalesOrder {
         ) {
             this.props.status = newStatus;
             this.props.modifiedDate = new Date();
+            this.props.modifiedBy = modifiedBy;
         } else {
             throw new BusinessException('Status Invalid');
         }
     }
 
-    changeStatusToReturned(newStatus: string) {
+    changeStatusToReturned(newStatus: string, modifiedBy: number) {
         const oldStatus = this.props.status;
         if (oldStatus == SalesOrderStatus.Delivered && newStatus == SalesOrderStatus.Returned) {
             this.props.status = newStatus;
             this.props.modifiedDate = new Date();
+            this.props.modifiedBy = modifiedBy;
         } else {
             throw new BusinessException('Status Invalid');
         }
     }
 
-    changePostingDate(postingDate: Date) {
+    #changePostingDate(postingDate: Date) {
         if (this.props.status !== SalesOrderStatus.Draft) {
             throw new BusinessException(
                 "Can't change the Posting Date because its status is not draft"
@@ -245,11 +255,29 @@ export class SalesOrder {
 
     #calcTotalAmount() {
         this.props.totalAmount =
-            this.totalBeforeDiscount -
-            this.totalLineDiscount -
+            this.props.totalBeforeDiscount -
+            this.props.totalLineDiscount -
             this.props.orderDiscountAmount -
             this.props.commission +
-            this.tax +
+            this.props.tax +
             this.props.shippingFee;
+    }
+
+    #calcTotalBeforeDiscount() {
+        this.props.totalBeforeDiscount = this.props.items.reduce((value, current) => {
+            return value + current.quantity * current.unitPrice;
+        }, 0);
+    }
+
+    #calcTotalLineDiscount() {
+        this.props.totalLineDiscount = this.props.items.reduce((value, current) => {
+            return value + current.discountAmount;
+        }, 0);
+    }
+
+    #calcTax() {
+        this.props.tax = this.props.items.reduce((value, current) => {
+            return value + current.tax;
+        }, 0);
     }
 }

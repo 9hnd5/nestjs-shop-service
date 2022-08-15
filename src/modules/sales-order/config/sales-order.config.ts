@@ -62,6 +62,21 @@ export const SalesOrderSchema = new EntitySchema<SalesOrderProps>({
             type: String,
             length: 255,
         },
+        totalBeforeDiscount: {
+            name: 'total_before_discount',
+            type: Number,
+            nullable: false,
+        },
+        totalLineDiscount: {
+            name: 'total_line_discount',
+            type: Number,
+            nullable: false,
+        },
+        tax: {
+            name: 'tax',
+            type: Number,
+            nullable: false,
+        },
         contactPerson: {
             name: 'contact_person',
             nullable: false,

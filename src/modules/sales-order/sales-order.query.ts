@@ -68,9 +68,12 @@ export class SalesOrderQuery {
         if (salesmanCode) {
             condition.andWhere('s.salesman_code= :salesmanCode', { salesmanCode });
         }
+
+        condition.orderBy('s.modified_date', 'DESC').addOrderBy('s.created_date', 'DESC');
+
         const [dataSource, totalRow] = await condition
             .orderBy('s.modified_date', 'DESC')
-            .addOrderBy('s.posting_date', 'DESC')
+            .addOrderBy('s.created_date', 'DESC')
             .skip(pageSize * (pageIndex - 1))
             .take(pageSize)
             .getManyAndCount();

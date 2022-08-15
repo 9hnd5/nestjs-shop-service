@@ -34,7 +34,6 @@ export class SalesOrderItem {
     get id() {
         return this.props.id;
     }
-
     get entity() {
         return this.props;
     }
@@ -65,6 +64,7 @@ export class SalesOrderItem {
             lineTotal: props.quantity * props.unitPrice,
         });
     }
+
     static createFromPersistence(props: SalesOrderItemProps) {
         return new SalesOrderItem(props);
     }

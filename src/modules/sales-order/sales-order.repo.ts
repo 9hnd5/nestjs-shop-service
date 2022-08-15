@@ -1,7 +1,14 @@
 import { SalesOrderSchema } from '@modules/sales-order/config/sales-order.config';
 import { SalesOrder, SalesOrderProps } from '@modules/sales-order/entities/sales-order.entity';
 import { Injectable } from '@nestjs/common';
-import { DataSource, FindManyOptions, FindOneOptions, Repository, SaveOptions } from 'typeorm';
+import {
+    DataSource,
+    FindManyOptions,
+    FindOneOptions,
+    Repository,
+    SaveOptions,
+    SelectQueryBuilder,
+} from 'typeorm';
 
 @Injectable()
 export default class SalesOrderRepo {
@@ -9,6 +16,11 @@ export default class SalesOrderRepo {
         findOne(options: FindOneOptions<SalesOrderProps>): Promise<SalesOrder | null>;
         find(options: FindManyOptions<SalesOrderProps>): Promise<SalesOrder[]>;
         save(value: SalesOrder, options?: SaveOptions | undefined): Promise<SalesOrder>;
+        findPagination(
+            pageIndex: number,
+            pageSize: number,
+            condition: SelectQueryBuilder<SalesOrderProps>
+        ): Promise<[dataSource: SalesOrder[], totalRow: number]>;
     } & Repository<SalesOrderProps>;
     constructor(dataSource: DataSource) {
         this.customRepo = dataSource.getRepository(SalesOrderSchema).extend({
@@ -25,6 +37,23 @@ export default class SalesOrderRepo {
                     return result.map((x) => SalesOrder.createFromPersistence(x));
                 }
                 return [];
+            },
+            async findPagination(
+                pageIndex: number,
+                pageSize: number,
+                condition: SelectQueryBuilder<SalesOrderProps>
+            ) {
+                const [dataSource, totalRow] = await condition
+                    .orderBy('s.modified_date', 'DESC')
+                    .addOrderBy('s.created_date', 'DESC')
+                    .skip(pageSize * (pageIndex - 1))
+                    .take(pageSize)
+                    .getManyAndCount();
+
+                const salesOrders = dataSource?.map((item) =>
+                    SalesOrder.createFromPersistence(item)
+                );
+                return [salesOrders, totalRow];
             },
             async save(value: SalesOrder, options?: SaveOptions) {
                 const result = await dataSource

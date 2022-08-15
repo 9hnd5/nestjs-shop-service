@@ -50,9 +50,9 @@ export class UpdateSalesOrderCommandHanlder extends BaseCommandHandler<
             salesmanCode: data.salesmanCode,
             salesmanName: data.salesmanName,
             deliveryDate: data.deliveryDate,
-            modifiedBy: command.session.userId,
+            postingDate: data.postingDate,
+            modifiedBy: 0,
         });
-        data.postingDate && salesOrder.changePostingDate(data.postingDate);
 
         const orderItems = [...salesOrder.items];
         for (const item of orderItems) {
@@ -88,7 +88,7 @@ export class UpdateSalesOrderCommandHanlder extends BaseCommandHandler<
                 );
             }
         }
-        // salesOrder.calcTotalAmount();
+
         const result = await this.salesOrderRepo.repository.save(salesOrder);
         return result.entity.id;
     }

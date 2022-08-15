@@ -43,8 +43,9 @@ export class AddSalesOrderCommandHandler extends BaseCommandHandler<AddSalesOrde
             salesmanName: data.salesmanName,
             postingDate: data.postingDate,
             deliveryDate: data.deliveryDate,
-            createdBy: command.session.userId,
+            createdBy: 0,
         });
+
         try {
             this.queryRunner.connect();
             this.queryRunner.startTransaction();

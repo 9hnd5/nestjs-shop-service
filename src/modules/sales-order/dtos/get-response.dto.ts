@@ -49,6 +49,12 @@ export class GetResponse {
     totalAmount: number;
 
     @Expose()
+    totalBeforeDiscount: number;
+
+    @Expose()
+    totalLineDiscount: number;
+
+    @Expose()
     @Type(() => Date)
     createdDate: Date;
 

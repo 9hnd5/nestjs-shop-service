@@ -32,30 +32,29 @@ export class UpdateSalesOrderStatusCommandHanlder extends BaseCommandHandler<
 
         switch (status) {
             case SalesOrderStatus.New:
-                salesOrder.changeStatusToNew(status);
+                salesOrder.changeStatusToNew(status, 0);
                 break;
             case SalesOrderStatus.Confirmed:
-                salesOrder.changeStatusToConfirmed(status);
+                salesOrder.changeStatusToConfirmed(status, 0);
                 break;
             case SalesOrderStatus.Canceled:
-                salesOrder.changeStatusToCanceled(status);
+                salesOrder.changeStatusToCanceled(status, 0);
                 break;
             case SalesOrderStatus.OrderPreparation:
-                salesOrder.changeStatusToOrderPreparation(status);
+                salesOrder.changeStatusToOrderPreparation(status, 0);
                 break;
             case SalesOrderStatus.WaitingDelivery:
-                salesOrder.changeStatusToWaitingDelivery(status);
+                salesOrder.changeStatusToWaitingDelivery(status, 0);
                 break;
             case SalesOrderStatus.Delivered:
-                salesOrder.changeStatusToDeliveried(status);
+                salesOrder.changeStatusToDeliveried(status, 0);
                 break;
             case SalesOrderStatus.Returned:
-                salesOrder.changeStatusToReturned(status);
+                salesOrder.changeStatusToReturned(status, 0);
                 break;
             default:
                 break;
         }
-
         const result = await this.salesOrderRepo.repository.save(salesOrder);
         return result.entity.id;
     }
