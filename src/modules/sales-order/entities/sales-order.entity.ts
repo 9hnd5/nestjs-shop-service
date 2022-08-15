@@ -15,8 +15,9 @@ export class SalesOrderProps extends TenantBase {
     readonly status: string;
     readonly postingDate: Date;
     readonly contactPerson: string;
-    readonly contactNumber: string;
-    readonly shipAddress: string;
+    readonly contactPhoneNumber: string;
+    readonly contactAddress: string;
+    readonly contactAddressId: number;
     readonly salesChannelCode: string;
     readonly salesChannelName: string;
     readonly deliveryPartner: string;
@@ -35,8 +36,8 @@ export class SalesOrderProps extends TenantBase {
     readonly items: SalesOrderItemProps[];
     readonly customerId?: number;
     readonly customerName?: string;
-    readonly phoneNumber?: string;
-    readonly address?: string;
+    readonly customerPhoneNumber?: string;
+    readonly customerAddress?: string;
     readonly note?: string;
 }
 type AddProps = Omit<

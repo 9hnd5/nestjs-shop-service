@@ -429,7 +429,7 @@ components:
                 postingDate:
                     type: string
                     format: date-time
-                address:
+                customerAddress:
                     type: string
                     nullable: true
                 contactPerson:
@@ -437,7 +437,7 @@ components:
                 contactPhone:
                     type: string
                     example: '0901234567'
-                shipAddress:
+                contactAddress:
                     type: string
                 customerId:
                     type: integer
@@ -446,7 +446,7 @@ components:
                 customerName:
                     type: string
                     nullable: true
-                phoneNumber:
+                customerPhoneNumber:
                     type: string
                     nullable: true
                     example: '0901234567'
@@ -569,9 +569,9 @@ components:
                     type: string
                 contactPerson:
                     type: string
-                contactNumber:
+                contactPhoneNumber:
                     type: string
-                shipAddress:
+                contactAddress:
                     type: string
                 salesChannel:
                     type: string
@@ -589,10 +589,10 @@ components:
                 customerName:
                     type: string
                     nullable: true
-                address:
+                customerAddress:
                     type: string
                     nullable: true
-                phoneNumber:
+                customerPhoneNumber:
                     type: string
                     nullable: true
                 paymentMethodId:

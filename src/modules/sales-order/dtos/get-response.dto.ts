@@ -25,19 +25,19 @@ export class GetResponse {
     customerName?: string;
 
     @Expose()
-    phoneNumber?: string;
+    customerPhoneNumber?: string;
 
     @Expose()
     contactPerson: string;
 
     @Expose()
-    contactNumber: string;
+    contactPhoneNumber: string;
 
     @Expose()
-    address?: string;
+    customerAddress?: string;
 
     @Expose()
-    shipAddress: string;
+    contactAddress: string;
 
     @Expose()
     shippingFee: number;

@@ -32,8 +32,9 @@ export class UpdateSalesOrderCommandHanlder extends BaseCommandHandler<
 
         salesOrder.update({
             contactPerson: data.contactPerson,
-            contactNumber: data.contactNumber,
-            shipAddress: data.shipAddress,
+            contactPhoneNumber: data.contactPhoneNumber,
+            contactAddress: data.contactAddress,
+            contactAddressId: data.contactAddressId,
             salesChannelCode: data.salesChannelCode,
             salesChannelName: data.salesChannelName,
             commission: data.commission ?? 0,
@@ -42,8 +43,8 @@ export class UpdateSalesOrderCommandHanlder extends BaseCommandHandler<
             paymentMethodName: data.paymentMethodName,
             customerId: data.customerId,
             customerName: data.customerName,
-            phoneNumber: data.phoneNumber,
-            address: data.address,
+            customerPhoneNumber: data.customerPhoneNumber,
+            customerAddress: data.customerAddress,
             deliveryPartner: data.deliveryPartner,
             orderDiscountAmount: data.orderDiscountAmount ?? 0,
             note: data.note,

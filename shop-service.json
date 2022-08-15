@@ -709,7 +709,7 @@
           "street": {
             "type": "string"
           },
-          "phoneNumber": {
+          "customerPhoneNumber": {
             "type": "string",
             "example": "0900001234"
           },
@@ -895,7 +895,7 @@
             "type": "string",
             "format": "date-time"
           },
-          "address": {
+          "customerAddress": {
             "type": "string",
             "nullable": true
           },
@@ -906,7 +906,7 @@
             "type": "string",
             "example": "0901234567"
           },
-          "shipAddress": {
+          "contactAddress": {
             "type": "string"
           },
           "customerId": {
@@ -918,7 +918,7 @@
             "type": "string",
             "nullable": true
           },
-          "phoneNumber": {
+          "customerPhoneNumber": {
             "type": "string",
             "nullable": true,
             "example": "0901234567"
@@ -1096,10 +1096,10 @@
           "contactPerson": {
             "type": "string"
           },
-          "contactNumber": {
+          "contactPhoneNumber": {
             "type": "string"
           },
-          "shipAddress": {
+          "contactAddress": {
             "type": "string"
           },
           "salesChannel": {
@@ -1124,11 +1124,11 @@
             "type": "string",
             "nullable": true
           },
-          "address": {
+          "customerAddress": {
             "type": "string",
             "nullable": true
           },
-          "phoneNumber": {
+          "customerPhoneNumber": {
             "type": "string",
             "nullable": true
           },

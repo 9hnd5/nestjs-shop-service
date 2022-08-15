@@ -56,8 +56,8 @@ export const SalesOrderSchema = new EntitySchema<SalesOrderProps>({
             nullable: true,
             type: Number,
         },
-        address: {
-            name: 'address',
+        customerAddress: {
+            name: 'customer_address',
             nullable: true,
             type: String,
             length: 255,
@@ -83,8 +83,8 @@ export const SalesOrderSchema = new EntitySchema<SalesOrderProps>({
             type: String,
             length: 50,
         },
-        contactNumber: {
-            name: 'contact_number',
+        contactPhoneNumber: {
+            name: 'contact_phone_number',
             nullable: false,
             type: String,
             length: 11,
@@ -95,17 +95,22 @@ export const SalesOrderSchema = new EntitySchema<SalesOrderProps>({
             type: String,
             length: 50,
         },
-        phoneNumber: {
-            name: 'phone_number',
+        customerPhoneNumber: {
+            name: 'customer_phone_number',
             nullable: true,
             type: String,
             length: 11,
         },
-        shipAddress: {
-            name: 'ship_address',
+        contactAddress: {
+            name: 'contact_address',
             nullable: false,
             type: String,
             length: 255,
+        },
+        contactAddressId: {
+            name: 'contact_address_id',
+            nullable: false,
+            type: Number,
         },
         deliveryPartner: {
             name: 'delivery_partner',

@@ -31,13 +31,13 @@ export default class AddSalesOrder {
     @IsNotEmpty()
     @IsString()
     @IsOptional()
-    phoneNumber?: string;
+    customerPhoneNumber?: string;
 
     @Expose()
     @IsNotEmpty()
     @IsString()
     @IsOptional()
-    address?: string;
+    customerAddress?: string;
 
     @Expose()
     @IsNotEmpty()
@@ -57,12 +57,17 @@ export default class AddSalesOrder {
     @Expose()
     @IsNotEmpty()
     @IsString()
-    contactNumber: string;
+    contactPhoneNumber: string;
 
     @Expose()
     @IsNotEmpty()
     @IsString()
-    shipAddress: string;
+    contactAddress: string;
+
+    @Expose()
+    @IsPositive()
+    @IsInt()
+    contactAddressId: number;
 
     @Expose()
     @IsNotEmpty()
