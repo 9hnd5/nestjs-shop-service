@@ -2,4 +2,7 @@ tags:
   - name: SalesOrder
     description: API for Sales Order
     x-displayName: 'Sales Order'
+  - name: Delivery
+    description: API for Delivery
+    x-displayName: 'Delivery'
 
