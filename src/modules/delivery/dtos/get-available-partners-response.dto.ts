@@ -5,7 +5,7 @@ class FormField {
     label: string;
 
     @Expose()
-    value: string | number | null | undefined;
+    value?: string | number;
 
     @Expose()
     fieldName: string;

@@ -1,7 +1,7 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { Mediator } from 'be-core';
 import { DeliveryService } from './delivery.service';
-import { GetAvailablePartnersQuery } from './dtos';
+import { GetAvailablePartnersQuery } from './dtos/get-available-partners-query.dto';
 
 @Controller('deliveries')
 export class DeliveryController {

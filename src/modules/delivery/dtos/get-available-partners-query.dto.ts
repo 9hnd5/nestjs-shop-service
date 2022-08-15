@@ -8,17 +8,14 @@ export class DeliveryLocationQuery {
 
     @Expose()
     @IsString()
-    @IsNotEmpty()
     provinceCode: string;
 
     @Expose()
     @IsString()
-    @IsNotEmpty()
     districtCode: string;
 
     @Expose()
     @IsString()
-    @IsNotEmpty()
     wardCode: string;
 
     @Expose()
@@ -27,19 +24,19 @@ export class DeliveryLocationQuery {
 
     @Expose()
     @IsOptional()
-    phoneNumber: string;
+    phoneNumber?: string;
 
     @Expose()
     @IsOptional()
-    fullName: string;
+    fullName?: string;
 
     @Expose()
     @IsOptional()
-    postCode?: string | null;
+    postCode?: string;
 
     @Expose()
     @IsOptional()
-    email?: string | null;
+    email?: string;
 }
 
 export class GetAvailablePartnersQuery {

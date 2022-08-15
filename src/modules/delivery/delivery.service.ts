@@ -1,7 +1,8 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { HttpService } from 'be-core';
 import { get as getConfig } from '../../config';
-import { GetAvailablePartnersQuery, GetAvailablePartnersResponse } from './dtos';
+import { GetAvailablePartnersQuery } from './dtos/get-available-partners-query.dto';
+import { GetAvailablePartnersResponse } from './dtos/get-available-partners-response.dto';
 
 const externalServiceConfig = getConfig('externalService');
 
