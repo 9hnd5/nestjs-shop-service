@@ -1,75 +1,7 @@
-import { Expose, Type } from 'class-transformer';
-import {
-    IsEmail,
-    IsNotEmpty,
-    IsOptional,
-    IsPhoneNumber,
-    IsString,
-    ValidateNested,
-} from 'class-validator';
-
-export class DeliveryLocationDetail {
-    @Expose()
-    @IsString()
-    @IsNotEmpty()
-    countryCode: string;
-
-    @Expose()
-    @IsString()
-    @IsNotEmpty()
-    provinceCode: string;
-
-    @Expose()
-    @IsString()
-    @IsNotEmpty()
-    districtCode: string;
-
-    @Expose()
-    @IsString()
-    @IsNotEmpty()
-    wardCode: string;
-
-    @Expose()
-    @IsString()
-    @IsNotEmpty()
-    street: string;
-
-    @Expose()
-    @IsOptional()
-    @IsPhoneNumber()
-    phoneNumber?: string;
-
-    @Expose()
-    @IsOptional()
-    @IsString()
-    fullName?: string;
-
-    @Expose()
-    @IsOptional()
-    @IsString()
-    postCode?: string;
-
-    @Expose()
-    @IsOptional()
-    @IsString()
-    email?: string;
-}
+import { Expose } from 'class-transformer';
+import { IsEmail, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class GetAvailablePartnersQuery {
-    @Expose()
-    @ValidateNested()
-    @IsNotEmpty()
-    @Type(() => DeliveryLocationDetail)
-    from: DeliveryLocationDetail;
-
-    @Expose()
-    @ValidateNested()
-    @IsNotEmpty()
-    @Type(() => DeliveryLocationDetail)
-    to: DeliveryLocationDetail;
-}
-
-export class DeliveryLocationQuery {
     @Expose()
     @IsString()
     @IsNotEmpty()

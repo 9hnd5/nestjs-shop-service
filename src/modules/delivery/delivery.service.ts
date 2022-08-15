@@ -1,10 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { HttpService } from 'be-core';
 import { get as getConfig } from '../../config';
-import {
-    GetAvailablePartnersQuery,
-    DeliveryLocationQuery,
-} from './dtos/get-available-partners-query.dto';
+import { GetAvailablePartnersQuery } from './dtos/get-available-partners-query.dto';
 import { GetAvailablePartnersResponse } from './dtos/get-available-partners-response.dto';
 
 const externalServiceConfig = getConfig('externalService');
@@ -13,8 +10,8 @@ const externalServiceConfig = getConfig('externalService');
 export class DeliveryService {
     constructor(private httpClient: HttpService) {}
 
-    async getAvailablePartners(query: DeliveryLocationQuery) {
-        const queryForDeliveryService: GetAvailablePartnersQuery = {
+    async getAvailablePartners(query: GetAvailablePartnersQuery) {
+        const data = {
             from: {
                 countryCode: query.fromCountryCode,
                 provinceCode: query.fromProvinceCode,
@@ -41,7 +38,7 @@ export class DeliveryService {
         try {
             const deliveryRs = await this.httpClient.post<GetAvailablePartnersResponse[]>(
                 `delivery/integration/v1/documents/partners/available`,
-                queryForDeliveryService,
+                data,
                 {
                     config: {
                         baseURL: externalServiceConfig.deliveryService,
