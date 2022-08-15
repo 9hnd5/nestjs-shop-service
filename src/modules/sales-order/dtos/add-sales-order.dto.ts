@@ -4,30 +4,37 @@ import {
     ArrayNotEmpty,
     IsBoolean,
     IsDate,
+    IsInt,
     IsNotEmpty,
     IsNumber,
     IsOptional,
+    IsPositive,
     IsString,
+    Min,
     ValidateNested,
 } from 'class-validator';
 
 export default class AddSalesOrder {
     @Expose()
-    @IsNumber()
+    @IsPositive()
+    @IsInt()
     @IsOptional()
     customerId?: number;
 
     @Expose()
+    @IsNotEmpty()
     @IsString()
     @IsOptional()
     customerName?: string;
 
     @Expose()
+    @IsNotEmpty()
     @IsString()
     @IsOptional()
     phoneNumber?: string;
 
     @Expose()
+    @IsNotEmpty()
     @IsString()
     @IsOptional()
     address?: string;
@@ -83,13 +90,13 @@ export default class AddSalesOrder {
     postingDate: Date;
 
     @Expose()
-    @IsNotEmpty()
+    @Min(0)
     @IsNumber()
     shippingFee: number;
 
     @Expose()
-    @IsNotEmpty()
-    @IsNumber()
+    @IsPositive()
+    @IsInt()
     paymentMethodId: number;
 
     @Expose()
@@ -98,16 +105,19 @@ export default class AddSalesOrder {
     paymentMethodName: string;
 
     @Expose()
+    @Min(0)
     @IsNumber()
     @IsOptional()
     commission?: number;
 
     @Expose()
+    @IsNotEmpty()
     @IsString()
     @IsOptional()
     note?: string;
 
     @Expose()
+    @Min(0)
     @IsNumber()
     @IsOptional()
     orderDiscountAmount?: number;

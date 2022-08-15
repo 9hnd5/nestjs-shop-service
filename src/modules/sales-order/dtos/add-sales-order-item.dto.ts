@@ -1,28 +1,29 @@
 import { Expose } from 'class-transformer';
-import { IsNotEmpty, IsNumber, IsOptional } from 'class-validator';
+import { IsInt, IsNumber, IsOptional, IsPositive, Min } from 'class-validator';
 
 export default class AddSalesOrderItem {
     @Expose()
-    @IsNotEmpty()
-    @IsNumber()
+    @IsPositive()
+    @IsInt()
     itemId: number;
 
     @Expose()
-    @IsNotEmpty()
-    @IsNumber()
+    @IsPositive()
+    @IsInt()
     uomId: number;
 
     @Expose()
-    @IsNotEmpty()
+    @Min(0)
     @IsNumber()
     unitPrice: number;
 
     @Expose()
-    @IsNotEmpty()
+    @Min(0)
     @IsNumber()
     quantity: number;
 
     @Expose()
+    @Min(0)
     @IsNumber()
     @IsOptional()
     tax?: number;

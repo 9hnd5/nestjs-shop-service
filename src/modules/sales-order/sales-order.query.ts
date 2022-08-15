@@ -148,10 +148,12 @@ export class SalesOrderQuery {
             .select(['count(s.status) as count', 's.status as status'])
             .getRawMany<OrderStatus>();
 
-        const paymentStatuses = await condition
-            .groupBy('s.paymentStatus')
-            .select(['count(s.paymentStatus) as count', 's.paymentStatus as status'])
-            .getRawMany<PaymentStatus>();
+        const paymentStatuses = (
+            await condition
+                .groupBy('s.paymentStatus')
+                .select(['count(s.paymentStatus) as count', 's.paymentStatus as status'])
+                .getRawMany<PaymentStatus>()
+        ).filter((x) => x.status !== null);
 
         const result = new SummaryResponse();
         result.orderStatuses = orderStatuses;

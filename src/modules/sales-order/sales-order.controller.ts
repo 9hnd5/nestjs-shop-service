@@ -1,11 +1,12 @@
 import { AddSalesOrderCommand } from '@modules/sales-order/commands/add-sales-order.command';
+import { UpdateSalesOrderPostingDateCommand } from '@modules/sales-order/commands/update-sales-order-posting-date.command';
 import { UpdateSalesOrderCommand } from '@modules/sales-order/commands/update-sales-order.command';
 import AddSalesOrder from '@modules/sales-order/dtos/add-sales-order.dto';
 import { GetQuery } from '@modules/sales-order/dtos/get-query.dto';
 import SummaryQuery from '@modules/sales-order/dtos/summary-query.dto';
 import UpdateSalesOrder from '@modules/sales-order/dtos/update-sales-order.dto';
 import { SalesOrderQuery } from '@modules/sales-order/sales-order.query';
-import { Body, Controller, Get, Param, Post, Put, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, Put, Query } from '@nestjs/common';
 import { Mediator } from 'be-core';
 import { UpdateSalesOrderStatusCommand } from './commands/update-sales-order-status.command';
 import { SalesOrderStatus } from './enums/sales-order-status.enum';
@@ -97,5 +98,11 @@ export class SalesOrderController {
         command.id = id;
         command.status = SalesOrderStatus.Returned;
         return this.mediator.send(command);
+    }
+
+    @Patch(':id')
+    updatePostingDate(@Param('id') id: number, @Body() data: UpdateSalesOrderPostingDateCommand) {
+        data.id = id;
+        return this.mediator.send(data);
     }
 }

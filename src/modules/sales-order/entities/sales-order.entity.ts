@@ -102,7 +102,7 @@ export class SalesOrder {
             throw new BusinessException('Posting Date is not allow before Delivery Date');
         }
         if (data.postingDate) {
-            this.#changePostingDate(data.postingDate);
+            this.changePostingDate(data.postingDate);
         }
         this.props = { ...this.props, ...data, modifiedDate: new Date() };
     }
@@ -239,7 +239,7 @@ export class SalesOrder {
         }
     }
 
-    #changePostingDate(postingDate: Date) {
+    changePostingDate(postingDate: Date) {
         if (this.props.status !== SalesOrderStatus.Draft) {
             throw new BusinessException(
                 "Can't change the Posting Date because its status is not draft"
