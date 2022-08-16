@@ -40,6 +40,9 @@ export class GetResponse {
     contactAddress: string;
 
     @Expose()
+    contactAddressId: number;
+
+    @Expose()
     shippingFee: number;
 
     @Expose()
