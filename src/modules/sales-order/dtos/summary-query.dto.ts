@@ -24,4 +24,9 @@ export default class SummaryQuery {
     @IsDate()
     @IsOptional()
     toDate?: Date;
+
+    @Expose()
+    @IsString()
+    @IsOptional()
+    orderStatus?: string;
 }

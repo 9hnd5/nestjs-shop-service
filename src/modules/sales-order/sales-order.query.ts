@@ -123,7 +123,7 @@ export class SalesOrderQuery {
     }
 
     async getStatusSummary(query: SummaryQuery) {
-        const { salesChannelCode, fromDate, toDate, salesmanCode } = query;
+        const { salesChannelCode, fromDate, toDate, salesmanCode, orderStatus } = query;
         const condition = this.salesOrderRepo.repository
             .createQueryBuilder('s')
             .where('is_deleted = :isDeleted', { isDeleted: false });
@@ -136,6 +136,11 @@ export class SalesOrderQuery {
         if (salesmanCode) {
             condition.andWhere('salesman_code = :salesmanCode', {
                 salesmanCode,
+            });
+        }
+        if (orderStatus) {
+            condition.andWhere('status = :orderStatus', {
+                orderStatus,
             });
         }
         if (fromDate) {
