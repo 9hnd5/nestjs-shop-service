@@ -135,11 +135,7 @@ export class SalesOrderQuery {
                 salesmanCode,
             });
         }
-        if (orderStatus) {
-            condition.andWhere('status = :orderStatus', {
-                orderStatus,
-            });
-        }
+
         if (fromDate) {
             condition.andWhere('posting_date >= :fromDate', { fromDate });
         }
@@ -152,6 +148,12 @@ export class SalesOrderQuery {
             .groupBy('s.status')
             .select(['count(s.status) as count', 's.status as status'])
             .getRawMany<OrderStatus>();
+
+        if (orderStatus) {
+            condition.andWhere('status = :orderStatus', {
+                orderStatus,
+            });
+        }
 
         const paymentStatuses = (
             await condition
