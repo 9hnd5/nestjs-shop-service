@@ -10,6 +10,12 @@ export class GetResponse {
     code: string;
 
     @Expose()
+    paymentMethodId: number;
+
+    @Expose()
+    paymentMethodName: string;
+
+    @Expose()
     status: string;
 
     @Expose()

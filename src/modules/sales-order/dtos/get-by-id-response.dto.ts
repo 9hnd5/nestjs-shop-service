@@ -7,12 +7,6 @@ export class GetByIdResponse extends GetResponse {
     note?: string;
 
     @Expose()
-    paymentMethodId: number;
-
-    @Expose()
-    paymentMethodName: string;
-
-    @Expose()
     orderDiscountAmount: number;
 
     @Expose()
