@@ -8,6 +8,7 @@ import UpdateSalesOrder from '@modules/sales-order/dtos/update-sales-order.dto';
 import { SalesOrderQuery } from '@modules/sales-order/sales-order.query';
 import { Body, Controller, Get, Param, Patch, Post, Put, Query } from '@nestjs/common';
 import { Mediator } from 'be-core';
+import { CalculateSalesOrderCommand } from './commands/calculate_order.command';
 import { UpdateSalesOrderStatusCommand } from './commands/update-sales-order-status.command';
 import { SalesOrderStatus } from './enums/sales-order-status.enum';
 
@@ -24,6 +25,11 @@ export class SalesOrderController {
         return this.salesOrderQuery.getStatusSummary(query);
     }
 
+    @Get('/by-salesman')
+    getsBySalesman(@Query() query: GetQuery) {
+        return this.salesOrderQuery.get(query);
+    }
+
     @Get(':id')
     getById(@Param('id') id: number) {
         return this.salesOrderQuery.getById(id);
@@ -32,6 +38,13 @@ export class SalesOrderController {
     @Post()
     post(@Body() data: AddSalesOrder) {
         const command = new AddSalesOrderCommand();
+        command.data = data;
+        return this.mediator.send(command);
+    }
+
+    @Post('/calculate')
+    calculateOrder(@Body() data: AddSalesOrder) {
+        const command = new CalculateSalesOrderCommand();
         command.data = data;
         return this.mediator.send(command);
     }
