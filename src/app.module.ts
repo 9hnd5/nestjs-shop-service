@@ -7,23 +7,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import {
     AuthModule,
     CacheModule,
+    CloseConnectionInterceptor,
     CoreResInterceptor,
     InitialModule,
-    CloseConnectionInterceptor,
 } from 'be-core';
-import { DataSource } from 'typeorm';
 import { load } from './config';
-const dataSource = new DataSource({
-    type: 'mysql',
-    host: '172.16.0.110',
-    port: 6003,
-    username: 'dev',
-    password: 'comatic_dev@2022',
-    database: 'comatic_icc',
-    entities: [__dirname + '/modules/**/**.config.{ts,js}'],
-    migrations: [__dirname + '/migrations/*.{ts,js}'],
-    synchronize: false,
-});
+
 @Module({
     imports: [
         ConfigModule.forRoot({
@@ -68,4 +57,3 @@ const dataSource = new DataSource({
     ],
 })
 export class AppModule {}
-export { dataSource };

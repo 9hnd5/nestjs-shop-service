@@ -4,44 +4,44 @@ import {
 } from '@modules/sales-order/entities/sales-order-item.entity';
 import { PaymentStatus } from '@modules/sales-order/enums/payment-status.enum';
 import { SalesOrderStatus } from '@modules/sales-order/enums/sales-order-status.enum';
-import { BusinessException, DeepMutable, TenantBase } from 'be-core';
+import { BusinessException, TenantBase } from 'be-core';
 import { isAfter } from 'date-fns';
 import { isArray, remove } from 'lodash';
 
 export class SalesOrderProps extends TenantBase {
-    readonly id: number;
-    readonly code: string;
-    readonly deliveryDate: Date;
-    readonly status: string;
-    readonly postingDate: Date;
-    readonly contactPerson: string;
-    readonly contactPhoneNumber: string;
-    readonly contactAddress: string;
-    readonly contactAddressId: number;
-    readonly salesChannelCode: string;
-    readonly salesChannelName: string;
-    readonly deliveryPartner: string;
-    readonly shippingFee: number;
-    readonly paymentMethodId: number;
-    readonly paymentMethodName: string;
-    readonly totalAmount: number;
-    readonly totalBeforeDiscount: number;
-    readonly totalLineDiscount: number;
-    readonly orderDiscountAmount: number;
-    readonly commission: number;
-    readonly salesmanCode: string;
-    readonly salesmanName: string;
-    readonly tax: number;
-    readonly paymentStatus?: PaymentStatus;
-    readonly items: SalesOrderItemProps[];
-    readonly customerId?: number;
-    readonly customerName?: string;
-    readonly customerPhoneNumber?: string;
-    readonly customerAddress?: string;
-    readonly note?: string;
+    id: number;
+    code: string;
+    deliveryDate: Date;
+    status: string;
+    postingDate: Date;
+    contactPerson: string;
+    contactPhoneNumber: string;
+    contactAddress: string;
+    contactAddressId: number;
+    salesChannelCode: string;
+    salesChannelName: string;
+    deliveryPartner: string;
+    shippingFee: number;
+    paymentMethodId: number;
+    paymentMethodName: string;
+    totalAmount: number;
+    totalBeforeDiscount: number;
+    totalLineDiscount: number;
+    orderDiscountAmount: number;
+    commission: number;
+    salesmanCode: string;
+    salesmanName: string;
+    tax: number;
+    paymentStatus?: PaymentStatus;
+    items: SalesOrderItemProps[];
+    customerId?: number;
+    customerName?: string;
+    customerPhoneNumber?: string;
+    customerAddress?: string;
+    note?: string;
 }
 type AddProps = Omit<
-    DeepMutable<SalesOrderProps>,
+    SalesOrderProps,
     | 'paymentStatus'
     | 'items'
     | 'code'
@@ -62,9 +62,9 @@ type UpdateProps = Omit<AddProps, 'status' | 'postingDate' | 'createdBy'> & {
 };
 
 export class SalesOrder {
-    private props: DeepMutable<SalesOrderProps>;
+    private props: SalesOrderProps;
 
-    private constructor(props: DeepMutable<AddProps> | DeepMutable<SalesOrderProps>) {
+    private constructor(props: AddProps | SalesOrderProps) {
         if ('id' in props) {
             this.props = props;
         } else {
