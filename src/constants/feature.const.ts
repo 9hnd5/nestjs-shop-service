@@ -3,4 +3,5 @@ export class FeatureConst {
     public static readonly variantManagement: string = 'VariantManagement';
     public static readonly productCategoryManagement: string = 'ProductCategoryManagement';
     public static readonly uomManagement: string = 'UomManagement';
+    public static readonly orderManagement: string = 'OrderManagement';
 }
