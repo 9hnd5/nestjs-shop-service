@@ -59,14 +59,14 @@ export class UpdateSalesOrderCommandHanlder extends BaseCommandHandler<
         for (const item of orderItems) {
             const index = data.items.findIndex((x) => x.id === item.id);
             if (index < 0) {
-                salesOrder.removeItem(item.entity.id);
+                salesOrder.removeItem(item.id);
             }
         }
 
         for (const item of data.items) {
             //update
             if (item.id) {
-                const existItem = salesOrder.items.find((x) => x.entity.id == item.id);
+                const existItem = salesOrder.items.find((x) => x.id == item.id);
                 if (existItem) {
                     existItem.update({
                         itemId: item.itemId,
@@ -91,6 +91,6 @@ export class UpdateSalesOrderCommandHanlder extends BaseCommandHandler<
         }
 
         const result = await this.salesOrderRepo.repository.save(salesOrder);
-        return result.entity.id;
+        return result.id;
     }
 }

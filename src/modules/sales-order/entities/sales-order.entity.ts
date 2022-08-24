@@ -1,118 +1,137 @@
 import {
     SalesOrderItem,
-    SalesOrderItemProps,
+    SalesOrderItemEntity,
 } from '@modules/sales-order/entities/sales-order-item.entity';
 import { PaymentStatus } from '@modules/sales-order/enums/payment-status.enum';
 import { SalesOrderStatus } from '@modules/sales-order/enums/sales-order-status.enum';
-import { BusinessException, TenantBase } from 'be-core';
+import { BusinessException, TenantEntity, AggregateRoot, AddType } from 'be-core';
 import { isAfter } from 'date-fns';
-import { isArray, remove } from 'lodash';
+import { isArray, remove, merge } from 'lodash';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
-export class SalesOrderProps extends TenantBase {
+@Entity('sales_order')
+export class SalesOrderEntity extends TenantEntity {
+    @PrimaryGeneratedColumn()
     id: number;
+    @Column({ name: 'code', type: String })
     code: string;
+    @Column({ name: 'delivery_date', type: Date })
     deliveryDate: Date;
+    @Column({ name: 'status', type: String })
     status: string;
+    @Column({ name: 'posting_date', type: Date })
     postingDate: Date;
+    @Column({ name: 'contact_person', type: String })
     contactPerson: string;
+    @Column({ name: 'contact_phone_number', type: String })
     contactPhoneNumber: string;
+    @Column({ name: 'contact_address', type: String })
     contactAddress: string;
+    @Column({ name: 'contact_address_id', type: Number })
     contactAddressId: number;
+    @Column({ name: 'sales_channel_code', type: String })
     salesChannelCode: string;
+    @Column({ name: 'sales_channel_name', type: String })
     salesChannelName: string;
+    @Column({ name: 'delivery_partner', type: String })
     deliveryPartner: string;
+    @Column({ name: 'shipping_fee', type: Number })
     shippingFee: number;
+    @Column({ name: 'payment_method_id', type: Number })
     paymentMethodId: number;
+    @Column({ name: 'payment_method_name', type: String })
     paymentMethodName: string;
+    @Column({ name: 'total_amount', type: Number })
     totalAmount: number;
+    @Column({ name: 'total_before_discount', type: Number })
     totalBeforeDiscount: number;
+    @Column({ name: 'total_line_discount', type: Number })
     totalLineDiscount: number;
+    @Column({ name: 'order_discount_amount', type: Number })
     orderDiscountAmount: number;
+    @Column({ name: 'commission', type: Number })
     commission: number;
+    @Column({ name: 'salesman_code', type: String })
     salesmanCode: string;
+    @Column({ name: 'salesman_name', type: String })
     salesmanName: string;
+    @Column({ name: 'tax', type: Number })
     tax: number;
+    @Column({ name: 'payment_status', type: 'enum', enum: PaymentStatus, nullable: true })
     paymentStatus?: PaymentStatus;
-    items: SalesOrderItemProps[];
+    @OneToMany(() => SalesOrderItemEntity, (s) => s.order, { cascade: true })
+    items: SalesOrderItemEntity[];
+    @Column({ name: 'customer_id', type: Number, nullable: true })
     customerId?: number;
+    @Column({ name: 'customer_name', type: String, nullable: true })
     customerName?: string;
+    @Column({ name: 'customer_phone_number', type: String, nullable: true })
     customerPhoneNumber?: string;
+    @Column({ name: 'customer_address', type: String, nullable: true })
     customerAddress?: string;
+    @Column({ name: 'note', type: String, nullable: true })
     note?: string;
 }
 type AddProps = Omit<
-    SalesOrderProps,
+    AddType<SalesOrderEntity>,
     | 'paymentStatus'
     | 'items'
     | 'code'
     | 'id'
     | 'totalAmount'
-    | 'createdDate'
-    | 'modifiedDate'
-    | 'modifiedBy'
-    | 'companyId'
-    | 'isDeleted'
     | 'totalLineDiscount'
     | 'totalBeforeDiscount'
     | 'tax'
 >;
-type UpdateProps = Omit<AddProps, 'status' | 'postingDate' | 'createdBy'> & {
+type UpdateProps = Omit<AddProps, 'status' | 'postingDate'> & {
     modifiedBy: number;
     postingDate?: Date;
 };
 
-export class SalesOrder {
-    private props: SalesOrderProps;
-
-    private constructor(props: AddProps | SalesOrderProps) {
-        if ('id' in props) {
-            this.props = props;
-        } else {
-            this.props = { ...this.props, ...props };
-        }
+export class SalesOrder extends AggregateRoot<SalesOrderEntity> {
+    private constructor(entity: Partial<SalesOrderEntity>) {
+        super(entity);
     }
 
-    get id() {
-        return this.props.id;
+    get customerId() {
+        return this.entity.customerId;
     }
-    get entity() {
-        return this.props;
-    }
+
     get items() {
-        return this.props.items.map((x) => new SalesOrderItem(x));
-    }
-    set code(value: string) {
-        this.props.code = value;
+        return this.entity.items.map((x) => new SalesOrderItem(x));
     }
 
-    static create(props: AddProps) {
+    set code(value: string) {
+        this.entity.code = value;
+    }
+
+    static create(data: AddProps) {
         return new SalesOrder({
-            ...props,
-            createdDate: new Date(),
+            ...data,
             paymentStatus:
-                props.status === SalesOrderStatus.Draft ? undefined : PaymentStatus.Unpaid,
+                data.status === SalesOrderStatus.Draft ? undefined : PaymentStatus.Unpaid,
         });
     }
 
-    static createFromPersistence(props: SalesOrderProps) {
-        return new SalesOrder(props);
+    static createFromPersistence(entity: SalesOrderEntity) {
+        return new SalesOrder(entity);
     }
 
     update(data: UpdateProps) {
-        if (isAfter(this.props.postingDate, data.deliveryDate)) {
+        if (isAfter(this.entity.postingDate, data.deliveryDate)) {
             throw new BusinessException('Posting Date is not allow before Delivery Date');
         }
         if (data.postingDate) {
             this.changePostingDate(data.postingDate);
         }
-        this.props = { ...this.props, ...data, modifiedDate: new Date() };
+        this.entity = merge(this.entity, data);
     }
 
     addItem(item: SalesOrderItem) {
-        if (!isArray(this.props.items)) {
-            this.props.items = [];
+        if (!isArray(this.entity.items)) {
+            this.entity.items = [];
         }
-        this.props.items.push(item.entity);
+        this.entity.items.push(item.toEntity());
         this.#calcTotalBeforeDiscount();
         this.#calcTotalLineDiscount();
         this.#calcTax();
@@ -120,9 +139,9 @@ export class SalesOrder {
     }
 
     updateItem(id: number, item: SalesOrderItem) {
-        const index = this.props.items.findIndex((x) => x.id === id);
+        const index = this.entity.items.findIndex((x) => x.id === id);
         if (index >= 0) {
-            this.props.items[index] = item.entity;
+            this.entity.items[index] = item.toEntity();
         }
         this.#calcTotalBeforeDiscount();
         this.#calcTotalLineDiscount();
@@ -131,10 +150,10 @@ export class SalesOrder {
     }
 
     removeItem(id: number) {
-        if (!isArray(this.props.items)) {
-            this.props.items = [];
+        if (!isArray(this.entity.items)) {
+            this.entity.items = [];
         }
-        remove(this.props.items, (x) => x.id === id);
+        remove(this.entity.items, (x) => x.id === id);
         this.#calcTotalBeforeDiscount();
         this.#calcTotalLineDiscount();
         this.#calcTax();
@@ -151,133 +170,126 @@ export class SalesOrder {
         );
     }
 
-    changeStatusToNew(newStatus: string, modifiedBy: number) {
-        const oldStatus = this.props.status;
+    changeStatusToNew(newStatus: string) {
+        const oldStatus = this.entity.status;
         if (oldStatus == SalesOrderStatus.Draft && newStatus == SalesOrderStatus.New) {
-            this.props.status = newStatus;
-            this.props.modifiedDate = new Date();
-            this.props.modifiedBy = modifiedBy;
+            this.entity.status = newStatus;
+            this.entity.modifiedDate = new Date();
         } else {
             throw new BusinessException('Status Invalid');
         }
     }
 
-    changeStatusToConfirmed(newStatus: string, modifiedBy: number) {
-        const oldStatus = this.props.status;
+    changeStatusToConfirmed(newStatus: string) {
+        const oldStatus = this.entity.status;
         if (oldStatus == SalesOrderStatus.New && newStatus == SalesOrderStatus.Confirmed) {
-            this.props.status = newStatus;
-            this.props.modifiedDate = new Date();
-            this.props.modifiedBy = modifiedBy;
+            this.entity.status = newStatus;
+            this.entity.modifiedDate = new Date();
         } else {
             throw new BusinessException('Status Invalid');
         }
     }
 
-    changeStatusToCanceled(newStatus: string, modifiedBy: number) {
-        const oldStatus = this.props.status;
+    changeStatusToCanceled(newStatus: string) {
+        const oldStatus = this.entity.status;
         if (
             (oldStatus == SalesOrderStatus.Draft && newStatus == SalesOrderStatus.Canceled) ||
             (oldStatus == SalesOrderStatus.New && newStatus == SalesOrderStatus.Canceled)
         ) {
-            this.props.status = newStatus;
-            this.props.modifiedDate = new Date();
-            this.props.modifiedBy = modifiedBy;
+            this.entity.status = newStatus;
+            this.entity.modifiedDate = new Date();
         } else {
             throw new BusinessException('Status Invalid');
         }
     }
 
-    changeStatusToOrderPreparation(newStatus: string, modifiedBy: number) {
-        const oldStatus = this.props.status;
+    changeStatusToOrderPreparation(newStatus: string) {
+        const oldStatus = this.entity.status;
         if (
             oldStatus == SalesOrderStatus.Confirmed &&
             newStatus == SalesOrderStatus.OrderPreparation
         ) {
-            this.props.status = newStatus;
-            this.props.modifiedDate = new Date();
-            this.props.modifiedBy = modifiedBy;
+            this.entity.status = newStatus;
+            this.entity.modifiedDate = new Date();
         } else {
             throw new BusinessException('Status Invalid');
         }
     }
 
-    changeStatusToWaitingDelivery(newStatus: string, modifiedBy: number) {
-        const oldStatus = this.props.status;
+    changeStatusToWaitingDelivery(newStatus: string) {
+        const oldStatus = this.entity.status;
         if (
             oldStatus == SalesOrderStatus.OrderPreparation &&
             newStatus == SalesOrderStatus.WaitingDelivery
         ) {
-            this.props.status = newStatus;
-            this.props.modifiedDate = new Date();
-            this.props.modifiedBy = modifiedBy;
+            this.entity.status = newStatus;
+            this.entity.modifiedDate = new Date();
         } else {
             throw new BusinessException('Status Invalid');
         }
     }
 
-    changeStatusToDeliveried(newStatus: string, modifiedBy: number) {
-        const oldStatus = this.props.status;
+    changeStatusToDeliveried(newStatus: string) {
+        const oldStatus = this.entity.status;
         if (
             oldStatus == SalesOrderStatus.WaitingDelivery &&
             newStatus == SalesOrderStatus.Delivered
         ) {
-            this.props.status = newStatus;
-            this.props.modifiedDate = new Date();
-            this.props.modifiedBy = modifiedBy;
+            this.entity.status = newStatus;
+            this.entity.modifiedDate = new Date();
         } else {
             throw new BusinessException('Status Invalid');
         }
     }
 
-    changeStatusToReturned(newStatus: string, modifiedBy: number) {
-        const oldStatus = this.props.status;
+    changeStatusToReturned(newStatus: string) {
+        const oldStatus = this.entity.status;
         if (oldStatus == SalesOrderStatus.Delivered && newStatus == SalesOrderStatus.Returned) {
-            this.props.status = newStatus;
-            this.props.modifiedDate = new Date();
-            this.props.modifiedBy = modifiedBy;
+            this.entity.status = newStatus;
+            this.entity.modifiedDate = new Date();
         } else {
             throw new BusinessException('Status Invalid');
         }
     }
 
     changePostingDate(postingDate: Date) {
-        if (this.props.status !== SalesOrderStatus.Draft) {
+        if (this.entity.status !== SalesOrderStatus.Draft) {
             throw new BusinessException(
                 "Can't change the Posting Date because its status is not draft"
             );
         }
 
-        if (isAfter(postingDate, this.props.deliveryDate)) {
+        if (isAfter(postingDate, this.entity.deliveryDate)) {
             throw new BusinessException('Posting Date is not allow before Delivery Date');
         }
-        this.props.postingDate = postingDate;
-        this.props.modifiedDate = new Date();
+        this.entity.postingDate = postingDate;
+        this.entity.modifiedDate = new Date();
     }
 
     #calcTotalAmount() {
-        this.props.totalAmount =
-            this.props.totalBeforeDiscount -
-            this.props.totalLineDiscount -
-            this.props.orderDiscountAmount -
-            this.props.commission +
-            this.props.tax +
-            this.props.shippingFee;
+        this.entity.totalAmount =
+            this.entity.totalBeforeDiscount -
+            this.entity.totalLineDiscount -
+            this.entity.orderDiscountAmount -
+            this.entity.commission +
+            this.entity.tax +
+            this.entity.shippingFee;
     }
 
     #calcTotalBeforeDiscount() {
-        this.props.totalBeforeDiscount = this.props.items.reduce((value, current) => {
+        this.entity.totalBeforeDiscount = this.entity.items.reduce((value, current) => {
             return value + current.quantity * current.unitPrice;
         }, 0);
     }
 
     #calcTotalLineDiscount() {
-        this.props.totalLineDiscount = this.props.items.reduce((value, current) => {
+        this.entity.totalLineDiscount = this.entity.items.reduce((value, current) => {
             return value + current.discountAmount;
         }, 0);
     }
 
     #calcTax() {
-        this.props.tax = this.props.items.reduce((value, current) => {
+        this.entity.tax = this.entity.items.reduce((value, current) => {
             return value + current.tax;
         }, 0);
     }

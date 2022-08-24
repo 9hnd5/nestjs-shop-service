@@ -96,12 +96,12 @@ export class SalesOrderQuery {
         if (!salesOrder) {
             throw new NotFoundException('Not Found');
         }
-        let response = plainToInstance(GetByIdResponse, salesOrder.entity, {
+        let response = plainToInstance(GetByIdResponse, salesOrder.toEntity(), {
             excludeExtraneousValues: true,
         });
         if (salesOrder && salesOrder.items.length > 0) {
             const itemIds = salesOrder.items.map((t) => t.itemId);
-            const customerId = salesOrder.entity.customerId ?? 0;
+            const customerId = salesOrder.customerId ?? 0;
             const itemsWithPrice = await this.salesOrderService.getItemByIds(itemIds, customerId);
             for (const line of response.items) {
                 const item = itemsWithPrice.find((t) => t.id === line.itemId);

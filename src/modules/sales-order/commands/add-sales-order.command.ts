@@ -44,7 +44,6 @@ export class AddSalesOrderCommandHandler extends BaseCommandHandler<AddSalesOrde
             salesmanName: data.salesmanName,
             postingDate: data.postingDate,
             deliveryDate: data.deliveryDate,
-            createdBy: 0,
         });
 
         try {

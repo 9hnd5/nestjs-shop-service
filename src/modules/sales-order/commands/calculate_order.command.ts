@@ -1,17 +1,17 @@
 import AddSalesOrder from '@modules/sales-order/dtos/add-sales-order.dto';
 import { SalesOrderItem } from '@modules/sales-order/entities/sales-order-item.entity';
-import { SalesOrder, SalesOrderProps } from '@modules/sales-order/entities/sales-order.entity';
+import { SalesOrder, SalesOrderEntity } from '@modules/sales-order/entities/sales-order.entity';
 import { BaseCommand, BaseCommandHandler, BusinessException, RequestHandler } from 'be-core';
 import { SalesOrderStatus } from '../enums/sales-order-status.enum';
 
-export class CalculateSalesOrderCommand extends BaseCommand<SalesOrderProps> {
+export class CalculateSalesOrderCommand extends BaseCommand<SalesOrderEntity> {
     data: AddSalesOrder;
 }
 
 @RequestHandler(CalculateSalesOrderCommand)
 export class CalculateSalesOrderCommandHandler extends BaseCommandHandler<
     CalculateSalesOrderCommand,
-    SalesOrderProps
+    SalesOrderEntity
 > {
     constructor() {
         super();
@@ -42,7 +42,6 @@ export class CalculateSalesOrderCommandHandler extends BaseCommandHandler<
             salesmanName: data.salesmanName,
             postingDate: data.postingDate,
             deliveryDate: data.deliveryDate,
-            createdBy: 0,
         });
 
         try {
@@ -57,7 +56,7 @@ export class CalculateSalesOrderCommandHandler extends BaseCommandHandler<
                     })
                 );
             }
-            return Promise.resolve(order.entity);
+            return Promise.resolve(order.toEntity());
         } catch (error) {
             throw new BusinessException(error);
         }

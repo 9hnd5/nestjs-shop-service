@@ -1,71 +1,73 @@
-import { SalesOrderProps } from '@modules/sales-order/entities/sales-order.entity';
-import { TenantBase, DeepMutable } from 'be-core';
+import { SalesOrderEntity } from '@modules/sales-order/entities/sales-order.entity';
+import { AddType, AggregateRoot, TenantEntity } from 'be-core';
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
-export class SalesOrderItemProps extends TenantBase {
-    readonly id: number;
-    readonly orderId: number;
-    readonly itemId: number;
-    readonly uomId: number;
-    readonly tax: number;
-    readonly percentageDiscount: number;
-    readonly discountAmount: number;
-    readonly unitPrice: number;
-    readonly quantity: number;
-    readonly lineTotal: number;
-    readonly order: SalesOrderProps;
-    readonly itemType?: number;
+@Entity('sales_order_item')
+export class SalesOrderItemEntity extends TenantEntity {
+    @PrimaryGeneratedColumn()
+    id: number;
+    @Column({ name: 'order_id', type: Number })
+    orderId: number;
+    @Column({ name: 'item_id', type: Number })
+    itemId: number;
+    @Column({ name: 'uom_id', type: Number })
+    uomId: number;
+    @Column({ name: 'tax', type: Number })
+    tax: number;
+    @Column({ name: 'percentage_discount', type: Number })
+    percentageDiscount: number;
+    @Column({ name: 'discount_amount', type: Number })
+    discountAmount: number;
+    @Column({ name: 'unit_price', type: Number })
+    unitPrice: number;
+    @Column({ name: 'quantity', type: Number })
+    quantity: number;
+    @Column({ name: 'line_total', type: Number })
+    lineTotal: number;
+    @ManyToOne(() => SalesOrderEntity, (s) => s.items, { orphanedRowAction: 'delete' })
+    @JoinColumn({ name: 'order_id' })
+    order: SalesOrderEntity;
+    @Column({ name: 'item_type', type: Number })
+    itemType: number;
 }
 type AddProps = Pick<
-    DeepMutable<SalesOrderItemProps>,
+    AddType<SalesOrderItemEntity>,
     'itemId' | 'uomId' | 'unitPrice' | 'quantity' | 'tax'
 >;
 
 type UpdateProps = Omit<AddProps, 'tax'>;
-export class SalesOrderItem {
-    private props: DeepMutable<SalesOrderItemProps>;
-    constructor(props: DeepMutable<SalesOrderItemProps | AddProps>) {
-        if ('id' in props) {
-            this.props = props;
-        } else {
-            this.props = { ...this.props, ...props };
-        }
+export class SalesOrderItem extends AggregateRoot<SalesOrderItemEntity> {
+    constructor(entity: Partial<SalesOrderItemEntity>) {
+        super(entity);
     }
 
-    get id() {
-        return this.props.id;
-    }
-    get entity() {
-        return this.props;
-    }
     get itemId() {
-        return this.props.itemId;
+        return this.entity.itemId;
     }
     set itemId(value: number) {
-        this.props.itemId = value;
+        this.entity.itemId = value;
     }
     set uomId(value: number) {
-        this.props.uomId = value;
+        this.entity.uomId = value;
     }
 
     update(data: UpdateProps) {
-        this.itemId = data.itemId;
-        this.uomId = data.uomId;
-        this.props.quantity = data.quantity;
-        this.props.unitPrice = data.unitPrice;
-        this.props.lineTotal = data.quantity * data.unitPrice;
+        this.entity.itemId = data.itemId;
+        this.entity.uomId = data.uomId;
+        this.entity.quantity = data.quantity;
+        this.entity.unitPrice = data.unitPrice;
+        this.entity.lineTotal = data.quantity * data.unitPrice;
     }
 
-    static create(props: AddProps) {
+    static create(data: AddProps) {
         return new SalesOrderItem({
-            ...props,
+            ...data,
             discountAmount: 0,
-            createdDate: new Date(),
-            createdBy: 0,
-            lineTotal: props.quantity * props.unitPrice,
+            lineTotal: data.quantity * data.unitPrice,
         });
     }
 
-    static createFromPersistence(props: SalesOrderItemProps) {
-        return new SalesOrderItem(props);
+    static createFromPersistence(entity: SalesOrderItemEntity) {
+        return new SalesOrderItem(entity);
     }
 }

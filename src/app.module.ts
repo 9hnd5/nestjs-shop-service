@@ -28,7 +28,7 @@ import { load } from './config';
                     username: request.scopeVariable.primary.username,
                     password: request.scopeVariable.primary.password,
                     database: request.scopeVariable.primary.database,
-                    entities: [__dirname + '/modules/**/**.config.{ts,js}'],
+                    entities: [__dirname + '/modules/**/**.entity.{ts,js}'],
                     synchronize: false,
                     retryAttempts: 3,
                     retryDelay: 1000,
