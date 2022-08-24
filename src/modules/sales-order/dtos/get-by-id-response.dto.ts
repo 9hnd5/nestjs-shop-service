@@ -47,6 +47,9 @@ class Item {
     lineTotal: number;
 
     @Expose()
+    imageId: string;
+
+    @Expose()
     @Type(() => PriceListDetail)
     priceListDetails: PriceListDetail[];
 }

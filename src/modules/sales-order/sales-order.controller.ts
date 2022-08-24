@@ -1,3 +1,5 @@
+import { FeatureConst } from '@constants/feature.const';
+import { MessageConst } from '@constants/message.const';
 import { AddSalesOrderCommand } from '@modules/sales-order/commands/add-sales-order.command';
 import { UpdateSalesOrderPostingDateCommand } from '@modules/sales-order/commands/update-sales-order-posting-date.command';
 import { UpdateSalesOrderCommand } from '@modules/sales-order/commands/update-sales-order.command';
@@ -6,15 +8,32 @@ import { GetQuery } from '@modules/sales-order/dtos/get-query.dto';
 import SummaryQuery from '@modules/sales-order/dtos/summary-query.dto';
 import UpdateSalesOrder from '@modules/sales-order/dtos/update-sales-order.dto';
 import { SalesOrderQuery } from '@modules/sales-order/sales-order.query';
-import { Body, Controller, Get, Param, Patch, Post, Put, Query } from '@nestjs/common';
-import { Mediator } from 'be-core';
+import {
+    Body,
+    Controller,
+    Get,
+    NotFoundException,
+    Param,
+    Patch,
+    Post,
+    Put,
+    Query,
+} from '@nestjs/common';
+import { BaseController, Mediator, LocalAuthorize, Permission } from 'be-core';
 import { CalculateSalesOrderCommand } from './commands/calculate_order.command';
 import { UpdateSalesOrderStatusCommand } from './commands/update-sales-order-status.command';
 import { SalesOrderStatus } from './enums/sales-order-status.enum';
+import { SalesOrderService } from './sales-order.service';
 
 @Controller('sales-order')
-export class SalesOrderController {
-    constructor(private mediator: Mediator, private salesOrderQuery: SalesOrderQuery) {}
+export class SalesOrderController extends BaseController {
+    constructor(
+        private mediator: Mediator,
+        private salesOrderQuery: SalesOrderQuery,
+        private salesOrderService: SalesOrderService
+    ) {
+        super();
+    }
     @Get()
     get(@Query() query: GetQuery) {
         return this.salesOrderQuery.get(query);
@@ -26,8 +45,15 @@ export class SalesOrderController {
     }
 
     @Get('/by-salesman')
-    getsBySalesman(@Query() query: GetQuery) {
-        return this.salesOrderQuery.get(query);
+    @LocalAuthorize(FeatureConst.orderManagement, Permission.View)
+    async getsBySalesman(@Query() query: GetQuery) {
+        const userId = this.scopeVariable.session?.userId ?? 0;
+        const response = await this.salesOrderService.getEmployeeByUserId(+userId);
+        if (response) {
+            query.salesmanCode = response.code;
+            return this.salesOrderQuery.get(query);
+        }
+        throw new NotFoundException(MessageConst.EmployeeNotExist);
     }
 
     @Get(':id')

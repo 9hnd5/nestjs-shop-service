@@ -1,27 +1,28 @@
 {
     "primarySQLConnection": {
-        "host": "172.16.0.110",
+        "host": "172.200.0.200",
         "port": 6003,
-        "username": "dev",
-        "password": "comatic_dev@2022",
+        "username": "running",
+        "password": "6eWG&=:G",
         "database": "comatic_{0}"
     },
     "secondarySQLConnection": {
-        "host": "172.16.0.110",
+        "host": "172.200.0.200",
         "port": 6003,
-        "username": "dev",
-        "password": "comatic_dev@2022",
+        "username": "running",
+        "password": "6eWG&=:G",
         "database": "comatic_{0}"
     },
     "redis": {
-        "host": "172.16.0.110",
+        "host": "172.200.0.200",
         "port": 5001,
-        "password": "abcd1234",
+        "password": "Juve@12345",
         "db": 2
     },
     "externalService": {
         "paymentUrl": "http://localhost:6006",
         "ecommerceShopService": "http://localhost:4010",
-        "deliveryService": "http://localhost:3001"
+        "deliveryService": "http://localhost:3001",
+        "memberService": "http://localhost:4002"
     }
 }

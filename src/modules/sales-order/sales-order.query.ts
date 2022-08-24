@@ -108,6 +108,7 @@ export class SalesOrderQuery {
                 if (item) {
                     line.priceListDetails = item.priceListDetails;
                     line.itemName = item.name;
+                    line.imageId = item.picture?.imageId ?? '';
                     line.uomName =
                         line.priceListDetails.find((t) => t.uomId === line.uomId)?.uomName || '';
                 }
