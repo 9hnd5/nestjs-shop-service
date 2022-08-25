@@ -1,3 +1,4 @@
+import { FeatureConst } from '@constants/feature.const';
 import { MessageConst } from '@constants/message.const';
 import { AddSalesOrderCommand } from '@modules/sales-order/commands/add-sales-order.command';
 import { UpdateSalesOrderPostingDateCommand } from '@modules/sales-order/commands/update-sales-order-posting-date.command';
@@ -18,7 +19,7 @@ import {
     Put,
     Query,
 } from '@nestjs/common';
-import { BaseController, Mediator } from 'be-core';
+import { BaseController, LocalAuthorize, Mediator, Permission } from 'be-core';
 import { CalculateSalesOrderCommand } from './commands/calculate_order.command';
 import { UpdateSalesOrderStatusCommand } from './commands/update-sales-order-status.command';
 import { SalesOrderStatus } from './enums/sales-order-status.enum';
@@ -45,6 +46,18 @@ export class SalesOrderController extends BaseController {
             query.salesmanCode = response.code;
         }
         return this.salesOrderQuery.get(query);
+    }
+
+    @Get('/by-salesman')
+    @LocalAuthorize(FeatureConst.orderManagement, Permission.View)
+    async getsBySalesman(@Query() query: GetQuery) {
+        const userId = this.scopeVariable.session?.userId ?? 0;
+        const response = await this.salesOrderService.getEmployeeByUserId(+userId);
+        if (response) {
+            query.salesmanCode = response.code;
+            return this.salesOrderQuery.get(query);
+        }
+        throw new NotFoundException(MessageConst.EmployeeNotExist);
     }
 
     @Get('/summary')
