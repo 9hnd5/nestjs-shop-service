@@ -36,6 +36,7 @@ export class SalesOrderController extends BaseController {
     }
 
     @Get()
+    @LocalAuthorize(FeatureConst.orderManagement, Permission.View)
     async get(@Query() query: GetQuery) {
         if (query.byLogingUser) {
             const userId = this.scopeVariable.session?.userId ?? 0;
