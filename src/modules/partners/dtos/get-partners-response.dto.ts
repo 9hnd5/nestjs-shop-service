@@ -72,4 +72,13 @@ export class GetPartnersResponse {
 
     @Expose()
     isActive: boolean;
+
+    @Expose()
+    logoUrl: string;
+
+    @Expose()
+    isIntegrator: boolean;
+
+    @Expose()
+    isLive: boolean;
 }

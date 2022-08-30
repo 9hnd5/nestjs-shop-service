@@ -12,14 +12,12 @@ export class PartnerService {
     async getByCode(code: string) {
         try {
             const response = await this.httpClient.get<GetPartnersResponse>(
-                `extenal/delivery/integration/v1/partners=${code}`,
+                `https://api.1retail-dev.asia/external/delivery/integration/v1/partners/${code}`,
                 {
                     autoInject: true,
                     config: {
                         baseURL: externalServiceConfig.partnerService,
-                        headers: {
-                        },
-
+                        headers: {},
                     },
                 }
             );
@@ -32,7 +30,7 @@ export class PartnerService {
     async gets() {
         try {
             const response = await this.httpClient.get<GetPartnersResponse>(
-                `extenal/delivery/integration/v1/partners`,
+                `https://api.1retail-dev.asia/external/delivery/integration/v1/partners`,
                 {
                     autoInject: true,
                     config: {
