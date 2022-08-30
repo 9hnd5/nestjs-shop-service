@@ -73,6 +73,7 @@ export class UpdateSalesOrderCommandHanlder extends BaseCommandHandler<
                         uomId: item.uomId,
                         quantity: item.quantity,
                         unitPrice: item.unitPrice,
+                        itemType: item.itemType,
                     });
                     salesOrder.updateItem(item.id, existItem);
                 }
@@ -85,6 +86,7 @@ export class UpdateSalesOrderCommandHanlder extends BaseCommandHandler<
                         unitPrice: item.unitPrice,
                         quantity: item.quantity,
                         tax: item.tax ?? 0,
+                        itemType: item.itemType,
                     })
                 );
             }

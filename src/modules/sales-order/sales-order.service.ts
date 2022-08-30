@@ -2,10 +2,12 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { HttpService } from 'be-core';
 import { get as getConfig } from '../../config';
 import { Employee } from './dtos/employee.dto';
+import { ApplyPromotionDoc } from './dtos/apply-promotion.dto';
 
 const externalServiceConfig = getConfig('externalService');
 interface Item {
     id: number;
+    code: string;
     name: string;
     picture: Picture;
     priceListDetails: PriceListDetail[];
@@ -15,6 +17,7 @@ interface Picture {
 }
 interface PriceListDetail {
     uomId: number;
+    uomCode: string;
     uomName: string;
     price?: number;
     maxPrice?: number;
@@ -47,6 +50,27 @@ export class SalesOrderService {
         }
     }
 
+    async getItemByCodes(itemCodes: string[], customerId: number) {
+        try {
+            const itemsRs = await this.httpClient.post<Item[]>(
+                `internal/ecommerce-shop/v1/item/by-codes`,
+                {
+                    itemCodes,
+                    customerId,
+                },
+                {
+                    autoInject: true,
+                    config: {
+                        baseURL: externalServiceConfig.ecommerceShopService,
+                    },
+                }
+            );
+            return itemsRs.data;
+        } catch (er) {
+            throw new BadRequestException(er);
+        }
+    }
+
     async getEmployeeByUserId(userId: number) {
         try {
             const response = await this.httpClient.get<Employee>(
@@ -55,6 +79,41 @@ export class SalesOrderService {
                     autoInject: true,
                     config: {
                         baseURL: externalServiceConfig.memberService,
+                    },
+                }
+            );
+            return response.data;
+        } catch (er) {
+            throw new BadRequestException(er);
+        }
+    }
+
+    async getCustomerById(id: number) {
+        try {
+            const response = await this.httpClient.get<Employee>(
+                `internal/member/v1/customers/${id}`,
+                {
+                    autoInject: true,
+                    config: {
+                        baseURL: externalServiceConfig.memberService,
+                    },
+                }
+            );
+            return response.data;
+        } catch (er) {
+            throw new BadRequestException(er);
+        }
+    }
+
+    async applyPromotion(doc: ApplyPromotionDoc) {
+        try {
+            const response = await this.httpClient.post<ApplyPromotionDoc>(
+                `internal/promotions/v1/promotions/apply`,
+                doc,
+                {
+                    autoInject: true,
+                    config: {
+                        baseURL: externalServiceConfig.promotionService,
                     },
                 }
             );

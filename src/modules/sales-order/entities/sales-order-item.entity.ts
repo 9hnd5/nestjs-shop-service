@@ -32,7 +32,7 @@ export class SalesOrderItemEntity extends TenantEntity {
 }
 type AddProps = Pick<
     AddType<SalesOrderItemEntity>,
-    'itemId' | 'uomId' | 'unitPrice' | 'quantity' | 'tax'
+    'itemId' | 'uomId' | 'unitPrice' | 'quantity' | 'tax' | 'itemType'
 >;
 
 type UpdateProps = Omit<AddProps, 'tax'>;
@@ -64,6 +64,14 @@ export class SalesOrderItem extends AggregateRoot<SalesOrderItemEntity> {
             ...data,
             discountAmount: 0,
             lineTotal: data.quantity * data.unitPrice,
+        });
+    }
+
+    static createDiscountLine(data: AddProps, discountAmount: number) {
+        return new SalesOrderItem({
+            ...data,
+            discountAmount: -discountAmount,
+            lineTotal: -discountAmount,
         });
     }
 
