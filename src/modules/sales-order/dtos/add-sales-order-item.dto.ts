@@ -13,6 +13,11 @@ export default class AddSalesOrderItem {
     uomId: number;
 
     @Expose()
+    @IsPositive()
+    @IsInt()
+    itemType: number;
+
+    @Expose()
     @Min(0)
     @IsNumber()
     unitPrice: number;
