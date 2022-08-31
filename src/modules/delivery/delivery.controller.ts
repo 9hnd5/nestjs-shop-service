@@ -1,7 +1,7 @@
-import { Controller, Get, Query, Param } from '@nestjs/common';
+import { Controller, Get, Query, Param, ParseIntPipe } from '@nestjs/common';
 import { DeliveryService } from './delivery.service';
 import { GetAvailablePartnersQuery } from './dtos/get-available-partners-query.dto';
-import { GetDocumentsQuery } from './dtos/get-document-query.dto';
+import { GetListPartnerQuery } from './dtos/get-list-partner-query.dto';
 
 @Controller('deliveries')
 export class DeliveryController {
@@ -12,23 +12,19 @@ export class DeliveryController {
         return this.deliveryService.getAvailablePartners(query);
     }
 
-    @Get(':code')
-    getByCode(@Param('code') code: string) {
-        return this.deliveryService.getByCode(code);
+    @Get('partners')
+    getListPartner(
+        @Query('skip', ParseIntPipe) skip: number,
+        @Query('take', ParseIntPipe) take: number
+    ) {
+        return this.deliveryService.getListPartner(skip, take);
     }
 
-    @Get(':code/documents/confirmed')
-    getDocumentConfirm(@Param('code') code: string, @Query() query: GetDocumentsQuery) {
-        return this.deliveryService.getDocumentConfirmed(code, query);
-    }
-
-    @Get(':code/documents/canceled')
-    getDocumentCancel(@Param('code') code: string, @Query() query: GetDocumentsQuery) {
-        return this.deliveryService.getDocumentCanceled(code, query);
-    }
-
-    @Get(':code/documents/update')
-    getDocumentUpdate(@Param('code') code: string, @Query() query: GetDocumentsQuery) {
-        return this.deliveryService.getDocumentUpdate(code, query);
+    @Get(':partnerCode')
+    getPartnerPrice(
+        @Param('partnerCode') partnerCode: string,
+        @Query() query: GetListPartnerQuery
+    ) {
+        return this.deliveryService.getPartnerPrice(partnerCode, query);
     }
 }

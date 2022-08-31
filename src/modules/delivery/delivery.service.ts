@@ -3,9 +3,9 @@ import { HttpService } from 'be-core';
 import { get as getConfig } from '../../config';
 import { GetAvailablePartnersQuery } from './dtos/get-available-partners-query.dto';
 import { GetAvailablePartnersResponse } from './dtos/get-available-partners-response.dto';
-import { GetDocumentByCodeResponse } from './dtos/get-document-by-code-response.dto';
-import { GetDocumentsQuery } from './dtos/get-document-query.dto';
-import { GetDocumentResponse } from './dtos/get-document-response.dto';
+import { GetPartnersResponse } from './dtos/get-list-partners-response.dto';
+import { GetListPartnerQuery } from './dtos/get-list-partner-query.dto';
+import { GetPartnerPriceResponse } from './dtos/get-partner-price-response.dto';
 
 const externalServiceConfig = getConfig('externalService');
 @Injectable()
@@ -44,7 +44,6 @@ export class DeliveryService {
                 {
                     config: {
                         baseURL: externalServiceConfig.deliveryService,
-                        headers: {},
                     },
                 }
             );
@@ -54,10 +53,10 @@ export class DeliveryService {
         }
     }
 
-    async getByCode(code: string) {
+    async getListPartner(skip: number, take: number) {
         try {
-            const response = await this.httpClient.get<GetDocumentByCodeResponse>(
-                `https://api.1retail-dev.asia/external/delivery/integration/v1/documents/${code}`,
+            const response = await this.httpClient.get<GetPartnersResponse>(
+                `https://api.1retail-dev.asia/delivery/v1/partners?skip=${skip}&take=${take}`,
                 {
                     autoInject: true,
                     config: {
@@ -71,124 +70,12 @@ export class DeliveryService {
         }
     }
 
-    async getDocumentConfirmed(code: string, query: GetDocumentsQuery) {
-        const data = {
-            code: query.code,
-            status: query.status,
-            partnerCode: query.partnerCode,
-            userId: query.userId,
-            from: query.from,
-            to: query.to,
-            dimension: query.dimension,
-            fromNote: query.fromNote,
-            toNote: query.toNote,
-            isPickup: query.isPickup,
-            insuranceAmount: query.insuranceAmount,
-            insuranceFee: query.insuranceFee,
-            isCOD: query.isCOD,
-            codAmount: query.codAmount,
-            allowTrial: query.allowTrial,
-            paymentType: query.paymentType,
-            serviceLevel: query.serviceLevel,
-            itemType: query.itemType,
-            deliveryFee: query.deliveryFee,
-            totalFee: query.totalFee,
-            email: query.email,
-            lines: query.lines,
-            webhook: query.webhook,
-            totalFeeUpdated: query.totalFeeUpdated,
-        };
+    async getPartnerPrice(partnerCode: string, query: GetListPartnerQuery) {
         try {
-            const deliveryRs = await this.httpClient.post<GetDocumentResponse>(
-                `https://api.1retail-dev.asia/external/delivery/integration/v1/documents/${code}`,
-                data,
+            const deliveryRs = await this.httpClient.get<GetPartnerPriceResponse[]>(
+                `https://api.1retail-dev.asia/delivery/v1/partner-prices/${partnerCode}?fromDistrictCode=${query.fromDistrictCode}&fromProvinceCode=${query.fromProvinceCode}&toDistrictCode=${query.toDistrictCode}&toProvinceCode=${query.toProvinceCode}`,
                 {
-                    config: {
-                        baseURL: externalServiceConfig.deliveryService,
-                    },
-                }
-            );
-            return deliveryRs.data;
-        } catch (er) {
-            throw new BadRequestException(er);
-        }
-    }
-
-    async getDocumentCanceled(code: string, query: GetDocumentsQuery) {
-        const data = {
-            code: query.code,
-            status: query.status,
-            partnerCode: query.partnerCode,
-            userId: query.userId,
-            from: query.from,
-            to: query.to,
-            dimension: query.dimension,
-            fromNote: query.fromNote,
-            toNote: query.toNote,
-            isPickup: query.isPickup,
-            insuranceAmount: query.insuranceAmount,
-            insuranceFee: query.insuranceFee,
-            isCOD: query.isCOD,
-            codAmount: query.codAmount,
-            allowTrial: query.allowTrial,
-            paymentType: query.paymentType,
-            serviceLevel: query.serviceLevel,
-            itemType: query.itemType,
-            deliveryFee: query.deliveryFee,
-            totalFee: query.totalFee,
-            email: query.email,
-            lines: query.lines,
-            webhook: query.webhook,
-            totalFeeUpdated: query.totalFeeUpdated,
-        };
-        try {
-            const deliveryRs = await this.httpClient.put<GetDocumentResponse>(
-                `https://api.1retail-dev.asia/external/delivery/integration/v1/documents/${code}`,
-                data,
-                {
-                    config: {
-                        baseURL: externalServiceConfig.deliveryService,
-                    },
-                }
-            );
-            return deliveryRs.data;
-        } catch (er) {
-            throw new BadRequestException(er);
-        }
-    }
-
-    async getDocumentUpdate(code: string, query: GetDocumentsQuery) {
-        const data = {
-            code: query.code,
-            status: query.status,
-            partnerCode: query.partnerCode,
-            userId: query.userId,
-            from: query.from,
-            to: query.to,
-            dimension: query.dimension,
-            fromNote: query.fromNote,
-            toNote: query.toNote,
-            isPickup: query.isPickup,
-            insuranceAmount: query.insuranceAmount,
-            insuranceFee: query.insuranceFee,
-            isCOD: query.isCOD,
-            codAmount: query.codAmount,
-            allowTrial: query.allowTrial,
-            paymentType: query.paymentType,
-            serviceLevel: query.serviceLevel,
-            itemType: query.itemType,
-            deliveryFee: query.deliveryFee,
-            totalFee: query.totalFee,
-            email: query.email,
-            lines: query.lines,
-            webhook: query.webhook,
-            totalFeeUpdated: query.totalFeeUpdated,
-        };
-        try {
-            const deliveryRs = await this.httpClient.patch<GetDocumentResponse>(
-                `https://api.1retail-dev.asia/external/delivery/integration/v1/documents/${code}`,
-                data,
-                {
+                    autoInject: true,
                     config: {
                         baseURL: externalServiceConfig.deliveryService,
                     },

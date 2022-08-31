@@ -39,23 +39,14 @@ class PartnerInformation {
     @Expose()
     @Type(() => FormField)
     isUsePriceList?: FormField;
-
-    @Expose()
-    @Type(() => FormField)
-    clientId?: FormField;
-
-    @Expose()
-    @Type(() => FormField)
-    clientSecret?: FormField;
-
-    @Expose()
-    @Type(() => FormField)
-    tokenExpiresTime?: FormField;
 }
 
 export class GetPartnersResponse {
     @Expose()
     _id: string;
+
+    @Expose()
+    userId: string;
 
     @Expose()
     code: string;
@@ -75,9 +66,6 @@ export class GetPartnersResponse {
 
     @Expose()
     logoUrl: string;
-
-    @Expose()
-    isIntegrator: boolean;
 
     @Expose()
     isLive: boolean;
