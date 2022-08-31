@@ -105,11 +105,11 @@ export class SalesOrderService {
         }
     }
 
-    async applyPromotion(doc: ApplyPromotionDoc) {
+    async applyPromotion(document: ApplyPromotionDoc) {
         try {
             const response = await this.httpClient.post<ApplyPromotionDoc>(
                 `internal/promotions/v1/promotions/apply`,
-                doc,
+                { document },
                 {
                     autoInject: true,
                     config: {

@@ -58,23 +58,25 @@ export class AddSalesOrderCommandHandler extends BaseCommandHandler<AddSalesOrde
             this.queryRunner.startTransaction();
             const repo = this.queryRunner.manager.withRepository(this.salesOrderRepo.repository);
 
-            // Calculate promotion
-            if (data.customerId) {
+            // Calculate promotion only if order came from Comatic
+            const onlyNormalLines = data.items.filter((t) => t.itemType === PromotionTypeId.NORMAL);
+            if (data.customerId && onlyNormalLines.length > 0) {
                 const customer = await this.salesOrderService.getCustomerById(data.customerId);
                 const itemInfos = await this.salesOrderService.getItemByIds(
-                    data.items.map((t) => t.itemId),
+                    onlyNormalLines.map((t) => t.itemId),
                     customer.id
                 );
                 const toPromotion: ApplyPromotionDocLine[] = [];
-                for (const line of data.items) {
+                for (const line of onlyNormalLines) {
                     const item = itemInfos.find((t) => t.id === line.itemId);
                     const uom = item?.priceListDetails.find((t) => t.uomId === line.uomId);
-                    if (!item || !uom) throw new BusinessException(MessageConst.MissingItemOrPrice);
+                    if (!item || !uom?.price)
+                        throw new BusinessException(MessageConst.MissingItemOrPrice);
                     toPromotion.push({
                         item: item.code,
                         uom: uom.uomCode,
                         quantity: line.quantity,
-                        unitPrice: line.unitPrice,
+                        unitPrice: uom.price,
                         itemType: PromotionTypeId.NORMAL,
                         tax: line.tax ?? 0,
                         discountValue: 0,
@@ -113,7 +115,7 @@ export class AddSalesOrderCommandHandler extends BaseCommandHandler<AddSalesOrde
                                     SalesOrderItem.create({
                                         itemId: item.id,
                                         uomId: uom.uomId,
-                                        unitPrice: line.unitPrice,
+                                        unitPrice: uom.price,
                                         quantity: line.quantity,
                                         tax: line.tax,
                                         itemType: line.itemType,
@@ -194,10 +196,23 @@ export class AddSalesOrderCommandHandler extends BaseCommandHandler<AddSalesOrde
                                     tax: 0,
                                     itemType: line.itemType,
                                 },
-                                line.discountValue * order.totalBeforeDiscount
+                                (line.discountValue * order.totalBeforeDiscount) / 100
                             )
                         );
                     }
+                }
+            } else {
+                for (const item of data.items) {
+                    order.addItem(
+                        SalesOrderItem.create({
+                            itemId: item.itemId,
+                            uomId: item.uomId,
+                            unitPrice: item.unitPrice,
+                            quantity: item.quantity,
+                            tax: item.tax ?? 0,
+                            itemType: item.itemType,
+                        })
+                    );
                 }
             }
 

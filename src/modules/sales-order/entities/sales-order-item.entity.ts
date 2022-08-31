@@ -70,7 +70,7 @@ export class SalesOrderItem extends AggregateRoot<SalesOrderItemEntity> {
     static createDiscountLine(data: AddProps, discountAmount: number) {
         return new SalesOrderItem({
             ...data,
-            discountAmount: -discountAmount,
+            discountAmount,
             lineTotal: -discountAmount,
         });
     }
