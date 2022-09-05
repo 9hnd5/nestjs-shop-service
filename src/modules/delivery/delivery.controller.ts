@@ -1,4 +1,4 @@
-import { Controller, Get, Query, Param } from '@nestjs/common';
+import { Controller, Get, Query, Param, Post, Put, Patch } from '@nestjs/common';
 import { DeliveryService } from './delivery.service';
 import { GetAvailablePartnersQuery } from './dtos/get-available-partners-query.dto';
 import { GetPartnerPricesQuery } from './dtos/get-partner-prices-query.dto';
@@ -24,5 +24,20 @@ export class DeliveryController {
         @Query() query: GetPartnerPricesQuery
     ) {
         return this.deliveryService.getPartnerPrices(partnerCode, query);
+    }
+
+    @Post(':code')
+    confirm(@Param('code') code: string) {
+        return this.deliveryService.documentConfirmed(code);
+    }
+
+    @Put(':code')
+    cancel(@Param('code') code: string) {
+        return this.deliveryService.documentCancel(code);
+    }
+
+    @Patch(':code')
+    update(@Param('code') code: string) {
+        return this.deliveryService.documentUpdate(code);
     }
 }

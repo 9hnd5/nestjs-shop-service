@@ -7,6 +7,7 @@ import { GetPartnersResponse } from './dtos/get-partners-response.dto';
 import { GetPartnerPricesQuery } from './dtos/get-partner-prices-query.dto';
 import { GetPartnerPriceResponse } from './dtos/get-partner-prices-response.dto';
 import { GetPartnersQuery } from './dtos/get-partners-query.dto';
+import { GetDocumentResponse } from './dtos/get-document-response.dto';
 
 const externalServiceConfig = getConfig('externalService');
 @Injectable()
@@ -79,6 +80,63 @@ export class DeliveryService {
                     autoInject: true,
                     config: {
                         baseURL: externalServiceConfig.deliveryService,
+                    },
+                }
+            );
+            return deliveryRs.data;
+        } catch (er) {
+            throw new BadRequestException(er);
+        }
+    }
+
+    async documentConfirmed(code: string) {
+        try {
+            const deliveryRs = await this.httpClient.post<GetDocumentResponse>(
+                `https://api.1retail-dev.asia/external/delivery/integration/v1/documents/${code}`,
+                {
+                    config: {
+                        baseURL: externalServiceConfig.deliveryService,
+                        Headers: {
+                            'api-key': ''
+                        }
+                    },
+                }
+            );
+            return deliveryRs.data;
+        } catch (er) {
+            throw new BadRequestException(er);
+        }
+    }
+
+    async documentCancel(code: string) {
+        try {
+            const deliveryRs = await this.httpClient.put<GetDocumentResponse>(
+                `https://api.1retail-dev.asia/external/delivery/integration/v1/documents/${code}`,
+                {
+                    config: {
+                        baseURL: externalServiceConfig.deliveryService,
+                        Headers: {
+                            'api-key': ''
+                        }
+                    },
+                }
+            );
+            return deliveryRs.data;
+        } catch (er) {
+            throw new BadRequestException(er);
+        }
+    }
+
+    async documentUpdate(code: string) {
+        try {
+            const deliveryRs = await this.httpClient.patch<GetDocumentResponse>(
+                `https://api.1retail-dev.asia/external/delivery/integration/v1/documents/${code}`,
+                {
+                    config: {
+                        baseURL: externalServiceConfig.deliveryService,
+                        Headers: {
+                            'api-key': ''
+                        }
                     },
                 }
             );

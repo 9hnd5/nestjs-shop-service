@@ -130,6 +130,21 @@ class Dimension {
     size: Size;
 }
 
+
+class DocumentLine {
+    @Expose()
+    name: string;
+
+    @Expose()
+    code: string;
+
+    @Expose()
+    quantity: number;
+
+    @Expose()
+    weight: number;
+}
+
 export class GetDocumentResponse {
     @Expose()
     _id: string;
@@ -138,7 +153,13 @@ export class GetDocumentResponse {
     code: string;
 
     @Expose()
+    partnerDocumentCode: string;
+
+    @Expose()
     partnerCode: string;
+    
+    @Expose()
+    userId: string;
 
     @Expose()
     @Type(() => From)
@@ -153,11 +174,37 @@ export class GetDocumentResponse {
     dimension: Dimension;
 
     @Expose()
-    @Type(() => PartnerInformation)
-    partnerInformation: PartnerInformation;
+    fromNote: string;
 
     @Expose()
-    isActive: boolean;
+    toNote: string;
+
+    @Expose()
+    isPickup: boolean;
+
+    @Expose()
+    insuranceAmount: number;
+
+    @Expose()
+    insuranceFee: number;
+
+    @Expose()
+    isCOD: number;
+
+    @Expose()
+    codAmount: number;
+
+    @Expose()
+    paymentType: 'SENDER' | 'RECEIVER';
+
+    @Expose()
+    allowTrial: boolean;
+
+    @Expose()
+    serviceLevel: 'STANDARD' | 'EXPRESS' | 'SAMEDAY' | 'NEXTDAY';
+
+    @Expose()
+    itemType: 'NORMAL' | 'FRAGILITY';
 
     @Expose()
     deliveryFee: number;
@@ -166,14 +213,14 @@ export class GetDocumentResponse {
     totalFee: number;
 
     @Expose()
+    email: string;
+
+    @Expose()
+    lines: DocumentLine[];
+
+    @Expose()
     webhook: string;
 
     @Expose()
-    totalFeeUpdated: number;
-
-    @Expose()
-    itemType: string;
-
-    @Expose()
-    serviceLevel: string;
+    totalFeeUpdated: number; // tổng phí do đối tác response
 }
