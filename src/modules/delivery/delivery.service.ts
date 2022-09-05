@@ -3,9 +3,10 @@ import { HttpService } from 'be-core';
 import { get as getConfig } from '../../config';
 import { GetAvailablePartnersQuery } from './dtos/get-available-partners-query.dto';
 import { GetAvailablePartnersResponse } from './dtos/get-available-partners-response.dto';
-import { GetPartnersResponse } from './dtos/get-list-partners-response.dto';
-import { GetListPartnerQuery } from './dtos/get-list-partner-query.dto';
-import { GetPartnerPriceResponse } from './dtos/get-partner-price-response.dto';
+import { GetPartnersResponse } from './dtos/get-partners-response.dto';
+import { GetPartnerPricesQuery } from './dtos/get-partner-prices-query.dto';
+import { GetPartnerPriceResponse } from './dtos/get-partner-prices-response.dto';
+import { GetPartnersQuery } from './dtos/get-partners-query.dto';
 
 const externalServiceConfig = getConfig('externalService');
 @Injectable()
@@ -53,10 +54,10 @@ export class DeliveryService {
         }
     }
 
-    async getListPartner(skip: number, take: number) {
+    async getPartners(query: GetPartnersQuery) {
         try {
             const response = await this.httpClient.get<GetPartnersResponse>(
-                `https://api.1retail-dev.asia/delivery/v1/partners?skip=${skip}&take=${take}`,
+                `https://api.1retail-dev.asia/delivery/v1/partners?skip=${query.pageIndex}&take=${query.pageSize}`,
                 {
                     autoInject: true,
                     config: {
@@ -70,10 +71,10 @@ export class DeliveryService {
         }
     }
 
-    async getPartnerPrice(partnerCode: string, query: GetListPartnerQuery) {
+    async getPartnerPrices(partnerCode: string, query: GetPartnerPricesQuery) {
         try {
             const deliveryRs = await this.httpClient.get<GetPartnerPriceResponse[]>(
-                `https://api.1retail-dev.asia/delivery/v1/partner-prices/${partnerCode}?fromDistrictCode=${query.fromDistrictCode}&fromProvinceCode=${query.fromProvinceCode}&toDistrictCode=${query.toDistrictCode}&toProvinceCode=${query.toProvinceCode}`,
+                `https://api.1retail-dev.asia/delivery/v1/partner-prices/${partnerCode}?fromDistrictCode=${query.fromDistrictCode}&fromProvinceCode=${query.fromProvinceCode}&toDistrictCode=${query.toDistrictCode}&toProvinceCode=${query.toProvinceCode}&skip=${query.pageIndex}&take=${query.pageSize}`,
                 {
                     autoInject: true,
                     config: {

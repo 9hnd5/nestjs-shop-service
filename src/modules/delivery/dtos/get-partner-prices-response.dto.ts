@@ -23,8 +23,5 @@ export class GetPartnerPriceResponse {
     deliveryFee: number;
 
     @Expose()
-    price: number;
-
-    @Expose()
-    description: string | null;
+    partnerPrices: string;
 }

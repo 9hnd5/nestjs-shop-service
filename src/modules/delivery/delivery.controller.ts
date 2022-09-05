@@ -1,7 +1,8 @@
-import { Controller, Get, Query, Param, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Query, Param } from '@nestjs/common';
 import { DeliveryService } from './delivery.service';
 import { GetAvailablePartnersQuery } from './dtos/get-available-partners-query.dto';
-import { GetListPartnerQuery } from './dtos/get-list-partner-query.dto';
+import { GetPartnerPricesQuery } from './dtos/get-partner-prices-query.dto';
+import { GetPartnersQuery } from './dtos/get-partners-query.dto';
 
 @Controller('deliveries')
 export class DeliveryController {
@@ -13,18 +14,15 @@ export class DeliveryController {
     }
 
     @Get('partners')
-    getListPartner(
-        @Query('skip', ParseIntPipe) skip: number,
-        @Query('take', ParseIntPipe) take: number
-    ) {
-        return this.deliveryService.getListPartner(skip, take);
+    getListPartner(@Query() query: GetPartnersQuery) {
+        return this.deliveryService.getPartners(query);
     }
 
     @Get(':partnerCode')
-    getPartnerPrice(
+    getPartnerPrices(
         @Param('partnerCode') partnerCode: string,
-        @Query() query: GetListPartnerQuery
+        @Query() query: GetPartnerPricesQuery
     ) {
-        return this.deliveryService.getPartnerPrice(partnerCode, query);
+        return this.deliveryService.getPartnerPrices(partnerCode, query);
     }
 }
