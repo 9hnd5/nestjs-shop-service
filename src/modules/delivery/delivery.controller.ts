@@ -1,8 +1,9 @@
-import { Controller, Get, Query, Param, Post, Put, Patch } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, Put, Query } from '@nestjs/common';
 import { DeliveryService } from './delivery.service';
 import { GetAvailablePartnersQuery } from './dtos/get-available-partners-query.dto';
 import { GetPartnerPricesQuery } from './dtos/get-partner-prices-query.dto';
 import { GetPartnersQuery } from './dtos/get-partners-query.dto';
+import { UpdateDocument } from './dtos/get-update-document.dto';
 
 @Controller('deliveries')
 export class DeliveryController {
@@ -14,7 +15,7 @@ export class DeliveryController {
     }
 
     @Get('partners')
-    getListPartner(@Query() query: GetPartnersQuery) {
+    getPartners(@Query() query: GetPartnersQuery) {
         return this.deliveryService.getPartners(query);
     }
 
@@ -28,16 +29,16 @@ export class DeliveryController {
 
     @Post(':code')
     confirm(@Param('code') code: string) {
-        return this.deliveryService.documentConfirmed(code);
+        return this.deliveryService.confirmedDocument(code);
     }
 
     @Put(':code')
     cancel(@Param('code') code: string) {
-        return this.deliveryService.documentCancel(code);
+        return this.deliveryService.cancelDocument(code);
     }
 
     @Patch(':code')
-    update(@Param('code') code: string) {
-        return this.deliveryService.documentUpdate(code);
+    update(@Param('code') code: string, @Body() command: UpdateDocument) {
+        return this.deliveryService.updateDocument(code, command);
     }
 }

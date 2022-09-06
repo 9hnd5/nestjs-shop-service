@@ -1,113 +1,61 @@
 import { Expose, Type } from 'class-transformer';
 
-class FormField {
-    @Expose()
-    label: string;
-
-    @Expose()
-    value?: string | number;
-
-    @Expose()
-    fieldName: string;
-}
-
-class PartnerInformation {
-    @Expose()
-    @Type(() => FormField)
-    host?: FormField;
-
-    @Expose()
-    @Type(() => FormField)
-    countryCode?: FormField;
-
-    @Expose()
-    @Type(() => FormField)
-    version?: FormField;
-
-    @Expose()
-    @Type(() => FormField)
-    protocol?: FormField;
-
-    @Expose()
-    @Type(() => FormField)
-    accessToken?: FormField;
-
-    @Expose()
-    @Type(() => FormField)
-    isUseStore?: FormField;
-
-    @Expose()
-    @Type(() => FormField)
-    isUsePriceList?: FormField;
-
-    @Expose()
-    @Type(() => FormField)
-    clientId?: FormField;
-
-    @Expose()
-    @Type(() => FormField)
-    clientSecret?: FormField;
-
-    @Expose()
-    @Type(() => FormField)
-    tokenExpiresTime?: FormField;
-}
 class From {
     @Expose()
-    fromCountryCode: string;
+    countryCode: string;
 
     @Expose()
-    fromProvinceCode: string;
+    provinceCode: string;
 
     @Expose()
-    fromDistrictCode: string;
+    districtCode: string;
 
     @Expose()
-    fromWardCode: string;
+    wardCode: string;
 
     @Expose()
-    fromStreet: string;
+    street: string;
 
     @Expose()
-    fromPhoneNumber?: string;
+    phoneNumber?: string;
 
     @Expose()
-    fromFullName?: string;
+    fullName?: string;
 
     @Expose()
-    fromPostCode?: string;
+    postCode?: string;
 
     @Expose()
-    fromEmail?: string;
+    email?: string;
 }
 
 class To {
     @Expose()
-    toCountryCode: string;
+    countryCode: string;
 
     @Expose()
-    toProvinceCode: string;
+    provinceCode: string;
 
     @Expose()
-    toDistrictCode: string;
+    districtCode: string;
 
     @Expose()
-    toWardCode: string;
+    wardCode: string;
 
     @Expose()
-    toStreet: string;
+    street: string;
 
     @Expose()
-    toPhoneNumber?: string;
+    phoneNumber?: string;
 
     @Expose()
-    toFullName?: string;
+    fullName?: string;
 
     @Expose()
-    toPostCode?: string;
+    postCode?: string;
 
     @Expose()
-    toEmail?: string;
+    email?: string;
 }
 
 class Size {
@@ -129,7 +77,6 @@ class Dimension {
     @Type(() => Size)
     size: Size;
 }
-
 
 class DocumentLine {
     @Expose()
@@ -153,11 +100,14 @@ export class GetDocumentResponse {
     code: string;
 
     @Expose()
+    status: string;
+
+    @Expose()
     partnerDocumentCode: string;
 
     @Expose()
     partnerCode: string;
-    
+
     @Expose()
     userId: string;
 
@@ -189,22 +139,22 @@ export class GetDocumentResponse {
     insuranceFee: number;
 
     @Expose()
-    isCOD: number;
+    isCOD: boolean;
 
     @Expose()
     codAmount: number;
 
     @Expose()
-    paymentType: 'SENDER' | 'RECEIVER';
+    paymentType: string;
 
     @Expose()
     allowTrial: boolean;
 
     @Expose()
-    serviceLevel: 'STANDARD' | 'EXPRESS' | 'SAMEDAY' | 'NEXTDAY';
+    serviceLevel: boolean;
 
     @Expose()
-    itemType: 'NORMAL' | 'FRAGILITY';
+    itemType: boolean;
 
     @Expose()
     deliveryFee: number;
@@ -217,10 +167,4 @@ export class GetDocumentResponse {
 
     @Expose()
     lines: DocumentLine[];
-
-    @Expose()
-    webhook: string;
-
-    @Expose()
-    totalFeeUpdated: number; // tổng phí do đối tác response
 }

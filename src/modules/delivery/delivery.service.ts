@@ -3,11 +3,13 @@ import { HttpService } from 'be-core';
 import { get as getConfig } from '../../config';
 import { GetAvailablePartnersQuery } from './dtos/get-available-partners-query.dto';
 import { GetAvailablePartnersResponse } from './dtos/get-available-partners-response.dto';
-import { GetPartnersResponse } from './dtos/get-partners-response.dto';
+import { GetDocumentResponse } from './dtos/get-document-response.dto';
+import { AddDocument } from './dtos/get-document.dto';
 import { GetPartnerPricesQuery } from './dtos/get-partner-prices-query.dto';
 import { GetPartnerPriceResponse } from './dtos/get-partner-prices-response.dto';
 import { GetPartnersQuery } from './dtos/get-partners-query.dto';
-import { GetDocumentResponse } from './dtos/get-document-response.dto';
+import { GetPartnersResponse } from './dtos/get-partners-response.dto';
+import { UpdateDocument } from './dtos/get-update-document.dto';
 
 const externalServiceConfig = getConfig('externalService');
 @Injectable()
@@ -40,7 +42,7 @@ export class DeliveryService {
             },
         };
         try {
-            const deliveryRs = await this.httpClient.post<GetAvailablePartnersResponse[]>(
+            const result = await this.httpClient.post<GetAvailablePartnersResponse[]>(
                 `https://api.1retail-dev.asia/external/delivery/integration/v1/documents/partners/available`,
                 data,
                 {
@@ -49,7 +51,7 @@ export class DeliveryService {
                     },
                 }
             );
-            return deliveryRs.data;
+            return result.data;
         } catch (er) {
             throw new BadRequestException(er);
         }
@@ -58,7 +60,7 @@ export class DeliveryService {
     async getPartners(query: GetPartnersQuery) {
         try {
             const response = await this.httpClient.get<GetPartnersResponse>(
-                `https://api.1retail-dev.asia/delivery/v1/partners?skip=${query.pageIndex}&take=${query.pageSize}`,
+                `delivery/v1/partners?skip=${query.pageIndex}&take=${query.pageSize}`,
                 {
                     autoInject: true,
                     config: {
@@ -74,8 +76,8 @@ export class DeliveryService {
 
     async getPartnerPrices(partnerCode: string, query: GetPartnerPricesQuery) {
         try {
-            const deliveryRs = await this.httpClient.get<GetPartnerPriceResponse[]>(
-                `https://api.1retail-dev.asia/delivery/v1/partner-prices/${partnerCode}?fromDistrictCode=${query.fromDistrictCode}&fromProvinceCode=${query.fromProvinceCode}&toDistrictCode=${query.toDistrictCode}&toProvinceCode=${query.toProvinceCode}&skip=${query.pageIndex}&take=${query.pageSize}`,
+            const result = await this.httpClient.get<GetPartnerPriceResponse[]>(
+                `delivery/v1/partner-prices/${partnerCode}?fromDistrictCode=${query.fromDistrictCode}&fromProvinceCode=${query.fromProvinceCode}&toDistrictCode=${query.toDistrictCode}&toProvinceCode=${query.toProvinceCode}&skip=${query.pageIndex}&take=${query.pageSize}`,
                 {
                     autoInject: true,
                     config: {
@@ -83,64 +85,78 @@ export class DeliveryService {
                     },
                 }
             );
-            return deliveryRs.data;
+            return result.data;
         } catch (er) {
             throw new BadRequestException(er);
         }
     }
 
-    async documentConfirmed(code: string) {
+    async confirmedDocument(code: string) {
         try {
-            const deliveryRs = await this.httpClient.post<GetDocumentResponse>(
-                `https://api.1retail-dev.asia/external/delivery/integration/v1/documents/${code}`,
+            const result = await this.httpClient.post<GetDocumentResponse>(
+                `external/delivery/integration/v1/documents/${code}`,
                 {
                     config: {
                         baseURL: externalServiceConfig.deliveryService,
-                        Headers: {
-                            'api-key': ''
-                        }
+                        headers: {
+                            'api-key':
+                                '443910205C1214957142C76AD401BE749D9E2ED4857278611DB65C78511667A6',
+                            'api-tenant': 'Bao',
+                        },
                     },
                 }
             );
-            return deliveryRs.data;
+            return result.data;
         } catch (er) {
             throw new BadRequestException(er);
         }
     }
 
-    async documentCancel(code: string) {
+    async cancelDocument(code: string) {
+        const body = {
+            code,
+        };
         try {
-            const deliveryRs = await this.httpClient.put<GetDocumentResponse>(
-                `https://api.1retail-dev.asia/external/delivery/integration/v1/documents/${code}`,
+            const result = await this.httpClient.put<GetDocumentResponse>(
+                `external/delivery/integration/v1/documents/${code}`,
+                body,
                 {
                     config: {
                         baseURL: externalServiceConfig.deliveryService,
-                        Headers: {
-                            'api-key': ''
-                        }
+                        headers: {
+                            'api-key':
+                                '443910205C1214957142C76AD401BE749D9E2ED4857278611DB65C78511667A6',
+                            'api-tenant': 'Bao',
+                        },
                     },
                 }
             );
-            return deliveryRs.data;
+            return result.data;
         } catch (er) {
             throw new BadRequestException(er);
         }
     }
 
-    async documentUpdate(code: string) {
+    async updateDocument(code: string, data: UpdateDocument) {
+        const body = {
+            data,
+        };
         try {
-            const deliveryRs = await this.httpClient.patch<GetDocumentResponse>(
-                `https://api.1retail-dev.asia/external/delivery/integration/v1/documents/${code}`,
+            const result = await this.httpClient.patch<GetDocumentResponse>(
+                `external/delivery/integration/v1/documents/${code}`,
+                body,
                 {
                     config: {
                         baseURL: externalServiceConfig.deliveryService,
-                        Headers: {
-                            'api-key': ''
-                        }
+                        headers: {
+                            'api-key':
+                                '443910205C1214957142C76AD401BE749D9E2ED4857278611DB65C78511667A6',
+                            'api-tenant': 'Bao',
+                        },
                     },
                 }
             );
-            return deliveryRs.data;
+            return result.data;
         } catch (er) {
             throw new BadRequestException(er);
         }
