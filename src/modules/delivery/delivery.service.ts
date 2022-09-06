@@ -4,7 +4,7 @@ import { get as getConfig } from '../../config';
 import { GetAvailablePartnersQuery } from './dtos/get-available-partners-query.dto';
 import { GetAvailablePartnersResponse } from './dtos/get-available-partners-response.dto';
 import { GetDocumentResponse } from './dtos/get-document-response.dto';
-import { AddDocument } from './dtos/get-document.dto';
+
 import { GetPartnerPricesQuery } from './dtos/get-partner-prices-query.dto';
 import { GetPartnerPriceResponse } from './dtos/get-partner-prices-response.dto';
 import { GetPartnersQuery } from './dtos/get-partners-query.dto';
