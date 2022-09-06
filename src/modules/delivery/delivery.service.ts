@@ -4,12 +4,12 @@ import { get as getConfig } from '../../config';
 import { GetAvailablePartnersQuery } from './dtos/get-available-partners-query.dto';
 import { GetAvailablePartnersResponse } from './dtos/get-available-partners-response.dto';
 import { GetDocumentResponse } from './dtos/get-document-response.dto';
-
 import { GetPartnerPricesQuery } from './dtos/get-partner-prices-query.dto';
 import { GetPartnerPriceResponse } from './dtos/get-partner-prices-response.dto';
 import { GetPartnersQuery } from './dtos/get-partners-query.dto';
 import { GetPartnersResponse } from './dtos/get-partners-response.dto';
 import { UpdateDocument } from './dtos/get-update-document.dto';
+import { AddDocument } from './dtos/get-add-document.dto';
 
 const externalServiceConfig = getConfig('externalService');
 @Injectable()
@@ -82,6 +82,31 @@ export class DeliveryService {
                     autoInject: true,
                     config: {
                         baseURL: externalServiceConfig.deliveryService,
+                    },
+                }
+            );
+            return result.data;
+        } catch (er) {
+            throw new BadRequestException(er);
+        }
+    }
+
+    async addDocument(data: AddDocument) {
+        const body = {
+            data,
+        };
+        try {
+            const result = await this.httpClient.post<GetDocumentResponse>(
+                `external/delivery/integration/v1/documents`,
+                body,
+                {
+                    config: {
+                        baseURL: externalServiceConfig.deliveryService,
+                        headers: {
+                            'api-key':
+                                '443910205C1214957142C76AD401BE749D9E2ED4857278611DB65C78511667A6',
+                            'api-tenant': 'Bao',
+                        },
                     },
                 }
             );
