@@ -8,8 +8,8 @@ import { GetPartnerPricesQuery } from './dtos/get-partner-prices-query.dto';
 import { GetPartnerPriceResponse } from './dtos/get-partner-prices-response.dto';
 import { GetPartnersQuery } from './dtos/get-partners-query.dto';
 import { GetPartnersResponse } from './dtos/get-partners-response.dto';
-import { GetUpdateDocument } from './dtos/get-update-document.dto';
-import { GetAddDocument } from './dtos/get-add-document.dto';
+import { UpdateDocument } from './dtos/update-document.dto';
+import { AddDocument } from './dtos/add-document.dto';
 
 const externalServiceConfig = getConfig('externalService');
 @Injectable()
@@ -91,7 +91,7 @@ export class DeliveryService {
         }
     }
 
-    async addDocument(data: GetAddDocument) {
+    async addDocument(data: AddDocument) {
         const body = {
             data,
         };
@@ -162,7 +162,7 @@ export class DeliveryService {
         }
     }
 
-    async updateDocument(code: string, data: GetUpdateDocument) {
+    async updateDocument(code: string, data: UpdateDocument) {
         const body = {
             data,
         };

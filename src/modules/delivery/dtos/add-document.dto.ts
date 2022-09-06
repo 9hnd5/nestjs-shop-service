@@ -4,7 +4,7 @@ import { DeliveryLocation } from '../interface/delivery_location';
 import { Dimensions } from '../interface/dimensions';
 import { DocumentLine } from '../interface/document-line.interface';
 
-export class GetUpdateDocument {
+export class AddDocument {
     @Expose()
     @IsString()
     code: string;
