@@ -1,10 +1,10 @@
 import { Expose } from 'class-transformer';
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsBoolean, IsNotEmpty, IsString, IsNumber, IsEmail, IsUrl } from 'class-validator';
 import { DeliveryLocation } from '../interface/delivery_location';
 import { Dimensions } from '../interface/dimensions';
 import { DocumentLine } from '../interface/document-line.interface';
 
-export class GetDocumentsQuery {
+export class AddDocument {
     @Expose()
     @IsString()
     code: string;
@@ -15,10 +15,14 @@ export class GetDocumentsQuery {
 
     @Expose()
     @IsString()
-    @IsNotEmpty()
+    partnerDocumentCode: string;
+
+    @Expose()
+    @IsString()
     partnerCode: string;
 
     @Expose()
+    @IsNotEmpty()
     @IsString()
     userId: string;
 
@@ -31,7 +35,7 @@ export class GetDocumentsQuery {
     to: DeliveryLocation;
 
     @Expose()
-    @IsString()
+    @IsNotEmpty()
     dimension: Dimensions;
 
     @Expose()
@@ -43,57 +47,61 @@ export class GetDocumentsQuery {
     toNote: string;
 
     @Expose()
+    @IsBoolean()
     isPickup: boolean;
 
     @Expose()
-    @IsString()
+    @IsNumber()
     insuranceAmount: number;
 
     @Expose()
-    @IsString()
+    @IsNumber()
     insuranceFee: number;
 
     @Expose()
-    isCOD: boolean;
+    @IsNumber()
+    isCOD: number;
 
     @Expose()
+    @IsNumber()
     codAmount: number;
-
-    @Expose()
-    allowTrial: boolean;
 
     @Expose()
     @IsString()
     paymentType: string;
 
     @Expose()
-    isActive: boolean;
-
-    @Expose()
-    @IsString()
-    serviceLevel: string;
-
-    @Expose()
-    @IsString()
-    itemType: string;
-
-    @Expose()
-    deliveryFee: number;
-
-    @Expose()
-    totalFee: number;
-
-    @Expose()
-    @IsString()
-    email: string;
-
-    @Expose()
-    lines: DocumentLine;
-
-    @Expose()
-    @IsString()
+    @IsUrl()
     webhook: string;
 
     @Expose()
+    @IsBoolean()
+    allowTrial: boolean;
+
+    @Expose()
+    @IsNotEmpty()
+    serviceLevel: string;
+
+    @Expose()
+    @IsNotEmpty()
+    itemType: string;
+
+    @Expose()
+    @IsNumber()
+    deliveryFee: number;
+
+    @Expose()
+    @IsNumber()
+    totalFee: number;
+
+    @Expose()
+    @IsEmail()
+    email: string;
+
+    @Expose()
+    lines: DocumentLine[];
+
+    @Expose()
+    @IsNumber()
     totalFeeUpdated: number;
 }
