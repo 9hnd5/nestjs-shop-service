@@ -72,11 +72,17 @@ export class AddSalesOrderCommandHandler extends BaseCommandHandler<AddSalesOrde
                     const uom = item?.priceListDetails.find((t) => t.uomId === line.uomId);
                     if (!item || !uom?.price)
                         throw new BusinessException(MessageConst.MissingItemOrPrice);
+
+                    // Get either promotion price or original price
+                    const price =
+                        uom.promotionPrice && uom.promotionPrice > 0
+                            ? uom.promotionPrice
+                            : uom.price;
                     toPromotion.push({
                         item: item.code,
                         uom: uom.uomCode,
                         quantity: line.quantity,
-                        unitPrice: uom.price,
+                        unitPrice: price,
                         itemType: PromotionTypeId.NORMAL,
                         tax: line.tax ?? 0,
                         discountValue: 0,
@@ -102,23 +108,34 @@ export class AddSalesOrderCommandHandler extends BaseCommandHandler<AddSalesOrde
                         customer.id
                     );
                     for (const line of promotionRs.documentLines.filter(
-                        (t) => t.itemType !== PromotionTypeId.DISCOUNT_TOTAL_BILL_PERCENTAGE
+                        (t) =>
+                            ![
+                                PromotionTypeId.DISCOUNT_TOTAL_BILL_PERCENTAGE,
+                                PromotionTypeId.DISCOUNT_TOTAL_BILL_VALUE,
+                            ].includes(t.itemType)
                     )) {
                         const item = itemInfos.find((t) => t.code === line.item);
                         const uom = item?.priceListDetails.find((t) => t.uomCode === line.uom);
                         if (!item || !uom?.price)
                             throw new BusinessException(MessageConst.MissingItemOrPrice);
 
+                        // Get either promotion price or original price
+                        const price =
+                            uom.promotionPrice && uom.promotionPrice > 0
+                                ? uom.promotionPrice
+                                : uom.price;
                         switch (line.itemType) {
                             case PromotionTypeId.NORMAL:
                                 order.addItem(
                                     SalesOrderItem.create({
                                         itemId: item.id,
                                         uomId: uom.uomId,
-                                        unitPrice: uom.price,
+                                        unitPrice: price,
                                         quantity: line.quantity,
                                         tax: line.tax,
                                         itemType: line.itemType,
+                                        itemCode: item.code,
+                                        itemName: item.name,
                                     })
                                 );
                                 break;
@@ -131,6 +148,9 @@ export class AddSalesOrderCommandHandler extends BaseCommandHandler<AddSalesOrde
                                         quantity: line.quantity,
                                         tax: 0,
                                         itemType: line.itemType,
+                                        promotionCode: line.promotionCode,
+                                        itemCode: item.code,
+                                        itemName: item.name,
                                     })
                                 );
                                 break;
@@ -144,8 +164,11 @@ export class AddSalesOrderCommandHandler extends BaseCommandHandler<AddSalesOrde
                                             quantity: line.quantity,
                                             tax: 0,
                                             itemType: line.itemType,
+                                            promotionCode: line.promotionCode,
+                                            itemCode: item.code,
+                                            itemName: item.name,
                                         },
-                                        (line.discountValue * line.rateDiscount * uom.price) / 100
+                                        (line.discountValue * line.rateDiscount * price) / 100
                                     )
                                 );
                                 break;
@@ -159,27 +182,34 @@ export class AddSalesOrderCommandHandler extends BaseCommandHandler<AddSalesOrde
                                             quantity: line.quantity,
                                             tax: 0,
                                             itemType: line.itemType,
-                                        },
-                                        line.discountValue * line.rateDiscount
-                                    )
-                                );
-                                break;
-                            case PromotionTypeId.DISCOUNT_TOTAL_BILL_VALUE:
-                                order.addItem(
-                                    SalesOrderItem.createDiscountLine(
-                                        {
-                                            itemId: item.id,
-                                            uomId: uom.uomId,
-                                            unitPrice: 0,
-                                            quantity: 0,
-                                            tax: 0,
-                                            itemType: line.itemType,
+                                            promotionCode: line.promotionCode,
+                                            itemCode: item.code,
+                                            itemName: item.name,
                                         },
                                         line.discountValue * line.rateDiscount
                                     )
                                 );
                                 break;
                         }
+                    }
+
+                    for (const line of promotionRs.documentLines.filter(
+                        (t) => t.itemType === PromotionTypeId.DISCOUNT_TOTAL_BILL_VALUE
+                    )) {
+                        order.addItem(
+                            SalesOrderItem.createDiscountLine(
+                                {
+                                    itemId: 0,
+                                    uomId: 0,
+                                    unitPrice: 0,
+                                    quantity: 0,
+                                    tax: 0,
+                                    itemType: line.itemType,
+                                    promotionCode: line.promotionCode,
+                                },
+                                line.discountValue * line.rateDiscount
+                            )
+                        );
                     }
 
                     // Wait for all other item types before discount bill percentage
@@ -195,6 +225,7 @@ export class AddSalesOrderCommandHandler extends BaseCommandHandler<AddSalesOrde
                                     quantity: 0,
                                     tax: 0,
                                     itemType: line.itemType,
+                                    promotionCode: line.promotionCode,
                                 },
                                 (line.discountValue * order.totalBeforeDiscount) / 100
                             )

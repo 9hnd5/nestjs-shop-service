@@ -14,4 +14,5 @@ export class ApplyPromotionDocLine {
     tax: number;
     discountValue: number;
     rateDiscount: number;
+    promotionCode?: string;
 }

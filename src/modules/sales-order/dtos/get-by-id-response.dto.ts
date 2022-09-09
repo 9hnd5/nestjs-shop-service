@@ -32,6 +32,9 @@ class Item {
     itemName: string;
 
     @Expose()
+    itemType: number;
+
+    @Expose()
     uomId: number;
 
     @Expose()

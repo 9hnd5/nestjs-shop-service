@@ -29,10 +29,24 @@ export class SalesOrderItemEntity extends TenantEntity {
     order: SalesOrderEntity;
     @Column({ name: 'item_type', type: Number })
     itemType: number;
+    @Column({ name: 'item_code', type: String, nullable: true, length: 50 })
+    itemCode?: string;
+    @Column({ name: 'item_name', type: String, nullable: true, length: 255 })
+    itemName?: string;
+    @Column({ name: 'promotion_code', type: String, nullable: true, length: 50 })
+    promotionCode?: string;
 }
 type AddProps = Pick<
     AddType<SalesOrderItemEntity>,
-    'itemId' | 'uomId' | 'unitPrice' | 'quantity' | 'tax' | 'itemType'
+    | 'itemId'
+    | 'uomId'
+    | 'unitPrice'
+    | 'quantity'
+    | 'tax'
+    | 'itemType'
+    | 'promotionCode'
+    | 'itemCode'
+    | 'itemName'
 >;
 
 type UpdateProps = Omit<AddProps, 'tax'>;
@@ -47,16 +61,33 @@ export class SalesOrderItem extends AggregateRoot<SalesOrderItemEntity> {
     set itemId(value: number) {
         this.entity.itemId = value;
     }
+    get uomId() {
+        return this.entity.uomId;
+    }
     set uomId(value: number) {
         this.entity.uomId = value;
+    }
+    get promotionCode() {
+        return this.entity.promotionCode;
+    }
+    get itemType() {
+        return this.entity.itemType;
     }
 
     update(data: UpdateProps) {
         this.entity.itemId = data.itemId;
         this.entity.uomId = data.uomId;
+        this.entity.itemCode = data.itemCode;
+        this.entity.itemName = data.itemName;
         this.entity.quantity = data.quantity;
         this.entity.unitPrice = data.unitPrice;
         this.entity.lineTotal = data.quantity * data.unitPrice;
+    }
+
+    updateDiscount(data: UpdateProps, discountAmount: number) {
+        this.update(data);
+        this.entity.discountAmount = discountAmount;
+        this.entity.lineTotal = -discountAmount;
     }
 
     static create(data: AddProps) {
