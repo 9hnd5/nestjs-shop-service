@@ -3,12 +3,12 @@ import { IsInt, IsNumber, IsOptional, IsPositive, Min } from 'class-validator';
 
 export default class AddSalesOrderItem {
     @Expose()
-    @IsPositive()
+    @Min(0)
     @IsInt()
     itemId: number;
 
     @Expose()
-    @IsPositive()
+    @Min(0)
     @IsInt()
     uomId: number;
 
