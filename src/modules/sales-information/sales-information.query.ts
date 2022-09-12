@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 import { DataSource } from 'typeorm';
-import { TimeHelpers } from './../../helpers/time.helper';
 import { GetQuery } from './dtos/get-query.dto';
 import { GetRevenue } from './dtos/get-revenue.dto';
 import { GetVolume } from './dtos/get-volumn.dto';
 import { SalesInformationService } from './sales-information.service';
 import SalesOrderRepo from './sales-order.repo';
+import { format } from 'date-fns';
 
 @Injectable()
 export class SalesInformationQuery {
@@ -23,9 +23,9 @@ export class SalesInformationQuery {
         //Format salesmanCodes
         const salesmanCodesFormat = "'" + salesmanCodes.trim().replace(',', "','") + "'";
 
-        //parse UTC Date to date string format yyyymmdd
-        const fromdateStr = TimeHelpers.parsedate(fromDate);
-        const toDateStr = TimeHelpers.parsedate(toDate);
+        //parse Date to date string format yyyymmdd
+        const fromdateStr = format(fromDate, 'yyyyMMdd');
+        const toDateStr = format(toDate, 'yyyyMMdd');
 
         //Get Revenue
         const queryStr = this.getRevenueQuery(salesmanCodesFormat, itemIds, fromdateStr, toDateStr);
@@ -84,9 +84,9 @@ export class SalesInformationQuery {
         //Format salesmanCodes
         const salesmanCodesFormat = "'" + salesmanCodes.trim().replace(',', "','") + "'";
 
-        //parse UTC Date to date string format yyyymmdd
-        const fromdateStr = TimeHelpers.parsedate(fromDate);
-        const toDateStr = TimeHelpers.parsedate(toDate);
+        //parse Date to date string format yyyymmdd
+        const fromdateStr = format(fromDate, 'yyyyMMdd');
+        const toDateStr = format(toDate, 'yyyyMMdd');
 
         //Get Volume
         const queryStr = this.getVolumeQuery(salesmanCodesFormat, itemIds, fromdateStr, toDateStr);
@@ -143,8 +143,8 @@ export class SalesInformationQuery {
         const salesmanCodesFormat = "'" + salesmanCodes.trim().replace(',', "','") + "'";
 
         //parse UTC Date to date string format yyyymmdd
-        const fromdateStr = TimeHelpers.parsedate(fromDate);
-        const toDateStr = TimeHelpers.parsedate(toDate);
+        const fromdateStr = format(fromDate, 'yyyyMMdd');
+        const toDateStr = format(toDate, 'yyyyMMdd');
 
         //Get Actual Volume
         const queryStr = this.getActualVolumeQuery(

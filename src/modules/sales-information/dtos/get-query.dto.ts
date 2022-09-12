@@ -1,6 +1,6 @@
 import { QueryBase } from 'be-core';
 import { Expose, Type } from 'class-transformer';
-import { IsDate, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsDate, IsNotEmpty, IsString } from 'class-validator';
 
 export class GetQuery extends QueryBase {
     @Expose()
@@ -16,12 +16,12 @@ export class GetQuery extends QueryBase {
     @Expose()
     @Type(() => Date)
     @IsDate()
-    @IsOptional()
+    @IsNotEmpty()
     fromDate: Date;
 
     @Expose()
     @Type(() => Date)
     @IsDate()
-    @IsOptional()
+    @IsNotEmpty()
     toDate: Date;
 }

@@ -1,17 +1,16 @@
 import { Exclude, Expose } from 'class-transformer';
-import { Double } from 'typeorm';
 
 @Exclude()
 export class GetSalesInformation {
     @Expose()
-    SalesRevenue: Double;
+    SalesRevenue: number;
 
     @Expose()
-    ActualSalesRevenue: Double;
+    ActualSalesRevenue: number;
 
     @Expose()
-    SalesVolumn: Double;
+    SalesVolumn: number;
 
     @Expose()
-    ActualSalesVolumn: Double;
+    ActualSalesVolumn: number;
 }
