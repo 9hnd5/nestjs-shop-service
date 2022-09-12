@@ -35,6 +35,8 @@ export class SalesOrderItemEntity extends TenantEntity {
     itemName?: string;
     @Column({ name: 'promotion_code', type: String, nullable: true, length: 50 })
     promotionCode?: string;
+    @Column({ name: 'promotion_description', type: String, nullable: true, length: 1000 })
+    promotionDescription?: string;
 }
 type AddProps = Pick<
     AddType<SalesOrderItemEntity>,
@@ -45,6 +47,7 @@ type AddProps = Pick<
     | 'tax'
     | 'itemType'
     | 'promotionCode'
+    | 'promotionDescription'
     | 'itemCode'
     | 'itemName'
 >;
