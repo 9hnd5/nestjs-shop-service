@@ -9,8 +9,14 @@ export class GetSalesInformation {
     ActualSalesRevenue: number;
 
     @Expose()
-    SalesVolumn: number;
+    SalesVolume: number;
 
     @Expose()
-    ActualSalesVolumn: number;
+    ActualSalesVolume: number;
+
+    @Expose()
+    OrdersCount: number;
+
+    @Expose()
+    OrdersDeliveredCount: number;
 }

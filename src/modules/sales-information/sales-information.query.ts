@@ -3,6 +3,7 @@ import { plainToInstance } from 'class-transformer';
 import { DataSource } from 'typeorm';
 import { GetQuery } from './dtos/get-query.dto';
 import { GetRevenue } from './dtos/get-revenue.dto';
+import { GetOrderCount } from './dtos/get-order-count.dto';
 import { GetVolume } from './dtos/get-volumn.dto';
 import { SalesInformationService } from './sales-information.service';
 import SalesOrderRepo from './sales-order.repo';
@@ -21,7 +22,8 @@ export class SalesInformationQuery {
         const { salesmanCodes, itemIds, fromDate, toDate } = query;
 
         //Format salesmanCodes
-        const salesmanCodesFormat = "'" + salesmanCodes.trim().replace(',', "','") + "'";
+        const salesmanArr = salesmanCodes.split(',');
+        const salesmanCodesFormat = salesmanArr.map((word) => `'${word.trim()}'`).join(',');
 
         //parse Date to date string format yyyymmdd
         const fromdateStr = format(fromDate, 'yyyyMMdd');
@@ -82,7 +84,8 @@ export class SalesInformationQuery {
         const { salesmanCodes, itemIds, fromDate, toDate } = query;
 
         //Format salesmanCodes
-        const salesmanCodesFormat = "'" + salesmanCodes.trim().replace(',', "','") + "'";
+        const salesmanArr = salesmanCodes.split(',');
+        const salesmanCodesFormat = salesmanArr.map((word) => `'${word.trim()}'`).join(',');
 
         //parse Date to date string format yyyymmdd
         const fromdateStr = format(fromDate, 'yyyyMMdd');
@@ -140,7 +143,8 @@ export class SalesInformationQuery {
         const { salesmanCodes, itemIds, fromDate, toDate } = query;
 
         //Format salesmanCodes
-        const salesmanCodesFormat = "'" + salesmanCodes.trim().replace(',', "','") + "'";
+        const salesmanArr = salesmanCodes.split(',');
+        const salesmanCodesFormat = salesmanArr.map((word) => `'${word.trim()}'`).join(',');
 
         //parse UTC Date to date string format yyyymmdd
         const fromdateStr = format(fromDate, 'yyyyMMdd');
@@ -198,5 +202,72 @@ export class SalesInformationQuery {
             .andWhere(`so.posting_date BETWEEN  ${fromdateStr} AND ${toDateStr}`);
 
         return salesVolumeQuery.getQuery();
+    }
+
+    async getOrderCountData(query: GetQuery) {
+        const { salesmanCodes, itemIds, fromDate, toDate } = query;
+
+        //Format salesmanCodes
+        const salesmanArr = salesmanCodes.split(',');
+        const salesmanCodesFormat = salesmanArr.map((word) => `'${word.trim()}'`).join(',');
+
+        //parse Date to date string format yyyymmdd
+        const fromdateStr = format(fromDate, 'yyyyMMdd');
+        const toDateStr = format(toDate, 'yyyyMMdd');
+
+        //Get orderCount
+        const queryStr = this.getOrderCountQuery(
+            salesmanCodesFormat,
+            itemIds,
+            fromdateStr,
+            toDateStr
+        );
+        const queryResult = await this.ds.manager.query(queryStr);
+
+        const orderCountData = plainToInstance(GetOrderCount, queryResult as GetOrderCount[], {
+            excludeExtraneousValues: true,
+        });
+        return orderCountData;
+    }
+
+    getOrderCountQuery(
+        salesmanCodesFormat: string,
+        itemIds: string,
+        fromdateStr: string,
+        toDateStr: string
+    ) {
+        //Build query string
+        const ordersCountQuery = this.salesOrderRepo.repository
+            .createQueryBuilder('so')
+            .select('COUNT(so.id)', 'ordersCount')
+            .addSelect('0', 'ordersDeliveredCount')
+            .innerJoin('so.items', 'sol')
+            .where('so.is_deleted = 0')
+            .andWhere('sol.is_deleted = 0')
+            .andWhere(`so.salesman_code IN (${salesmanCodesFormat})`)
+            .andWhere(`sol.item_id IN (${itemIds})`)
+            .andWhere(`so.posting_date BETWEEN  ${fromdateStr} AND ${toDateStr}`);
+
+        const ordersDeliveredCountQuery = this.salesOrderRepo.repository
+            .createQueryBuilder('so')
+            .select('0', 'ordersCount')
+            .addSelect('COUNT(so.id)', 'ordersDeliveredCount')
+            .innerJoin('so.items', 'sol')
+            .where('so.is_deleted = 0')
+            .andWhere('sol.is_deleted = 0')
+            .andWhere("so.status IN ('Delivered')") 
+            .andWhere(`so.salesman_code IN (${salesmanCodesFormat})`)
+            .andWhere(`sol.item_id IN (${itemIds})`)
+            .andWhere(`so.posting_date BETWEEN  ${fromdateStr} AND ${toDateStr}`);
+
+        const queryStr = `
+            SELECT
+                COUNT(Temp.ordersCount) AS 'ordersCount',
+                COUNT(Temp.ordersDeliveredCount) AS 'ordersDeliveredCount' 
+            FROM(
+                ${ordersCountQuery.getQuery()} UNION ${ordersDeliveredCountQuery.getQuery()}
+            ) Temp;
+            `;
+        return queryStr;
     }
 }
