@@ -16,6 +16,8 @@ export class SalesInformationController extends BaseController {
     async get(@Query() query: GetQuery) {
         const revenueData = await this.salesInformationQuery.getRevenueData(query);
 
+        const orderCountData = await this.salesInformationQuery.getOrderCountData(query);
+
         const volumnData = await this.salesInformationQuery.getVolumeData(query);
 
         const actualVolumnData = await this.salesInformationQuery.getActualVolumeData(query);
@@ -23,12 +25,14 @@ export class SalesInformationController extends BaseController {
         const salesInformation: GetSalesInformation = {
             SalesRevenue: revenueData[0].SalesRevenue,
             ActualSalesRevenue: revenueData[0].ActualSalesRevenue,
-            SalesVolumn: volumnData
+            OrdersCount: orderCountData[0].ordersCount,
+            OrdersDeliveredCount: orderCountData[0].ordersDeliveredCount,
+            SalesVolume: volumnData
                 .map((item) => item.quantity)
-                .reduce((prev, next) => prev + next),
-            ActualSalesVolumn: actualVolumnData
+                .reduce((prev, next) => prev + next, 0),
+            ActualSalesVolume: actualVolumnData
                 .map((item) => item.quantity)
-                .reduce((prev, next) => prev + next),
+                .reduce((prev, next) => prev + next, 0),
         };
 
         return salesInformation;
