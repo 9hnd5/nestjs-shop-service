@@ -1,3 +1,4 @@
+import { SalesInformationModule } from './modules/sales-information/sales-information.module';
 import { DeliveryModule } from '@modules/delivery/delivery.module';
 import { SalesOrderModule } from '@modules/sales-order/sales-order.module';
 import { Module, Scope } from '@nestjs/common';
@@ -38,6 +39,7 @@ import { load } from './config';
             inject: [REQUEST],
         }),
         SalesOrderModule,
+        SalesInformationModule,
         DeliveryModule,
         CacheModule,
         InitialModule,
