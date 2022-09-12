@@ -29,7 +29,10 @@ class Item {
     itemId: number;
 
     @Expose()
-    itemName: string;
+    itemCode?: string;
+
+    @Expose()
+    itemName?: string;
 
     @Expose()
     itemType: number;
@@ -55,6 +58,9 @@ class Item {
     @Expose()
     @Type(() => PriceListDetail)
     priceListDetails: PriceListDetail[];
+
+    @Expose()
+    promotionDescription?: string;
 }
 
 class PriceListDetail {
