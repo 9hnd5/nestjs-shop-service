@@ -71,6 +71,14 @@ export class SalesOrderEntity extends TenantEntity {
     customerAddress?: string;
     @Column({ name: 'note', type: String, nullable: true })
     note?: string;
+    @Column({ name: 'payment_type', type: String, nullable: true })
+    paymentType?: string;
+    @Column({ name: 'service_level', type: String, nullable: true })
+    serviceLevel?: string;
+    @Column({ name: 'item_type', type: String, nullable: true })
+    itemType?: string;
+    @Column({ name: 'delivery_order_code', type: String, nullable: true })
+    deliveryOrderCode?: string;
 }
 type AddProps = Omit<
     AddType<SalesOrderEntity>,
@@ -82,6 +90,9 @@ type AddProps = Omit<
     | 'totalLineDiscount'
     | 'totalBeforeDiscount'
     | 'tax'
+    | 'itemType'
+    | 'serviceLevel'
+    | 'paymentType'
 >;
 type UpdateProps = Omit<AddProps, 'status' | 'postingDate'> & {
     modifiedBy: number;
@@ -107,6 +118,47 @@ export class SalesOrder extends AggregateRoot<SalesOrderEntity> {
 
     set code(value: string) {
         this.entity.code = value;
+    }
+
+    set itemType(value: string) {
+        this.entity.itemType = value;
+    }
+
+    set serviceLevel(value: string) {
+        this.entity.serviceLevel = value;
+    }
+
+    set paymentType(value: string) {
+        this.entity.paymentType = value;
+    }
+
+    set(value: string) {
+        this.entity.code = value;
+    }
+
+    get weight() {
+        return this.#calcWeight();
+    }
+
+    get height() {
+        return this.#calcHeight();
+    }
+
+    get length() {
+        return this.#calcLength();
+    }
+
+    get width() {
+        return this.#calcWidth();
+    }
+
+    set shippingFee(value: number) {
+        this.entity.shippingFee = value;
+        this.#calcTotalAmount();
+    }
+
+    set deliveryOrderCode(value: string) {
+        this.entity.deliveryOrderCode = value;
     }
 
     static create(data: AddProps) {
@@ -295,6 +347,27 @@ export class SalesOrder extends AggregateRoot<SalesOrderEntity> {
     #calcTax() {
         this.entity.tax = this.entity.items.reduce((value, current) => {
             return value + current.tax;
+        }, 0);
+    }
+
+    #calcWeight() {
+        return this.entity.items.reduce((value, current) => {
+            return value + current.weight;
+        }, 0);
+    }
+    #calcLength() {
+        return this.entity.items.reduce((value, current) => {
+            return value + current.length;
+        }, 0);
+    }
+    #calcWidth() {
+        return this.entity.items.reduce((value, current) => {
+            return value + current.width;
+        }, 0);
+    }
+    #calcHeight() {
+        return this.entity.items.reduce((value, current) => {
+            return value + current.height;
         }, 0);
     }
 }

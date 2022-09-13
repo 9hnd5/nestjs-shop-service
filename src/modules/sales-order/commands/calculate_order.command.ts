@@ -125,6 +125,10 @@ export class CalculateSalesOrderCommandHandler extends BaseCommandHandler<
                                         itemType: line.itemType,
                                         itemCode: item.code,
                                         itemName: item.name,
+                                        weight: item.weight,
+                                        length: item.length,
+                                        width: item.width,
+                                        height: item.height,
                                     })
                                 );
                                 break;
@@ -141,6 +145,10 @@ export class CalculateSalesOrderCommandHandler extends BaseCommandHandler<
                                         promotionDescription: line.promotionDescription,
                                         itemCode: item.code,
                                         itemName: item.name,
+                                        weight: item.weight,
+                                        length: item.length,
+                                        width: item.width,
+                                        height: item.height,
                                     })
                                 );
                                 break;
@@ -158,6 +166,10 @@ export class CalculateSalesOrderCommandHandler extends BaseCommandHandler<
                                             promotionDescription: line.promotionDescription,
                                             itemCode: item.code,
                                             itemName: item.name,
+                                            weight: item.weight,
+                                            length: item.length,
+                                            width: item.width,
+                                            height: item.height,
                                         },
                                         (line.discountValue * line.rateDiscount * price) / 100
                                     )
@@ -177,6 +189,29 @@ export class CalculateSalesOrderCommandHandler extends BaseCommandHandler<
                                             promotionDescription: line.promotionDescription,
                                             itemCode: item.code,
                                             itemName: item.name,
+                                            weight: item.weight,
+                                            length: item.length,
+                                            width: item.width,
+                                            height: item.height,
+                                        },
+                                        line.discountValue * line.rateDiscount
+                                    )
+                                );
+                                break;
+                            case PromotionTypeId.DISCOUNT_TOTAL_BILL_VALUE:
+                                order.addItem(
+                                    SalesOrderItem.createDiscountLine(
+                                        {
+                                            itemId: item.id,
+                                            uomId: uom.uomId,
+                                            unitPrice: 0,
+                                            quantity: 0,
+                                            tax: 0,
+                                            itemType: line.itemType,
+                                            weight: item.weight,
+                                            length: item.length,
+                                            width: item.width,
+                                            height: item.height,
                                         },
                                         line.discountValue * line.rateDiscount
                                     )
@@ -199,6 +234,10 @@ export class CalculateSalesOrderCommandHandler extends BaseCommandHandler<
                                     itemType: line.itemType,
                                     promotionCode: line.promotionCode,
                                     promotionDescription: line.promotionDescription,
+                                    weight: 0,
+                                    length: 0,
+                                    width: 0,
+                                    height: 0,
                                 },
                                 line.discountValue * line.rateDiscount
                             )
@@ -220,6 +259,10 @@ export class CalculateSalesOrderCommandHandler extends BaseCommandHandler<
                                     itemType: line.itemType,
                                     promotionCode: line.promotionCode,
                                     promotionDescription: line.promotionDescription,
+                                    weight: 0,
+                                    length: 0,
+                                    width: 0,
+                                    height: 0,
                                 },
                                 (line.discountValue * order.totalBeforeDiscount) / 100
                             )
@@ -236,6 +279,10 @@ export class CalculateSalesOrderCommandHandler extends BaseCommandHandler<
                             quantity: item.quantity,
                             tax: item.tax ?? 0,
                             itemType: item.itemType,
+                            weight: 0,
+                            length: 0,
+                            width: 0,
+                            height: 0,
                         })
                     );
                 }

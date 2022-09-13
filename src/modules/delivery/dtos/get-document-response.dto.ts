@@ -151,10 +151,10 @@ export class GetDocumentResponse {
     allowTrial: boolean;
 
     @Expose()
-    serviceLevel: boolean;
+    serviceLevel: string;
 
     @Expose()
-    itemType: boolean;
+    itemType: string;
 
     @Expose()
     deliveryFee: number;

@@ -2,7 +2,7 @@ import { Expose } from 'class-transformer';
 import { IsBoolean, IsNotEmpty, IsString, IsNumber, IsEmail, IsUrl } from 'class-validator';
 import { DeliveryLocation } from '../interface/delivery_location';
 import { Dimensions } from '../interface/dimensions';
-import { DocumentLine } from '../interface/document-line.interface';
+import { DocumentLine } from './add-document.dto';
 
 export class UpdateDocument {
     @Expose()

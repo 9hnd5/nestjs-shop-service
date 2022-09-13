@@ -1,4 +1,8 @@
 import { PromotionTypeId, MessageConst } from '@constants/.';
+import { DeliveryService } from '@modules/delivery/delivery.service';
+import { AddDocument, DocumentLine } from '@modules/delivery/dtos/add-document.dto';
+import { DeliveryLocation } from '@modules/delivery/interface/delivery_location';
+import { Dimensions, DimensionsSize } from '@modules/delivery/interface/dimensions';
 import AddSalesOrder from '@modules/sales-order/dtos/add-sales-order.dto';
 import { SalesOrderItem } from '@modules/sales-order/entities/sales-order-item.entity';
 import { SalesOrder } from '@modules/sales-order/entities/sales-order.entity';
@@ -7,7 +11,10 @@ import { InternalServerErrorException } from '@nestjs/common';
 import { BaseCommand, BaseCommandHandler, BusinessException, RequestHandler } from 'be-core';
 import { DataSource, QueryRunner } from 'typeorm';
 import { ApplyPromotionDocLine } from '../dtos/apply-promotion.dto';
+import { ItemType } from '../enums/item-type.enum';
+import { PaymentType } from '../enums/payment-type.enum';
 import { SalesOrderStatus } from '../enums/sales-order-status.enum';
+import { ServiceLevel } from '../enums/service-level.enum';
 import { SalesOrderService } from '../sales-order.service';
 
 export class AddSalesOrderCommand extends BaseCommand<SalesOrder> {
@@ -20,7 +27,8 @@ export class AddSalesOrderCommandHandler extends BaseCommandHandler<AddSalesOrde
     constructor(
         dataSource: DataSource,
         private salesOrderRepo: SalesOrderRepo,
-        private salesOrderService: SalesOrderService
+        private salesOrderService: SalesOrderService,
+        private deliveryService: DeliveryService
     ) {
         super();
         this.queryRunner = dataSource.createQueryRunner();
@@ -60,8 +68,9 @@ export class AddSalesOrderCommandHandler extends BaseCommandHandler<AddSalesOrde
 
             // Calculate promotion only if order came from Comatic
             const onlyNormalLines = data.items.filter((t) => t.itemType === PromotionTypeId.NORMAL);
+            const customer = await this.salesOrderService.getCustomerById(data.customerId ?? 0);
             if (data.customerId && onlyNormalLines.length > 0) {
-                const customer = await this.salesOrderService.getCustomerById(data.customerId);
+                //  const customer = await this.salesOrderService.getCustomerById(data.customerId);
                 const itemInfos = await this.salesOrderService.getItemByIds(
                     onlyNormalLines.map((t) => t.itemId),
                     customer.id
@@ -136,6 +145,10 @@ export class AddSalesOrderCommandHandler extends BaseCommandHandler<AddSalesOrde
                                         itemType: line.itemType,
                                         itemCode: item.code,
                                         itemName: item.name,
+                                        weight: item.weight,
+                                        length: item.length,
+                                        width: item.width,
+                                        height: item.weight,
                                     })
                                 );
                                 break;
@@ -152,6 +165,10 @@ export class AddSalesOrderCommandHandler extends BaseCommandHandler<AddSalesOrde
                                         promotionDescription: line.promotionDescription,
                                         itemCode: item.code,
                                         itemName: item.name,
+                                        weight: item.weight,
+                                        length: item.length,
+                                        width: item.width,
+                                        height: item.weight,
                                     })
                                 );
                                 break;
@@ -169,6 +186,10 @@ export class AddSalesOrderCommandHandler extends BaseCommandHandler<AddSalesOrde
                                             promotionDescription: line.promotionDescription,
                                             itemCode: item.code,
                                             itemName: item.name,
+                                            weight: item.weight,
+                                            length: item.length,
+                                            width: item.width,
+                                            height: item.weight,
                                         },
                                         (line.discountValue * line.rateDiscount * price) / 100
                                     )
@@ -188,6 +209,29 @@ export class AddSalesOrderCommandHandler extends BaseCommandHandler<AddSalesOrde
                                             promotionDescription: line.promotionDescription,
                                             itemCode: item.code,
                                             itemName: item.name,
+                                            weight: item.weight,
+                                            length: item.length,
+                                            width: item.width,
+                                            height: item.weight,
+                                        },
+                                        line.discountValue * line.rateDiscount
+                                    )
+                                );
+                                break;
+                            case PromotionTypeId.DISCOUNT_TOTAL_BILL_VALUE:
+                                order.addItem(
+                                    SalesOrderItem.createDiscountLine(
+                                        {
+                                            itemId: item.id,
+                                            uomId: uom.uomId,
+                                            unitPrice: 0,
+                                            quantity: 0,
+                                            tax: 0,
+                                            itemType: line.itemType,
+                                            weight: item.weight,
+                                            length: item.length,
+                                            width: item.width,
+                                            height: item.weight,
                                         },
                                         line.discountValue * line.rateDiscount
                                     )
@@ -210,6 +254,10 @@ export class AddSalesOrderCommandHandler extends BaseCommandHandler<AddSalesOrde
                                     itemType: line.itemType,
                                     promotionCode: line.promotionCode,
                                     promotionDescription: line.promotionDescription,
+                                    weight: 0,
+                                    length: 0,
+                                    width: 0,
+                                    height: 0,
                                 },
                                 line.discountValue * line.rateDiscount
                             )
@@ -231,6 +279,10 @@ export class AddSalesOrderCommandHandler extends BaseCommandHandler<AddSalesOrde
                                     itemType: line.itemType,
                                     promotionCode: line.promotionCode,
                                     promotionDescription: line.promotionDescription,
+                                    weight: 0,
+                                    length: 0,
+                                    width: 0,
+                                    height: 0,
                                 },
                                 (line.discountValue * order.totalBeforeDiscount) / 100
                             )
@@ -247,6 +299,10 @@ export class AddSalesOrderCommandHandler extends BaseCommandHandler<AddSalesOrde
                             quantity: item.quantity,
                             tax: item.tax ?? 0,
                             itemType: item.itemType,
+                            weight: 0,
+                            length: 0,
+                            width: 0,
+                            height: 0,
                         })
                     );
                 }
@@ -255,8 +311,69 @@ export class AddSalesOrderCommandHandler extends BaseCommandHandler<AddSalesOrde
             const result = await repo.save(order);
             result.code = result.generateCode(result.id);
             await repo.save(result);
-            this.queryRunner.commitTransaction();
 
+            // handle create delivery order
+            const deliveryAddress = await this.salesOrderService.getAddressById(
+                data.contactAddressId
+            );
+            if (!deliveryAddress) throw new BusinessException(MessageConst.AddressNotExist);
+            const resultEntity = result.toEntity();
+            const document = new AddDocument();
+            document.partnerCode = resultEntity.deliveryPartner;
+            document.email = customer?.email ?? 'nchi@gmail.com'; // hardcode email if customer's email is empty
+            document.webhook = 'https://api.1retail-dev.asia/shop/v1/sales-order/webhook'; // hardcode webhook
+            document.serviceLevel = ServiceLevel.STANDARD;
+            document.paymentType = PaymentType.SENDER;
+            document.itemType = ItemType.NORMAL;
+            document.insuranceAmount = resultEntity.totalAmount;
+            document.lines = [];
+            resultEntity.items
+                .filter(
+                    (t) =>
+                        ![
+                            PromotionTypeId.DISCOUNT_TOTAL_BILL_PERCENTAGE,
+                            PromotionTypeId.DISCOUNT_TOTAL_BILL_VALUE,
+                        ].includes(t.itemType)
+                )
+                .forEach((el) => {
+                    const line = new DocumentLine();
+                    line.name = el.itemName ?? '';
+                    line.code = el.itemCode ?? '';
+                    line.quantity = el.quantity;
+                    line.weight = el.weight;
+                    document.lines.push(line);
+                });
+            const size = new DimensionsSize(order.length, order.width, order.height);
+            document.dimension = new Dimensions(order.weight, size);
+            document.to = new DeliveryLocation(
+                deliveryAddress.street,
+                deliveryAddress.wardCode,
+                deliveryAddress.districtCode,
+                deliveryAddress.cityCode,
+                deliveryAddress.countryCode,
+                deliveryAddress.contactPerson,
+                deliveryAddress.phoneNumber
+            );
+            // hardcode document.from
+            document.from = new DeliveryLocation(
+                deliveryAddress.street,
+                deliveryAddress.wardCode,
+                deliveryAddress.districtCode,
+                deliveryAddress.cityCode,
+                deliveryAddress.countryCode,
+                deliveryAddress.contactPerson,
+                deliveryAddress.phoneNumber
+            );
+            const responseDocument = await this.deliveryService.addDocument(document);
+
+            result.paymentType = responseDocument.paymentType;
+            result.serviceLevel = responseDocument.serviceLevel;
+            result.itemType = responseDocument.itemType;
+            result.shippingFee = responseDocument.deliveryFee;
+            result.deliveryOrderCode = responseDocument.code;
+            await repo.save(result);
+
+            this.queryRunner.commitTransaction();
             return result.id;
         } catch (error) {
             this.queryRunner.rollbackTransaction();

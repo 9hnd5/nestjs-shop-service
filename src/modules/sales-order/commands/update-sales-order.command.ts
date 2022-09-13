@@ -164,6 +164,10 @@ export class UpdateSalesOrderCommandHanlder extends BaseCommandHandler<
                                         itemType: line.itemType,
                                         itemCode: item.code,
                                         itemName: item.name,
+                                        weight: item.weight,
+                                        length: item.length,
+                                        width: item.width,
+                                        height: item.weight,
                                     })
                                 );
                             }
@@ -194,6 +198,10 @@ export class UpdateSalesOrderCommandHanlder extends BaseCommandHandler<
                                         promotionDescription: line.promotionDescription,
                                         itemCode: item.code,
                                         itemName: item.name,
+                                        weight: item.weight,
+                                        length: item.length,
+                                        width: item.width,
+                                        height: item.weight,
                                     })
                                 );
                             }
@@ -228,6 +236,10 @@ export class UpdateSalesOrderCommandHanlder extends BaseCommandHandler<
                                             promotionDescription: line.promotionDescription,
                                             itemCode: item.code,
                                             itemName: item.name,
+                                            weight: item.weight,
+                                            length: item.length,
+                                            width: item.width,
+                                            height: item.weight,
                                         },
                                         (line.discountValue * line.rateDiscount * price) / 100
                                     )
@@ -264,6 +276,10 @@ export class UpdateSalesOrderCommandHanlder extends BaseCommandHandler<
                                             promotionDescription: line.promotionDescription,
                                             itemCode: item.code,
                                             itemName: item.name,
+                                            weight: item.weight,
+                                            length: item.length,
+                                            width: item.width,
+                                            height: item.weight,
                                         },
                                         line.discountValue * line.rateDiscount
                                     )
@@ -308,6 +324,10 @@ export class UpdateSalesOrderCommandHanlder extends BaseCommandHandler<
                                     itemType: line.itemType,
                                     promotionCode: line.promotionCode,
                                     promotionDescription: line.promotionDescription,
+                                    weight: 0,
+                                    length: 0,
+                                    width: 0,
+                                    height: 0,
                                 },
                                 line.discountValue * line.rateDiscount
                             )
@@ -351,6 +371,10 @@ export class UpdateSalesOrderCommandHanlder extends BaseCommandHandler<
                                     itemType: line.itemType,
                                     promotionCode: line.promotionCode,
                                     promotionDescription: line.promotionDescription,
+                                    weight: 0,
+                                    length: 0,
+                                    width: 0,
+                                    height: 0,
                                 },
                                 (line.discountValue * salesOrder.totalBeforeDiscount) / 100
                             )
@@ -403,6 +427,10 @@ export class UpdateSalesOrderCommandHanlder extends BaseCommandHandler<
                             quantity: item.quantity,
                             tax: item.tax ?? 0,
                             itemType: item.itemType,
+                            weight: 0,
+                            length: 0,
+                            width: 0,
+                            height: 0,
                         })
                     );
                 }

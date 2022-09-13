@@ -2,7 +2,6 @@ import { Expose } from 'class-transformer';
 import { IsBoolean, IsNotEmpty, IsString, IsNumber, IsEmail, IsUrl } from 'class-validator';
 import { DeliveryLocation } from '../interface/delivery_location';
 import { Dimensions } from '../interface/dimensions';
-import { DocumentLine } from '../interface/document-line.interface';
 
 export class AddDocument {
     @Expose()
@@ -104,4 +103,18 @@ export class AddDocument {
     @Expose()
     @IsNumber()
     totalFeeUpdated: number;
+}
+
+export class DocumentLine {
+    @Expose()
+    name: string;
+
+    @Expose()
+    code: string;
+
+    @Expose()
+    quantity: number;
+
+    @Expose()
+    weight: number;
 }
