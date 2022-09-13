@@ -1,3 +1,6 @@
+import { Expose } from 'class-transformer';
+import { IsNotEmpty, IsOptional, IsString, IsEmail } from 'class-validator';
+
 export class DeliveryLocation {
     constructor(
         street: string,
@@ -20,13 +23,51 @@ export class DeliveryLocation {
         this.postCode = postCode;
         this.email = email;
     }
+
+    @Expose()
+    @IsNotEmpty()
+    @IsString()
     countryCode: string;
+
+    @Expose()
+    @IsNotEmpty()
+    @IsString()
     provinceCode: string;
+
+    @Expose()
+    @IsNotEmpty()
+    @IsString()
     districtCode: string;
+
+    @Expose()
+    @IsNotEmpty()
+    @IsString()
     wardCode: string;
+
+    @Expose()
+    @IsNotEmpty()
+    @IsString()
     street: string;
+
+    @Expose()
+    @IsNotEmpty()
+    @IsString()
     phoneNumber: string;
+
+    @Expose()
+    @IsNotEmpty()
+    @IsString()
     fullName: string;
-    postCode?: string | null;
-    email?: string | null;
+
+    @Expose()
+    @IsNotEmpty()
+    @IsString()
+    @IsOptional()
+    postCode?: string;
+
+    @Expose()
+    @IsEmail()
+    @IsString()
+    @IsOptional()
+    email?: string;
 }

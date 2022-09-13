@@ -1,8 +1,11 @@
 import { PromotionTypeId, MessageConst } from '@constants/.';
 import { DeliveryService } from '@modules/delivery/delivery.service';
 import { AddDocument, DocumentLine } from '@modules/delivery/dtos/add-document.dto';
-import { DeliveryLocation } from '@modules/delivery/interface/delivery_location';
-import { Dimensions, DimensionsSize } from '@modules/delivery/interface/dimensions';
+import { DeliveryLocation } from '@modules/delivery/dtos/delivery-location.dto';
+import { Dimensions, DimensionsSize } from '@modules/delivery/dtos/dimensions.dto';
+import { ItemType } from '@modules/delivery/enums/item-type.enum';
+import { PaymentType } from '@modules/delivery/enums/payment-type.enum';
+import { ServiceLevel } from '@modules/delivery/enums/service-level.enum';
 import AddSalesOrder from '@modules/sales-order/dtos/add-sales-order.dto';
 import { SalesOrderItem } from '@modules/sales-order/entities/sales-order-item.entity';
 import { SalesOrder } from '@modules/sales-order/entities/sales-order.entity';
@@ -11,10 +14,7 @@ import { InternalServerErrorException } from '@nestjs/common';
 import { BaseCommand, BaseCommandHandler, BusinessException, RequestHandler } from 'be-core';
 import { DataSource, QueryRunner } from 'typeorm';
 import { ApplyPromotionDocLine } from '../dtos/apply-promotion.dto';
-import { ItemType } from '../enums/item-type.enum';
-import { PaymentType } from '../enums/payment-type.enum';
 import { SalesOrderStatus } from '../enums/sales-order-status.enum';
-import { ServiceLevel } from '../enums/service-level.enum';
 import { SalesOrderService } from '../sales-order.service';
 
 export class AddSalesOrderCommand extends BaseCommand<SalesOrder> {

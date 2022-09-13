@@ -255,7 +255,7 @@ export class SalesInformationQuery {
             .innerJoin('so.items', 'sol')
             .where('so.is_deleted = 0')
             .andWhere('sol.is_deleted = 0')
-            .andWhere("so.status IN ('Delivered')") 
+            .andWhere("so.status IN ('Delivered')")
             .andWhere(`so.salesman_code IN (${salesmanCodesFormat})`)
             .andWhere(`sol.item_id IN (${itemIds})`)
             .andWhere(`so.posting_date BETWEEN  ${fromdateStr} AND ${toDateStr}`);

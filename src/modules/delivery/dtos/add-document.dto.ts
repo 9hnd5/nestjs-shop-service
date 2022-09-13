@@ -1,72 +1,48 @@
-import { Expose } from 'class-transformer';
-import { IsBoolean, IsNotEmpty, IsString, IsNumber, IsEmail, IsUrl } from 'class-validator';
-import { DeliveryLocation } from '../interface/delivery_location';
-import { Dimensions } from '../interface/dimensions';
+import { Expose, Type } from 'class-transformer';
+import {
+    IsNotEmpty,
+    IsString,
+    IsNumber,
+    IsEmail,
+    IsUrl,
+    ValidateNested,
+    IsEnum,
+    Min,
+} from 'class-validator';
+import { ItemType } from '../enums/item-type.enum';
+import { PaymentType } from '../enums/payment-type.enum';
+import { ServiceLevel } from '../enums/service-level.enum';
+import { DeliveryLocation } from './delivery-location.dto';
+import { Dimensions } from './dimensions.dto';
 
 export class AddDocument {
     @Expose()
     @IsString()
-    code: string;
-
-    @Expose()
-    @IsString()
-    status: string;
-
-    @Expose()
-    @IsString()
-    partnerDocumentCode: string;
-
-    @Expose()
-    @IsString()
     partnerCode: string;
 
-    @Expose()
     @IsNotEmpty()
-    @IsString()
-    userId: string;
-
-    @Expose()
-    @IsNotEmpty()
+    @ValidateNested()
+    @Type(() => DeliveryLocation)
     from: DeliveryLocation;
 
-    @Expose()
     @IsNotEmpty()
+    @ValidateNested()
+    @Type(() => DeliveryLocation)
     to: DeliveryLocation;
 
-    @Expose()
     @IsNotEmpty()
+    @ValidateNested()
+    @Type(() => Dimensions)
     dimension: Dimensions;
-
-    @Expose()
-    @IsString()
-    fromNote: string;
-
-    @Expose()
-    @IsString()
-    toNote: string;
-
-    @Expose()
-    @IsBoolean()
-    isPickup: boolean;
 
     @Expose()
     @IsNumber()
     insuranceAmount: number;
 
     @Expose()
-    @IsNumber()
-    insuranceFee: number;
-
-    @Expose()
-    @IsNumber()
-    isCOD: number;
-
-    @Expose()
-    @IsNumber()
-    codAmount: number;
-
-    @Expose()
     @IsString()
+    @IsNotEmpty()
+    @IsEnum(PaymentType)
     paymentType: string;
 
     @Expose()
@@ -74,47 +50,42 @@ export class AddDocument {
     webhook: string;
 
     @Expose()
-    @IsBoolean()
-    allowTrial: boolean;
-
-    @Expose()
     @IsNotEmpty()
+    @IsString()
+    @IsEnum(ServiceLevel)
     serviceLevel: string;
 
     @Expose()
     @IsNotEmpty()
+    @IsString()
+    @IsEnum(ItemType)
     itemType: string;
-
-    @Expose()
-    @IsNumber()
-    deliveryFee: number;
-
-    @Expose()
-    @IsNumber()
-    totalFee: number;
 
     @Expose()
     @IsEmail()
     email: string;
 
-    @Expose()
+    @ValidateNested()
+    @Type(() => DocumentLine)
     lines: DocumentLine[];
-
-    @Expose()
-    @IsNumber()
-    totalFeeUpdated: number;
 }
 
 export class DocumentLine {
     @Expose()
+    @IsString()
     name: string;
 
     @Expose()
+    @IsString()
     code: string;
 
     @Expose()
+    @Min(0)
+    @IsNumber()
     quantity: number;
 
     @Expose()
+    @Min(0)
+    @IsNumber()
     weight: number;
 }
