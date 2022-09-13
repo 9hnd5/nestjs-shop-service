@@ -140,6 +140,7 @@ export class AddSalesOrderCommandHandler extends BaseCommandHandler<AddSalesOrde
                                         itemId: item.id,
                                         uomId: uom.uomId,
                                         unitPrice: price,
+                                        originalPrice: uom.price,
                                         quantity: line.quantity,
                                         tax: line.tax,
                                         itemType: line.itemType,

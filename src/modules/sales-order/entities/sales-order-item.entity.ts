@@ -20,6 +20,8 @@ export class SalesOrderItemEntity extends TenantEntity {
     discountAmount: number;
     @Column({ name: 'unit_price', type: Number })
     unitPrice: number;
+    @Column({ name: 'original_price', type: 'double', nullable: true })
+    originalPrice?: number;
     @Column({ name: 'quantity', type: Number })
     quantity: number;
     @Column({ name: 'line_total', type: Number })
@@ -62,6 +64,7 @@ type AddProps = Pick<
     | 'length'
     | 'width'
     | 'height'
+    | 'originalPrice'
 >;
 
 type UpdateProps = Omit<AddProps, 'tax' | 'weight' | 'length' | 'width' | 'height'>;
