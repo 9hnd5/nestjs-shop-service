@@ -43,7 +43,7 @@ export class AddDocument {
     @IsString()
     @IsNotEmpty()
     @IsEnum(PaymentType)
-    paymentType: string;
+    paymentType: PaymentType;
 
     @Expose()
     @IsUrl()
@@ -53,13 +53,13 @@ export class AddDocument {
     @IsNotEmpty()
     @IsString()
     @IsEnum(ServiceLevel)
-    serviceLevel: string;
+    serviceLevel: ServiceLevel;
 
     @Expose()
     @IsNotEmpty()
     @IsString()
     @IsEnum(ItemType)
-    itemType: string;
+    itemType: ItemType;
 
     @Expose()
     @IsEmail()

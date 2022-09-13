@@ -67,7 +67,6 @@ export class DeliveryLocation {
 
     @Expose()
     @IsEmail()
-    @IsString()
     @IsOptional()
     email?: string;
 }
