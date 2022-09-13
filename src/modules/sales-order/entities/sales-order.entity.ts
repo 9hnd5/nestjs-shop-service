@@ -331,6 +331,7 @@ export class SalesOrder extends AggregateRoot<SalesOrderEntity> {
     #calcTotalAmount() {
         this.entity.totalAmount =
             this.entity.totalBeforeDiscount -
+            this.entity.totalReducedAmount -
             this.entity.totalLineDiscount -
             this.entity.orderDiscountAmount -
             this.entity.commission +
@@ -340,7 +341,7 @@ export class SalesOrder extends AggregateRoot<SalesOrderEntity> {
 
     #calcTotalBeforeDiscount() {
         this.entity.totalBeforeDiscount = this.entity.items.reduce((value, current) => {
-            return value + current.quantity * current.unitPrice;
+            return value + current.quantity * (current.originalPrice ?? current.unitPrice);
         }, 0);
     }
 
