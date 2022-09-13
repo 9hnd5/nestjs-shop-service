@@ -16,6 +16,9 @@ export class GetByIdResponse extends GetResponse {
     totalLineDiscount: number;
 
     @Expose()
+    totalReducedAmount: number;
+
+    @Expose()
     @Type(() => Item)
     items: Item[];
 }
@@ -48,6 +51,9 @@ class Item {
 
     @Expose()
     unitPrice: number;
+
+    @Expose()
+    originalPrice?: number;
 
     @Expose()
     quantity: number;

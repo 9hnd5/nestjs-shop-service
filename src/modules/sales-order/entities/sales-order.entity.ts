@@ -47,6 +47,8 @@ export class SalesOrderEntity extends TenantEntity {
     totalBeforeDiscount: number;
     @Column({ name: 'total_line_discount', type: Number })
     totalLineDiscount: number;
+    @Column({ name: 'total_reduced_amount', type: 'double' })
+    totalReducedAmount: number;
     @Column({ name: 'order_discount_amount', type: Number })
     orderDiscountAmount: number;
     @Column({ name: 'commission', type: Number })
@@ -93,6 +95,7 @@ type AddProps = Omit<
     | 'itemType'
     | 'serviceLevel'
     | 'paymentType'
+    | 'totalReducedAmount'
 >;
 type UpdateProps = Omit<AddProps, 'status' | 'postingDate'> & {
     modifiedBy: number;
@@ -190,6 +193,7 @@ export class SalesOrder extends AggregateRoot<SalesOrderEntity> {
         this.entity.items.push(item.toEntity());
         this.#calcTotalBeforeDiscount();
         this.#calcTotalLineDiscount();
+        this.#calcTotalReducedAmount();
         this.#calcTax();
         this.#calcTotalAmount();
     }
@@ -201,6 +205,7 @@ export class SalesOrder extends AggregateRoot<SalesOrderEntity> {
         }
         this.#calcTotalBeforeDiscount();
         this.#calcTotalLineDiscount();
+        this.#calcTotalReducedAmount();
         this.#calcTax();
         this.#calcTotalAmount();
     }
@@ -212,6 +217,7 @@ export class SalesOrder extends AggregateRoot<SalesOrderEntity> {
         remove(this.entity.items, (x) => x.id === id);
         this.#calcTotalBeforeDiscount();
         this.#calcTotalLineDiscount();
+        this.#calcTotalReducedAmount();
         this.#calcTax();
         this.#calcTotalAmount();
     }
@@ -325,6 +331,7 @@ export class SalesOrder extends AggregateRoot<SalesOrderEntity> {
     #calcTotalAmount() {
         this.entity.totalAmount =
             this.entity.totalBeforeDiscount -
+            this.entity.totalReducedAmount -
             this.entity.totalLineDiscount -
             this.entity.orderDiscountAmount -
             this.entity.commission +
@@ -334,7 +341,7 @@ export class SalesOrder extends AggregateRoot<SalesOrderEntity> {
 
     #calcTotalBeforeDiscount() {
         this.entity.totalBeforeDiscount = this.entity.items.reduce((value, current) => {
-            return value + current.quantity * current.unitPrice;
+            return value + current.quantity * (current.originalPrice ?? current.unitPrice);
         }, 0);
     }
 
@@ -368,6 +375,16 @@ export class SalesOrder extends AggregateRoot<SalesOrderEntity> {
     #calcHeight() {
         return this.entity.items.reduce((value, current) => {
             return value + current.height;
+        }, 0);
+    }
+
+    #calcTotalReducedAmount() {
+        this.entity.totalReducedAmount = this.entity.items.reduce((value, current) => {
+            return (
+                value +
+                current.quantity *
+                    (current.originalPrice ? current.originalPrice - current.unitPrice : 0)
+            );
         }, 0);
     }
 }
