@@ -1,6 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { HttpService } from 'be-core';
 import { get as getConfig } from '../../config';
+import { AddDocument } from './dtos/add-document.dto';
 import { GetAvailablePartnersQuery } from './dtos/get-available-partners-query.dto';
 import { GetAvailablePartnersResponse } from './dtos/get-available-partners-response.dto';
 import { GetDocumentResponse } from './dtos/get-document-response.dto';
@@ -9,7 +10,6 @@ import { GetPartnerPriceResponse } from './dtos/get-partner-prices-response.dto'
 import { GetPartnersQuery } from './dtos/get-partners-query.dto';
 import { GetPartnersResponse } from './dtos/get-partners-response.dto';
 import { UpdateDocument } from './dtos/update-document.dto';
-import { AddDocument } from './dtos/add-document.dto';
 
 const externalServiceConfig = getConfig('externalService');
 @Injectable()

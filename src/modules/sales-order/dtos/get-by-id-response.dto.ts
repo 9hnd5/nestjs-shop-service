@@ -44,6 +44,9 @@ class Item {
     uomName: string;
 
     @Expose()
+    uomCode: string;
+
+    @Expose()
     unitPrice: number;
 
     @Expose()
@@ -69,6 +72,9 @@ class PriceListDetail {
 
     @Expose()
     uomName: string;
+
+    @Expose()
+    uomCode: string;
 
     @Expose()
     price?: number;

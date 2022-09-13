@@ -1,107 +1,91 @@
-import { Expose } from 'class-transformer';
-import { IsBoolean, IsNotEmpty, IsString, IsNumber, IsEmail, IsUrl } from 'class-validator';
-import { DeliveryLocation } from '../interface/delivery_location';
-import { Dimensions } from '../interface/dimensions';
-import { DocumentLine } from '../interface/document-line.interface';
+import { Expose, Type } from 'class-transformer';
+import {
+    IsNotEmpty,
+    IsString,
+    IsNumber,
+    IsEmail,
+    IsUrl,
+    ValidateNested,
+    IsEnum,
+    Min,
+} from 'class-validator';
+import { ItemType } from '../enums/item-type.enum';
+import { PaymentType } from '../enums/payment-type.enum';
+import { ServiceLevel } from '../enums/service-level.enum';
+import { DeliveryLocation } from './delivery-location.dto';
+import { Dimensions } from './dimensions.dto';
 
 export class AddDocument {
     @Expose()
     @IsString()
-    code: string;
-
-    @Expose()
-    @IsString()
-    status: string;
-
-    @Expose()
-    @IsString()
-    partnerDocumentCode: string;
-
-    @Expose()
-    @IsString()
     partnerCode: string;
 
-    @Expose()
     @IsNotEmpty()
-    @IsString()
-    userId: string;
-
-    @Expose()
-    @IsNotEmpty()
+    @ValidateNested()
+    @Type(() => DeliveryLocation)
     from: DeliveryLocation;
 
-    @Expose()
     @IsNotEmpty()
+    @ValidateNested()
+    @Type(() => DeliveryLocation)
     to: DeliveryLocation;
 
-    @Expose()
     @IsNotEmpty()
+    @ValidateNested()
+    @Type(() => Dimensions)
     dimension: Dimensions;
-
-    @Expose()
-    @IsString()
-    fromNote: string;
-
-    @Expose()
-    @IsString()
-    toNote: string;
-
-    @Expose()
-    @IsBoolean()
-    isPickup: boolean;
 
     @Expose()
     @IsNumber()
     insuranceAmount: number;
 
     @Expose()
-    @IsNumber()
-    insuranceFee: number;
-
-    @Expose()
-    @IsNumber()
-    isCOD: number;
-
-    @Expose()
-    @IsNumber()
-    codAmount: number;
-
-    @Expose()
     @IsString()
-    paymentType: string;
+    @IsNotEmpty()
+    @IsEnum(PaymentType)
+    paymentType: PaymentType;
 
     @Expose()
     @IsUrl()
     webhook: string;
 
     @Expose()
-    @IsBoolean()
-    allowTrial: boolean;
+    @IsNotEmpty()
+    @IsString()
+    @IsEnum(ServiceLevel)
+    serviceLevel: ServiceLevel;
 
     @Expose()
     @IsNotEmpty()
-    serviceLevel: string;
-
-    @Expose()
-    @IsNotEmpty()
-    itemType: string;
-
-    @Expose()
-    @IsNumber()
-    deliveryFee: number;
-
-    @Expose()
-    @IsNumber()
-    totalFee: number;
+    @IsString()
+    @IsEnum(ItemType)
+    itemType: ItemType;
 
     @Expose()
     @IsEmail()
     email: string;
 
-    @Expose()
+    @ValidateNested()
+    @Type(() => DocumentLine)
     lines: DocumentLine[];
+}
+
+export class DocumentLine {
+    @Expose()
+    @IsString()
+    name: string;
 
     @Expose()
+    @IsString()
+    code: string;
+
+    @Expose()
+    @Min(0)
     @IsNumber()
-    totalFeeUpdated: number;
+    quantity: number;
+
+    @Expose()
+    @Min(0)
+    @IsNumber()
+    weight: number;
 }

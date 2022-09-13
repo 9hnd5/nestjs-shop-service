@@ -1,3 +1,4 @@
+import { DeliveryService } from '@modules/delivery/delivery.service';
 import { AddSalesOrderCommandHandler } from '@modules/sales-order/commands/add-sales-order.command';
 import { UpdateSalesOrderPostingDateHandler } from '@modules/sales-order/commands/update-sales-order-posting-date.command';
 import { UpdateSalesOrderCommandHanlder } from '@modules/sales-order/commands/update-sales-order.command';
@@ -21,6 +22,7 @@ import { UpdateSalesOrderStatusCommandHanlder } from './commands/update-sales-or
         SalesOrderQuery,
         SalesOrderService,
         SalesOrderRepo,
+        DeliveryService,
     ],
     controllers: [SalesOrderController],
 })

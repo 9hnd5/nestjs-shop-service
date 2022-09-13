@@ -3,12 +3,17 @@ import { HttpService } from 'be-core';
 import { get as getConfig } from '../../config';
 import { Employee } from './dtos/employee.dto';
 import { ApplyPromotionDoc } from './dtos/apply-promotion.dto';
+import { Address } from './dtos/address.dto';
 
 const externalServiceConfig = getConfig('externalService');
 interface Item {
     id: number;
     code: string;
     name: string;
+    weight: number;
+    height: number;
+    width: number;
+    length: number;
     picture: Picture;
     priceListDetails: PriceListDetail[];
 }
@@ -117,6 +122,20 @@ export class SalesOrderService {
                     },
                 }
             );
+            return response.data;
+        } catch (er) {
+            throw new BadRequestException(er);
+        }
+    }
+
+    async getAddressById(id: number) {
+        try {
+            const response = await this.httpClient.get<Address>(`member/v1/addresses/${id}`, {
+                autoInject: true,
+                config: {
+                    baseURL: externalServiceConfig.memberService,
+                },
+            });
             return response.data;
         } catch (er) {
             throw new BadRequestException(er);
