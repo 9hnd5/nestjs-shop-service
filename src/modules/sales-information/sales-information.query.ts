@@ -1,3 +1,4 @@
+import { GetOrderdData } from './dtos/get-orders-data.dto';
 import { Injectable } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 import { DataSource } from 'typeorm';
@@ -8,6 +9,7 @@ import { GetVolume } from './dtos/get-volumn.dto';
 import { SalesInformationService } from './sales-information.service';
 import SalesOrderRepo from './sales-order.repo';
 import { format } from 'date-fns';
+import { GetBySalesMans } from './dtos/get-by-salesman.dto';
 
 @Injectable()
 export class SalesInformationQuery {
@@ -94,6 +96,7 @@ export class SalesInformationQuery {
         //Get Volume
         const queryStr = this.getVolumeQuery(salesmanCodesFormat, itemIds, fromdateStr, toDateStr);
         const queryResult = await this.ds.manager.query(queryStr);
+
         const volumnData = plainToInstance(GetVolume, queryResult as GetVolume[], {
             excludeExtraneousValues: true,
         });
@@ -262,12 +265,53 @@ export class SalesInformationQuery {
 
         const queryStr = `
             SELECT
-                COUNT(Temp.ordersCount) AS 'ordersCount',
-                COUNT(Temp.ordersDeliveredCount) AS 'ordersDeliveredCount' 
+                *
             FROM(
                 ${ordersCountQuery.getQuery()} UNION ${ordersDeliveredCountQuery.getQuery()}
             ) Temp;
             `;
         return queryStr;
+    }
+
+    async getOrdersData(query: GetBySalesMans) {
+        const { salesmanCodes, fromDate, toDate } = query;
+
+        //Format salesmanCodes
+        const salesmanArr = salesmanCodes.split(',');
+        const salesmanCodesFormat = salesmanArr.map((word) => `'${word.trim()}'`).join(',');
+
+        //parse Date to date string format yyyymmdd
+        const fromdateStr = format(fromDate, 'yyyyMMdd');
+        const toDateStr = format(toDate, 'yyyyMMdd');
+
+        //Get orderCount
+        const queryStr = this.getOrdersQuery(salesmanCodesFormat, fromdateStr, toDateStr);
+        const queryResult = await this.ds.manager.query(queryStr);
+
+        const orderCountData = plainToInstance(GetOrderdData, queryResult as GetOrderdData[], {
+            excludeExtraneousValues: true,
+        });
+        return orderCountData;
+    }
+
+    getOrdersQuery(salesmanCodesFormat: string, fromdateStr: string, toDateStr: string) {
+        //Build query string
+        const ordersQuery = this.salesOrderRepo.repository
+            .createQueryBuilder('so')
+            .select('so.id', 'OrderId')
+            .addSelect('so.status', 'Status')
+            .addSelect('so.salesman_code', 'SalesmanCode')
+            .addSelect('sol.item_id', 'ItemId')
+            .addSelect('sol.uom_id', 'UomId')
+            .addSelect('sol.quantity', 'Quantity')
+            .addSelect('sol.line_total', 'LineTotal')
+            .innerJoin('so.items', 'sol')
+            .where('so.is_deleted = 0')
+            .andWhere('sol.is_deleted = 0')
+            .andWhere(`so.salesman_code IN (${salesmanCodesFormat})`)
+            .andWhere(`so.posting_date BETWEEN  ${fromdateStr} AND ${toDateStr}`)
+            .getQuery();
+
+        return ordersQuery;
     }
 }
