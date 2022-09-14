@@ -1,6 +1,7 @@
 import { FeatureConst } from '@constants/feature.const';
 import { Controller, Get, Query } from '@nestjs/common';
 import { BaseController, LocalAuthorize, Permission } from 'be-core';
+import { GetBySalesMans } from './dtos/get-by-salesman.dto';
 import { GetQuery } from './dtos/get-query.dto';
 import { GetSalesInformation } from './dtos/get-sales-information.dto';
 import { SalesInformationQuery } from './sales-information.query';
@@ -36,5 +37,13 @@ export class SalesInformationController extends BaseController {
         };
 
         return salesInformation;
+    }
+
+    @Get('by-salesmans')
+    @LocalAuthorize(FeatureConst.orderManagement, Permission.View)
+    async getBySalesmans(@Query() query: GetBySalesMans) {
+        const ordersData = await this.salesInformationQuery.getOrdersData(query);
+
+        return ordersData;
     }
 }
