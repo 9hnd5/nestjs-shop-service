@@ -78,7 +78,9 @@ export class AddSalesOrderCommandHandler extends BaseCommandHandler<AddSalesOrde
 
                     // Get either promotion price or original price
                     const price =
-                        uom.promotionPrice && uom.promotionPrice > 0
+                        uom.promotionPrice !== undefined &&
+                        uom.promotionPrice !== null &&
+                        uom.promotionPrice >= 0
                             ? uom.promotionPrice
                             : uom.price;
                     toPromotion.push({
@@ -124,7 +126,9 @@ export class AddSalesOrderCommandHandler extends BaseCommandHandler<AddSalesOrde
 
                         // Get either promotion price or original price
                         const price =
-                            uom.promotionPrice && uom.promotionPrice > 0
+                            uom.promotionPrice !== undefined &&
+                            uom.promotionPrice !== null &&
+                            uom.promotionPrice >= 0
                                 ? uom.promotionPrice
                                 : uom.price;
                         switch (line.itemType) {

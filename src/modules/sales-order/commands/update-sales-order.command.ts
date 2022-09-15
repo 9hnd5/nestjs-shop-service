@@ -81,7 +81,11 @@ export class UpdateSalesOrderCommandHanlder extends BaseCommandHandler<
 
                 // Get either promotion price or original price
                 const price =
-                    uom.promotionPrice && uom.promotionPrice > 0 ? uom.promotionPrice : uom.price;
+                    uom.promotionPrice !== undefined &&
+                    uom.promotionPrice !== null &&
+                    uom.promotionPrice >= 0
+                        ? uom.promotionPrice
+                        : uom.price;
                 toPromotion.push({
                     item: item.code,
                     uom: uom.uomCode,
@@ -125,7 +129,9 @@ export class UpdateSalesOrderCommandHanlder extends BaseCommandHandler<
 
                     // Get either promotion price or original price
                     const price =
-                        uom.promotionPrice && uom.promotionPrice > 0
+                        uom.promotionPrice !== undefined &&
+                        uom.promotionPrice !== null &&
+                        uom.promotionPrice >= 0
                             ? uom.promotionPrice
                             : uom.price;
                     // First we update/insert items in old order
