@@ -64,7 +64,9 @@ export class CalculateSalesOrderCommandHandler extends BaseCommandHandler<
                         throw new BusinessException(MessageConst.MissingItemOrPrice);
                     // Get either promotion price or original price
                     const price =
-                        uom.promotionPrice && uom.promotionPrice > 0
+                        uom.promotionPrice !== undefined &&
+                        uom.promotionPrice !== null &&
+                        uom.promotionPrice >= 0
                             ? uom.promotionPrice
                             : uom.price;
                     toPromotion.push({
@@ -110,7 +112,9 @@ export class CalculateSalesOrderCommandHandler extends BaseCommandHandler<
 
                         // Get either promotion price or original price
                         const price =
-                            uom.promotionPrice && uom.promotionPrice > 0
+                            uom.promotionPrice !== undefined &&
+                            uom.promotionPrice !== null &&
+                            uom.promotionPrice >= 0
                                 ? uom.promotionPrice
                                 : uom.price;
                         switch (line.itemType) {
