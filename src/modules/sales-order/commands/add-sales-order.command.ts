@@ -47,7 +47,6 @@ export class AddSalesOrderCommandHandler extends BaseCommandHandler<AddSalesOrde
             customerPhoneNumber: data.customerPhoneNumber,
             customerAddress: data.customerAddress,
             deliveryPartner: data.deliveryPartner,
-            orderDiscountAmount: data.orderDiscountAmount ?? 0,
             note: data.note,
             salesmanCode: data.salesmanCode,
             salesmanName: data.salesmanName,
