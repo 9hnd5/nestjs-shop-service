@@ -1,6 +1,5 @@
 import { Body, Controller, Get, Param, Patch, Post, Put, Query } from '@nestjs/common';
 import { DeliveryService } from './delivery.service';
-import { AddDocument } from './dtos/add-document.dto';
 import { GetAvailablePartnersQuery } from './dtos/get-available-partners-query.dto';
 import { GetPartnerPricesQuery } from './dtos/get-partner-prices-query.dto';
 import { GetPartnersQuery } from './dtos/get-partners-query.dto';
@@ -26,11 +25,6 @@ export class DeliveryController {
         @Query() query: GetPartnerPricesQuery
     ) {
         return this.deliveryService.getPartnerPrices(partnerCode, query);
-    }
-
-    @Post()
-    add(@Body() command: AddDocument) {
-        return this.deliveryService.addDocument(command);
     }
 
     @Post(':code')

@@ -1,11 +1,5 @@
 import { PromotionTypeId, MessageConst } from '@constants/.';
 import { DeliveryService } from '@modules/delivery/delivery.service';
-import { AddDocument, DocumentLine } from '@modules/delivery/dtos/add-document.dto';
-import { DeliveryLocation } from '@modules/delivery/dtos/delivery-location.dto';
-import { Dimensions, DimensionsSize } from '@modules/delivery/dtos/dimensions.dto';
-import { ItemType } from '@modules/delivery/enums/item-type.enum';
-import { PaymentType } from '@modules/delivery/enums/payment-type.enum';
-import { ServiceLevel } from '@modules/delivery/enums/service-level.enum';
 import AddSalesOrder from '@modules/sales-order/dtos/add-sales-order.dto';
 import { SalesOrderItem } from '@modules/sales-order/entities/sales-order-item.entity';
 import { SalesOrder } from '@modules/sales-order/entities/sales-order.entity';
@@ -313,66 +307,24 @@ export class AddSalesOrderCommandHandler extends BaseCommandHandler<AddSalesOrde
             result.code = result.generateCode(result.id);
             await repo.save(result);
 
-            // handle create delivery order
-            const deliveryAddress = await this.salesOrderService.getAddressById(
-                data.contactAddressId
-            );
-            if (!deliveryAddress) throw new BusinessException(MessageConst.AddressNotExist);
-            const resultEntity = result.toEntity();
-            const document = new AddDocument();
-            document.partnerCode = resultEntity.deliveryPartner;
-            document.email = customer?.email ?? 'nchi@gmail.com'; // hardcode email if customer's email is empty
-            document.webhook = 'https://api.1retail-dev.asia/shop/v1/sales-order/webhook'; // hardcode webhook
-            document.serviceLevel = ServiceLevel.STANDARD;
-            document.paymentType = PaymentType.SENDER;
-            document.itemType = ItemType.NORMAL;
-            document.insuranceAmount = resultEntity.totalAmount;
-            document.lines = [];
-            resultEntity.items
-                .filter(
-                    (t) =>
-                        ![
-                            PromotionTypeId.DISCOUNT_TOTAL_BILL_PERCENTAGE,
-                            PromotionTypeId.DISCOUNT_TOTAL_BILL_VALUE,
-                        ].includes(t.itemType)
-                )
-                .forEach((el) => {
-                    const line = new DocumentLine();
-                    line.name = el.itemName ?? '';
-                    line.code = el.itemCode ?? '';
-                    line.quantity = el.quantity;
-                    line.weight = el.weight;
-                    document.lines.push(line);
-                });
-            const size = new DimensionsSize(order.length, order.width, order.height);
-            document.dimension = new Dimensions(order.weight, size);
-            document.to = new DeliveryLocation(
-                deliveryAddress.street,
-                deliveryAddress.wardCode,
-                deliveryAddress.districtCode,
-                deliveryAddress.cityCode,
-                deliveryAddress.countryCode,
-                deliveryAddress.contactPerson,
-                deliveryAddress.phoneNumber
-            );
-            // hardcode document.from
-            document.from = new DeliveryLocation(
-                deliveryAddress.street,
-                deliveryAddress.wardCode,
-                deliveryAddress.districtCode,
-                deliveryAddress.cityCode,
-                deliveryAddress.countryCode,
-                deliveryAddress.contactPerson,
-                deliveryAddress.phoneNumber
-            );
-            const responseDocument = await this.deliveryService.addDocument(document);
-
-            result.paymentType = responseDocument.paymentType;
-            result.serviceLevel = responseDocument.serviceLevel;
-            result.itemType = responseDocument.itemType;
-            result.shippingFee = responseDocument.deliveryFee;
-            result.deliveryOrderCode = responseDocument.code;
-            await repo.save(result);
+            if (status === SalesOrderStatus.New) {
+                // handle create delivery order
+                const deliveryAddress = await this.salesOrderService.getAddressById(
+                    data.contactAddressId
+                );
+                if (!deliveryAddress) throw new BusinessException(MessageConst.AddressNotExist);
+                const responseDocument = await this.deliveryService.addDocument(
+                    result,
+                    deliveryAddress,
+                    deliveryAddress
+                );
+                result.paymentType = responseDocument.paymentType;
+                result.serviceLevel = responseDocument.serviceLevel;
+                result.itemType = responseDocument.itemType;
+                result.shippingFee = responseDocument.deliveryFee;
+                result.deliveryOrderCode = responseDocument.code;
+                await repo.save(result);
+            }
 
             this.queryRunner.commitTransaction();
             return result.id;
