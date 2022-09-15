@@ -39,13 +39,13 @@ export class SalesOrderItemEntity extends TenantEntity {
     promotionCode?: string;
     @Column({ name: 'promotion_description', type: String, nullable: true, length: 1000 })
     promotionDescription?: string;
-    @Column({ name: 'weight', type: Number, default: 0 })
+    @Column({ name: 'weight', type: 'double', default: 0 })
     weight: number;
-    @Column({ name: 'length', type: Number, default: 0 })
+    @Column({ name: 'length', type: 'double', default: 0 })
     length: number;
-    @Column({ name: 'width', type: Number, default: 0 })
+    @Column({ name: 'width', type: 'double', default: 0 })
     width: number;
-    @Column({ name: 'height', type: Number, default: 0 })
+    @Column({ name: 'height', type: 'double', default: 0 })
     height: number;
 }
 type AddProps = Pick<

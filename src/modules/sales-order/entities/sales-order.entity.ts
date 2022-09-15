@@ -111,6 +111,10 @@ export class SalesOrder extends AggregateRoot<SalesOrderEntity> {
         return this.entity.customerId;
     }
 
+    get contactAddressId() {
+        return this.entity.contactAddressId;
+    }
+
     get items() {
         return this.entity.items.map((x) => new SalesOrderItem(x));
     }
@@ -160,7 +164,11 @@ export class SalesOrder extends AggregateRoot<SalesOrderEntity> {
         this.#calcTotalAmount();
     }
 
-    set deliveryOrderCode(value: string) {
+    get deliveryOrderCode() {
+        return this.entity.deliveryOrderCode;
+    }
+
+    set deliveryOrderCode(value) {
         this.entity.deliveryOrderCode = value;
     }
 

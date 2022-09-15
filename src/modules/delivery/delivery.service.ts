@@ -1,7 +1,12 @@
+import { PromotionTypeId } from '@constants/enum';
+import { Address } from '@modules/sales-order/dtos/address.dto';
+import { SalesOrder } from '@modules/sales-order/entities/sales-order.entity';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { HttpService } from 'be-core';
 import { get as getConfig } from '../../config';
-import { AddDocument } from './dtos/add-document.dto';
+import { AddDocument, DocumentLine } from './dtos/add-document.dto';
+import { DeliveryLocation } from './dtos/delivery-location.dto';
+import { Dimensions, DimensionsSize } from './dtos/dimensions.dto';
 import { GetAvailablePartnersQuery } from './dtos/get-available-partners-query.dto';
 import { GetAvailablePartnersResponse } from './dtos/get-available-partners-response.dto';
 import { GetDocumentResponse } from './dtos/get-document-response.dto';
@@ -10,6 +15,9 @@ import { GetPartnerPriceResponse } from './dtos/get-partner-prices-response.dto'
 import { GetPartnersQuery } from './dtos/get-partners-query.dto';
 import { GetPartnersResponse } from './dtos/get-partners-response.dto';
 import { UpdateDocument } from './dtos/update-document.dto';
+import { ItemType } from './enums/item-type.enum';
+import { PaymentType } from './enums/payment-type.enum';
+import { ServiceLevel } from './enums/service-level.enum';
 
 const externalServiceConfig = getConfig('externalService');
 @Injectable()
@@ -91,14 +99,60 @@ export class DeliveryService {
         }
     }
 
-    async addDocument(data: AddDocument) {
-        const body = {
-            data,
-        };
+    async addDocument(salesOrder: SalesOrder, from: Address, to: Address) {
+        const orderEntity = salesOrder.toEntity();
+        const data = new AddDocument();
+        data.partnerCode = orderEntity.deliveryPartner;
+        data.email = 'nchi@gmail.com'; // hardcode email if customer's email is empty
+        data.webhook = 'https://api.1retail-dev.asia/shop/v1/sales-order/webhook'; // hardcode webhook
+        data.serviceLevel = ServiceLevel.STANDARD;
+        data.paymentType = PaymentType.SENDER;
+        data.itemType = ItemType.NORMAL;
+        data.insuranceAmount = orderEntity.totalAmount;
+        data.lines = [];
+        orderEntity.items
+            .filter(
+                (t) =>
+                    ![
+                        PromotionTypeId.DISCOUNT_TOTAL_BILL_PERCENTAGE,
+                        PromotionTypeId.DISCOUNT_TOTAL_BILL_VALUE,
+                        PromotionTypeId.DISCOUNT_LINE_PERCENTAGE,
+                    ].includes(t.itemType)
+            )
+            .forEach((el) => {
+                const line = new DocumentLine();
+                line.name = el.itemName ?? '';
+                line.code = el.itemCode ?? '';
+                line.quantity = el.quantity;
+                line.weight = el.weight;
+                data.lines.push(line);
+            });
+
+        const size = new DimensionsSize(salesOrder.length, salesOrder.width, salesOrder.height);
+        data.dimension = new Dimensions(salesOrder.weight, size);
+        data.from = new DeliveryLocation(
+            from.street,
+            from.wardCode,
+            from.districtCode,
+            from.cityCode,
+            from.countryCode,
+            from.contactPerson,
+            from.phoneNumber
+        );
+        data.to = new DeliveryLocation(
+            to.street,
+            to.wardCode,
+            to.districtCode,
+            to.cityCode,
+            to.countryCode,
+            to.contactPerson,
+            to.phoneNumber
+        );
+
         try {
             const result = await this.httpClient.post<GetDocumentResponse>(
                 `external/delivery/integration/v1/documents`,
-                body,
+                { data },
                 {
                     config: {
                         baseURL: externalServiceConfig.deliveryService,
@@ -117,34 +171,28 @@ export class DeliveryService {
     }
 
     async confirmedDocument(code: string) {
-        try {
-            const result = await this.httpClient.post<GetDocumentResponse>(
-                `external/delivery/integration/v1/documents/${code}`,
-                {
-                    config: {
-                        baseURL: externalServiceConfig.deliveryService,
-                        headers: {
-                            'api-key':
-                                '443910205C1214957142C76AD401BE749D9E2ED4857278611DB65C78511667A6',
-                            'api-tenant': 'Bao',
-                        },
+        const result = await this.httpClient.patch<GetDocumentResponse>(
+            `external/delivery/integration/v1/documents/${code}/confirm`,
+            {},
+            {
+                config: {
+                    baseURL: externalServiceConfig.deliveryService,
+                    headers: {
+                        'api-key':
+                            '443910205C1214957142C76AD401BE749D9E2ED4857278611DB65C78511667A6',
+                        'api-tenant': 'Bao',
                     },
-                }
-            );
-            return result.data;
-        } catch (er) {
-            throw new BadRequestException(er);
-        }
+                },
+            }
+        );
+        return result.data;
     }
 
     async cancelDocument(code: string) {
-        const body = {
-            code,
-        };
         try {
-            const result = await this.httpClient.put<GetDocumentResponse>(
-                `external/delivery/integration/v1/documents/${code}`,
-                body,
+            const result = await this.httpClient.patch<GetDocumentResponse>(
+                `external/delivery/integration/v1/documents/${code}/cancel`,
+                {},
                 {
                     config: {
                         baseURL: externalServiceConfig.deliveryService,
