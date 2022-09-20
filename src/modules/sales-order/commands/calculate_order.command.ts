@@ -4,6 +4,7 @@ import { SalesOrderItem } from '@modules/sales-order/entities/sales-order-item.e
 import { SalesOrder, SalesOrderEntity } from '@modules/sales-order/entities/sales-order.entity';
 import { BaseCommand, BaseCommandHandler, BusinessException, RequestHandler } from 'be-core';
 import { ApplyPromotionDocLine } from '../dtos/apply-promotion.dto';
+import { CalculateSalesOrderResponse } from '../dtos/calculate-sales-order-response.dto';
 import { SalesOrderStatus } from '../enums/sales-order-status.enum';
 import { Item, SalesOrderService } from '../sales-order.service';
 
@@ -14,7 +15,7 @@ export class CalculateSalesOrderCommand extends BaseCommand<SalesOrderEntity> {
 @RequestHandler(CalculateSalesOrderCommand)
 export class CalculateSalesOrderCommandHandler extends BaseCommandHandler<
     CalculateSalesOrderCommand,
-    any
+    CalculateSalesOrderResponse
 > {
     constructor(private salesOrderService: SalesOrderService) {
         super();
@@ -299,6 +300,12 @@ export class CalculateSalesOrderCommandHandler extends BaseCommandHandler<
             const ord = order.toEntity();
             return Promise.resolve({
                 ...ord,
+                beforeInsert: function () {
+                    return;
+                },
+                beforeUpdate: function () {
+                    return;
+                },
                 items: ord.items.map((t) => {
                     const item = itemInfosAfter.find((u) => u.id === t.itemId);
                     return {
@@ -306,6 +313,12 @@ export class CalculateSalesOrderCommandHandler extends BaseCommandHandler<
                         itemImageId: item?.picture.imageId,
                         uomCode: item?.priceListDetails.find((u) => u.uomId === t.uomId)?.uomCode,
                         uomName: item?.priceListDetails.find((u) => u.uomId === t.uomId)?.uomName,
+                        beforeInsert: function () {
+                            return;
+                        },
+                        beforeUpdate: function () {
+                            return;
+                        },
                     };
                 }),
             });
