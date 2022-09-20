@@ -39,7 +39,6 @@ export class CalculateSalesOrderCommandHandler extends BaseCommandHandler<
             customerPhoneNumber: data.customerPhoneNumber,
             customerAddress: data.customerAddress,
             deliveryPartner: data.deliveryPartner,
-            orderDiscountAmount: data.orderDiscountAmount ?? 0,
             note: data.note,
             salesmanCode: data.salesmanCode,
             salesmanName: data.salesmanName,

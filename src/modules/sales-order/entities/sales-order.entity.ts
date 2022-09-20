@@ -1,3 +1,4 @@
+import { PromotionTypeId } from '@constants/.';
 import {
     SalesOrderItem,
     SalesOrderItemEntity,
@@ -96,6 +97,7 @@ type AddProps = Omit<
     | 'serviceLevel'
     | 'paymentType'
     | 'totalReducedAmount'
+    | 'orderDiscountAmount'
 >;
 type UpdateProps = Omit<AddProps, 'status' | 'postingDate'> & {
     modifiedBy: number;
@@ -202,6 +204,7 @@ export class SalesOrder extends AggregateRoot<SalesOrderEntity> {
         this.#calcTotalBeforeDiscount();
         this.#calcTotalLineDiscount();
         this.#calcTotalReducedAmount();
+        this.#calcOrderDiscountAmount();
         this.#calcTax();
         this.#calcTotalAmount();
     }
@@ -214,6 +217,7 @@ export class SalesOrder extends AggregateRoot<SalesOrderEntity> {
         this.#calcTotalBeforeDiscount();
         this.#calcTotalLineDiscount();
         this.#calcTotalReducedAmount();
+        this.#calcOrderDiscountAmount();
         this.#calcTax();
         this.#calcTotalAmount();
     }
@@ -226,6 +230,7 @@ export class SalesOrder extends AggregateRoot<SalesOrderEntity> {
         this.#calcTotalBeforeDiscount();
         this.#calcTotalLineDiscount();
         this.#calcTotalReducedAmount();
+        this.#calcOrderDiscountAmount();
         this.#calcTax();
         this.#calcTotalAmount();
     }
@@ -355,7 +360,16 @@ export class SalesOrder extends AggregateRoot<SalesOrderEntity> {
 
     #calcTotalLineDiscount() {
         this.entity.totalLineDiscount = this.entity.items.reduce((value, current) => {
-            return value + current.discountAmount;
+            let discountAmount = 0;
+            if (
+                ![
+                    PromotionTypeId.DISCOUNT_TOTAL_BILL_PERCENTAGE,
+                    PromotionTypeId.DISCOUNT_TOTAL_BILL_VALUE,
+                ].includes(current.itemType)
+            ) {
+                discountAmount += current.discountAmount;
+            }
+            return value + discountAmount;
         }, 0);
     }
 
@@ -393,6 +407,21 @@ export class SalesOrder extends AggregateRoot<SalesOrderEntity> {
                 current.quantity *
                     (current.originalPrice ? current.originalPrice - current.unitPrice : 0)
             );
+        }, 0);
+    }
+
+    #calcOrderDiscountAmount() {
+        this.entity.orderDiscountAmount = this.entity.items.reduce((value, current) => {
+            let discountAmount = 0;
+            if (
+                [
+                    PromotionTypeId.DISCOUNT_TOTAL_BILL_PERCENTAGE,
+                    PromotionTypeId.DISCOUNT_TOTAL_BILL_VALUE,
+                ].includes(current.itemType)
+            ) {
+                discountAmount += current.discountAmount;
+            }
+            return value + discountAmount;
         }, 0);
     }
 }
