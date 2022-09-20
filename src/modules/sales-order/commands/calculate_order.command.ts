@@ -5,7 +5,7 @@ import { SalesOrder, SalesOrderEntity } from '@modules/sales-order/entities/sale
 import { BaseCommand, BaseCommandHandler, BusinessException, RequestHandler } from 'be-core';
 import { ApplyPromotionDocLine } from '../dtos/apply-promotion.dto';
 import { SalesOrderStatus } from '../enums/sales-order-status.enum';
-import { SalesOrderService } from '../sales-order.service';
+import { Item, SalesOrderService } from '../sales-order.service';
 
 export class CalculateSalesOrderCommand extends BaseCommand<SalesOrderEntity> {
     data: AddSalesOrder;
@@ -14,7 +14,7 @@ export class CalculateSalesOrderCommand extends BaseCommand<SalesOrderEntity> {
 @RequestHandler(CalculateSalesOrderCommand)
 export class CalculateSalesOrderCommandHandler extends BaseCommandHandler<
     CalculateSalesOrderCommand,
-    SalesOrderEntity
+    any
 > {
     constructor(private salesOrderService: SalesOrderService) {
         super();
@@ -47,6 +47,8 @@ export class CalculateSalesOrderCommandHandler extends BaseCommandHandler<
         });
 
         try {
+            // Item Info for injecting Image Id, Uom info in the end
+            let itemInfosAfter: Item[] = [];
             // Calculate promotion only if order came from Comatic
             const onlyNormalLines = data.items.filter((t) => t.itemType === PromotionTypeId.NORMAL);
             if (data.customerId && onlyNormalLines.length > 0) {
@@ -55,6 +57,7 @@ export class CalculateSalesOrderCommandHandler extends BaseCommandHandler<
                     onlyNormalLines.map((t) => t.itemId),
                     customer.id
                 );
+                itemInfosAfter = itemInfos;
                 const toPromotion: ApplyPromotionDocLine[] = [];
                 for (const line of onlyNormalLines) {
                     const item = itemInfos.find((t) => t.id === line.itemId);
@@ -97,6 +100,7 @@ export class CalculateSalesOrderCommandHandler extends BaseCommandHandler<
                             .map((t) => t.item),
                         customer.id
                     );
+                    itemInfosAfter = itemInfos;
                     for (const line of promotionRs.documentLines.filter(
                         (t) =>
                             ![
@@ -292,7 +296,19 @@ export class CalculateSalesOrderCommandHandler extends BaseCommandHandler<
                 }
             }
 
-            return Promise.resolve(order.toEntity());
+            const ord = order.toEntity();
+            return Promise.resolve({
+                ...ord,
+                items: ord.items.map((t) => {
+                    const item = itemInfosAfter.find((u) => u.id === t.itemId);
+                    return {
+                        ...t,
+                        itemImageId: item?.picture.imageId,
+                        uomCode: item?.priceListDetails.find((u) => u.uomId === t.uomId)?.uomCode,
+                        uomName: item?.priceListDetails.find((u) => u.uomId === t.uomId)?.uomName,
+                    };
+                }),
+            });
         } catch (error) {
             throw new BusinessException(error);
         }

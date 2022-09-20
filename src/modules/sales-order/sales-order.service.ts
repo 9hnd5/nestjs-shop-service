@@ -6,7 +6,7 @@ import { ApplyPromotionDoc } from './dtos/apply-promotion.dto';
 import { Address } from './dtos/address.dto';
 
 const externalServiceConfig = getConfig('externalService');
-interface Item {
+export interface Item {
     id: number;
     code: string;
     name: string;
