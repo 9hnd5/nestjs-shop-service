@@ -125,6 +125,10 @@ export class SalesOrder extends AggregateRoot<SalesOrderEntity> {
         return this.entity.totalBeforeDiscount;
     }
 
+    get totalReducedAmount() {
+        return this.entity.totalReducedAmount;
+    }
+
     set code(value: string) {
         this.entity.code = value;
     }
