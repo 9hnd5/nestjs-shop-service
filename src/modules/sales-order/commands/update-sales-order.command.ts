@@ -226,7 +226,7 @@ export class UpdateSalesOrderCommandHanlder extends BaseCommandHandler<
                                         itemCode: item.code,
                                         itemName: item.name,
                                     },
-                                    (line.discountValue * line.rateDiscount * price) / 100
+                                    (line.discountValue * line.quantity * price) / 100
                                 );
                                 salesOrder.updateItem(existItem.id, existItem);
                             } else {
@@ -248,7 +248,7 @@ export class UpdateSalesOrderCommandHanlder extends BaseCommandHandler<
                                             width: item.width,
                                             height: item.weight,
                                         },
-                                        (line.discountValue * line.rateDiscount * price) / 100
+                                        (line.discountValue * line.quantity * price) / 100
                                     )
                                 );
                             }
@@ -363,7 +363,9 @@ export class UpdateSalesOrderCommandHanlder extends BaseCommandHandler<
                                 quantity: 0,
                                 itemType: line.itemType,
                             },
-                            (line.discountValue * salesOrder.totalBeforeDiscount) / 100
+                            (line.discountValue *
+                                (salesOrder.totalBeforeDiscount - salesOrder.totalReducedAmount)) /
+                                100
                         );
                         salesOrder.updateItem(existItem.id, existItem);
                     } else {
@@ -383,7 +385,10 @@ export class UpdateSalesOrderCommandHanlder extends BaseCommandHandler<
                                     width: 0,
                                     height: 0,
                                 },
-                                (line.discountValue * salesOrder.totalBeforeDiscount) / 100
+                                (line.discountValue *
+                                    (salesOrder.totalBeforeDiscount -
+                                        salesOrder.totalReducedAmount)) /
+                                    100
                             )
                         );
                     }
