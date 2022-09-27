@@ -21,7 +21,6 @@ export class UpdateSalesOrderStatusCommandHanlder extends BaseCommandHandler<
     private queryRunner: QueryRunner;
     constructor(
         dataSource: DataSource,
-        private salesOrderRepo: SalesOrderRepo,
         private deliveryService: DeliveryService,
         private salesOrderService: SalesOrderService
     ) {
@@ -31,10 +30,10 @@ export class UpdateSalesOrderStatusCommandHanlder extends BaseCommandHandler<
     async apply(command: UpdateSalesOrderStatusCommand) {
         const { id, status } = command;
         try {
-            this.queryRunner.connect();
-            this.queryRunner.startTransaction();
-            const repo = this.queryRunner.manager.withRepository(this.salesOrderRepo.repository);
-            const salesOrder = await repo.findOne({
+            await this.queryRunner.connect();
+            await this.queryRunner.startTransaction();
+            const repo = new SalesOrderRepo(this.queryRunner.manager);
+            const salesOrder = await repo.findOneEntity({
                 where: { id },
                 relations: {
                     items: true,
@@ -66,13 +65,13 @@ export class UpdateSalesOrderStatusCommandHanlder extends BaseCommandHandler<
                         salesOrder.itemType = responseDocument.itemType;
                         salesOrder.shippingFee = responseDocument.deliveryFee;
                         salesOrder.deliveryOrderCode = responseDocument.code;
-                        await repo.save(salesOrder);
+                        await repo.saveEntity(salesOrder);
                     }
                     break;
                 case SalesOrderStatus.Confirmed:
                     {
                         salesOrder.changeStatusToConfirmed(status);
-                        await repo.save(salesOrder);
+                        await repo.saveEntity(salesOrder);
                         if (salesOrder.deliveryOrderCode) {
                             await this.deliveryService.confirmedDocument(
                                 salesOrder.deliveryOrderCode
@@ -83,7 +82,7 @@ export class UpdateSalesOrderStatusCommandHanlder extends BaseCommandHandler<
                 case SalesOrderStatus.Canceled:
                     {
                         salesOrder.changeStatusToCanceled(status);
-                        await repo.save(salesOrder);
+                        await repo.saveEntity(salesOrder);
                         if (salesOrder.deliveryOrderCode) {
                             await this.deliveryService.cancelDocument(salesOrder.deliveryOrderCode);
                         }
@@ -91,24 +90,24 @@ export class UpdateSalesOrderStatusCommandHanlder extends BaseCommandHandler<
                     break;
                 case SalesOrderStatus.OrderPreparation:
                     salesOrder.changeStatusToOrderPreparation(status);
-                    await repo.save(salesOrder);
+                    await repo.saveEntity(salesOrder);
                     break;
                 case SalesOrderStatus.WaitingDelivery:
                     salesOrder.changeStatusToWaitingDelivery(status);
-                    await repo.save(salesOrder);
+                    await repo.saveEntity(salesOrder);
                     break;
                 case SalesOrderStatus.Delivered:
                     salesOrder.changeStatusToDeliveried(status);
-                    await repo.save(salesOrder);
+                    await repo.saveEntity(salesOrder);
                     break;
                 case SalesOrderStatus.Returned:
                     salesOrder.changeStatusToReturned(status);
-                    await repo.save(salesOrder);
+                    await repo.saveEntity(salesOrder);
                     break;
                 default:
                     break;
             }
-            this.queryRunner.commitTransaction();
+            await this.queryRunner.commitTransaction();
             return salesOrder.id;
         } catch (error) {
             this.queryRunner.rollbackTransaction();

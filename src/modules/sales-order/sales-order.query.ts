@@ -33,8 +33,8 @@ export class SalesOrderQuery {
             toDate,
             paymentStatus,
         } = query;
-        const condition = this.salesOrderRepo.repository
-            .createQueryBuilder('s')
+        const condition = this.salesOrderRepo
+            .createQuerybuild('s')
             .where('s.is_deleted = :isDeleted', { isDeleted: false });
 
         if (paymentStatus) {
@@ -89,7 +89,7 @@ export class SalesOrderQuery {
     }
 
     async getById(id: number) {
-        const salesOrder = await this.salesOrderRepo.repository.findOne({
+        const salesOrder = await this.salesOrderRepo.findOneEntity({
             where: { id, isDeleted: false },
             relations: { items: true },
         });
@@ -122,8 +122,8 @@ export class SalesOrderQuery {
 
     async getStatusSummary(query: SummaryQuery) {
         const { salesChannelCode, fromDate, toDate, salesmanCode, orderStatus } = query;
-        const condition = this.salesOrderRepo.repository
-            .createQueryBuilder('s')
+        const condition = this.salesOrderRepo
+            .createQuerybuild('s')
             .where('is_deleted = :isDeleted', { isDeleted: false });
 
         if (salesChannelCode) {

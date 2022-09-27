@@ -138,6 +138,7 @@ export class DeliveryService {
                         PromotionTypeId.DISCOUNT_TOTAL_BILL_PERCENTAGE,
                         PromotionTypeId.DISCOUNT_TOTAL_BILL_VALUE,
                         PromotionTypeId.DISCOUNT_LINE_PERCENTAGE,
+                        PromotionTypeId.DISCOUNT_LINE_VALUE,
                     ].includes(t.itemType)
             )
             .forEach((el) => {
@@ -175,6 +176,7 @@ export class DeliveryService {
                 `external/delivery/integration/v1/documents`,
                 { data },
                 {
+                    autoInject: false,
                     config: {
                         baseURL: deliveryServiceConfig.url,
                         headers: {
@@ -195,6 +197,7 @@ export class DeliveryService {
             `external/delivery/integration/v1/documents/${code}/confirm`,
             {},
             {
+                autoInject: false,
                 config: {
                     baseURL: deliveryServiceConfig.url,
                     headers: {
@@ -213,6 +216,7 @@ export class DeliveryService {
                 `external/delivery/integration/v1/documents/${code}/cancel`,
                 {},
                 {
+                    autoInject: false,
                     config: {
                         baseURL: deliveryServiceConfig.url,
                         headers: {
@@ -237,6 +241,7 @@ export class DeliveryService {
                 `external/delivery/integration/v1/documents/${code}`,
                 body,
                 {
+                    autoInject: false,
                     config: {
                         baseURL: deliveryServiceConfig.url,
                         headers: {
