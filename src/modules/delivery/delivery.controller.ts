@@ -9,11 +9,13 @@ import { UpdateDocument } from './dtos/update-document.dto';
 export class DeliveryController {
     constructor(private deliveryService: DeliveryService) {}
 
+    // Calculate price of route for delivering, and list partners
     @Get('partners/available')
     getAvailablePartners(@Query() query: GetAvailablePartnersQuery) {
         return this.deliveryService.getAvailablePartners(query);
     }
 
+    // Show list of all partners
     @Get('partners')
     getPartners(@Query() query: GetPartnersQuery) {
         return this.deliveryService.getPartners(query);

@@ -1,6 +1,6 @@
 import { Expose } from 'class-transformer';
 import { QueryBase } from 'be-core';
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsString, IsOptional } from 'class-validator';
 
 export class GetPartnerPricesQuery extends QueryBase {
     @Expose()
@@ -24,6 +24,7 @@ export class GetPartnerPricesQuery extends QueryBase {
     toDistrictCode: string;
 
     @Expose()
+    @IsOptional()
     @IsString()
     search?: string;
 }

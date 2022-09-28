@@ -2,7 +2,7 @@ import { PromotionTypeId } from '@constants/enum';
 import { Address } from '@modules/sales-order/dtos/address.dto';
 import { SalesOrder } from '@modules/sales-order/entities/sales-order.entity';
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { HttpService } from 'be-core';
+import { HttpService, Paginated } from 'be-core';
 import { get as getConfig } from '../../config';
 import { AddDocument, DocumentLine } from './dtos/add-document.dto';
 import { DeliveryLocation } from './dtos/delivery-location.dto';
@@ -19,7 +19,7 @@ import { ItemType } from './enums/item-type.enum';
 import { PaymentType } from './enums/payment-type.enum';
 import { ServiceLevel } from './enums/service-level.enum';
 
-const externalServiceConfig = getConfig('externalService');
+const deliveryServiceConfig = getConfig('deliveryService');
 @Injectable()
 export class DeliveryService {
     constructor(private httpClient: HttpService) {}
@@ -51,11 +51,16 @@ export class DeliveryService {
         };
         try {
             const result = await this.httpClient.post<GetAvailablePartnersResponse[]>(
-                `https://api.1retail-dev.asia/external/delivery/integration/v1/documents/partners/available`,
+                `external/delivery/integration/v1/documents/partners/available`,
                 data,
                 {
+                    autoInject: false,
                     config: {
-                        baseURL: externalServiceConfig.deliveryService,
+                        baseURL: deliveryServiceConfig.url,
+                        headers: {
+                            'api-key': deliveryServiceConfig.apiKey,
+                            'api-tenant': deliveryServiceConfig.apiTenant,
+                        },
                     },
                 }
             );
@@ -67,12 +72,20 @@ export class DeliveryService {
 
     async getPartners(query: GetPartnersQuery) {
         try {
-            const response = await this.httpClient.get<GetPartnersResponse>(
-                `delivery/v1/partners?skip=${query.pageIndex}&take=${query.pageSize}`,
+            const response = await this.httpClient.get<Paginated<GetPartnersResponse>>(
+                `external/delivery/integration/v1/partners`,
                 {
-                    autoInject: true,
+                    autoInject: false,
                     config: {
-                        baseURL: externalServiceConfig.deliveryService,
+                        baseURL: deliveryServiceConfig.url,
+                        headers: {
+                            'api-key': deliveryServiceConfig.apiKey,
+                            'api-tenant': deliveryServiceConfig.apiTenant,
+                        },
+                        params: {
+                            pageIndex: query.pageSize * (query.pageIndex - 1),
+                            pageSize: query.pageSize,
+                        },
                     },
                 }
             );
@@ -85,11 +98,19 @@ export class DeliveryService {
     async getPartnerPrices(partnerCode: string, query: GetPartnerPricesQuery) {
         try {
             const result = await this.httpClient.get<GetPartnerPriceResponse[]>(
-                `delivery/v1/partner-prices/${partnerCode}?fromDistrictCode=${query.fromDistrictCode}&fromProvinceCode=${query.fromProvinceCode}&toDistrictCode=${query.toDistrictCode}&toProvinceCode=${query.toProvinceCode}&skip=${query.pageIndex}&take=${query.pageSize}`,
+                `delivery/v1/partner-prices/${partnerCode}`,
                 {
-                    autoInject: true,
+                    autoInject: false,
                     config: {
-                        baseURL: externalServiceConfig.deliveryService,
+                        baseURL: deliveryServiceConfig.url,
+                        params: {
+                            fromDistrictCode: query.fromDistrictCode,
+                            fromProvinceCode: query.fromProvinceCode,
+                            toDistrictCode: query.toDistrictCode,
+                            toProvinceCode: query.toProvinceCode,
+                            skip: query.pageIndex,
+                            take: query.pageSize,
+                        },
                     },
                 }
             );
@@ -155,11 +176,10 @@ export class DeliveryService {
                 { data },
                 {
                     config: {
-                        baseURL: externalServiceConfig.deliveryService,
+                        baseURL: deliveryServiceConfig.url,
                         headers: {
-                            'api-key':
-                                '443910205C1214957142C76AD401BE749D9E2ED4857278611DB65C78511667A6',
-                            'api-tenant': 'Bao',
+                            'api-key': deliveryServiceConfig.apiKey,
+                            'api-tenant': deliveryServiceConfig.apiTenant,
                         },
                     },
                 }
@@ -176,11 +196,10 @@ export class DeliveryService {
             {},
             {
                 config: {
-                    baseURL: externalServiceConfig.deliveryService,
+                    baseURL: deliveryServiceConfig.url,
                     headers: {
-                        'api-key':
-                            '443910205C1214957142C76AD401BE749D9E2ED4857278611DB65C78511667A6',
-                        'api-tenant': 'Bao',
+                        'api-key': deliveryServiceConfig.apiKey,
+                        'api-tenant': deliveryServiceConfig.apiTenant,
                     },
                 },
             }
@@ -195,11 +214,10 @@ export class DeliveryService {
                 {},
                 {
                     config: {
-                        baseURL: externalServiceConfig.deliveryService,
+                        baseURL: deliveryServiceConfig.url,
                         headers: {
-                            'api-key':
-                                '443910205C1214957142C76AD401BE749D9E2ED4857278611DB65C78511667A6',
-                            'api-tenant': 'Bao',
+                            'api-key': deliveryServiceConfig.apiKey,
+                            'api-tenant': deliveryServiceConfig.apiTenant,
                         },
                     },
                 }
@@ -220,11 +238,10 @@ export class DeliveryService {
                 body,
                 {
                     config: {
-                        baseURL: externalServiceConfig.deliveryService,
+                        baseURL: deliveryServiceConfig.url,
                         headers: {
-                            'api-key':
-                                '443910205C1214957142C76AD401BE749D9E2ED4857278611DB65C78511667A6',
-                            'api-tenant': 'Bao',
+                            'api-key': deliveryServiceConfig.apiKey,
+                            'api-tenant': deliveryServiceConfig.apiTenant,
                         },
                     },
                 }

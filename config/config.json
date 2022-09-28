@@ -22,8 +22,13 @@
     "externalService": {
         "paymentUrl": "http://localhost:6006",
         "ecommerceShopService": "http://localhost:4010",
-        "deliveryService": "http://localhost:3001",
         "memberService": "http://localhost:4002",
         "promotionService": "http://localhost:4008"
+    },
+    "deliveryService": {
+        "url": "http://localhost:3001",
+        "apiKey": "443910205C1214957142C76AD401BE749D9E2ED4857278611DB65C78511667A6",
+        "apiTenant": "Bao"
+
     }
 }
