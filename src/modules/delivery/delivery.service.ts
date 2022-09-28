@@ -83,7 +83,7 @@ export class DeliveryService {
                             'api-tenant': deliveryServiceConfig.apiTenant,
                         },
                         params: {
-                            pageIndex: query.pageSize * (query.pageIndex - 1),
+                            pageIndex: query.pageIndex,
                             pageSize: query.pageSize,
                         },
                     },
