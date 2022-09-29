@@ -4,7 +4,6 @@ import AddSalesOrder from '@modules/sales-order/dtos/add-sales-order.dto';
 import { SalesOrderItem } from '@modules/sales-order/entities/sales-order-item.entity';
 import { SalesOrder } from '@modules/sales-order/entities/sales-order.entity';
 import SalesOrderRepo from '@modules/sales-order/sales-order.repo';
-import { InternalServerErrorException } from '@nestjs/common';
 import { BaseCommand, BaseCommandHandler, BusinessException, RequestHandler } from 'be-core';
 import { DataSource, QueryRunner } from 'typeorm';
 import { ApplyPromotionDocLine } from '../dtos/apply-promotion.dto';
@@ -316,7 +315,7 @@ export class AddSalesOrderCommandHandler extends BaseCommandHandler<AddSalesOrde
             return result.id;
         } catch (error) {
             this.queryRunner.rollbackTransaction();
-            throw new InternalServerErrorException(error);
+            throw error;
         }
     }
 }

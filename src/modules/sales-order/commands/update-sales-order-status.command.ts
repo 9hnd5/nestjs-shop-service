@@ -2,7 +2,7 @@ import { MessageConst } from '@constants/message.const';
 import { DeliveryService } from '@modules/delivery/delivery.service';
 import { SalesOrder } from '@modules/sales-order/entities/sales-order.entity';
 import SalesOrderRepo from '@modules/sales-order/sales-order.repo';
-import { InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { NotFoundException } from '@nestjs/common';
 import { BaseCommand, BaseCommandHandler, BusinessException, RequestHandler } from 'be-core';
 import { DataSource, QueryRunner } from 'typeorm';
 import { SalesOrderStatus } from '../enums/sales-order-status.enum';
@@ -112,7 +112,7 @@ export class UpdateSalesOrderStatusCommandHanlder extends BaseCommandHandler<
             return salesOrder.id;
         } catch (error) {
             this.queryRunner.rollbackTransaction();
-            throw new InternalServerErrorException(error);
+            throw error;
         }
     }
 }
