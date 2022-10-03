@@ -19,7 +19,6 @@ export class AddSalesOrderCommandHandler extends BaseCommandHandler<AddSalesOrde
     private queryRunner: QueryRunner;
     constructor(
         dataSource: DataSource,
-        private salesOrderRepo: SalesOrderRepo,
         private salesOrderService: SalesOrderService,
         private deliveryService: DeliveryService
     ) {
@@ -54,9 +53,9 @@ export class AddSalesOrderCommandHandler extends BaseCommandHandler<AddSalesOrde
         });
 
         try {
-            this.queryRunner.connect();
-            this.queryRunner.startTransaction();
-            const repo = this.queryRunner.manager.withRepository(this.salesOrderRepo.repository);
+            await this.queryRunner.connect();
+            await this.queryRunner.startTransaction();
+            const repo = new SalesOrderRepo(this.queryRunner.manager);
 
             // Calculate promotion only if order came from Comatic
             const onlyNormalLines = data.items.filter((t) => t.itemType === PromotionTypeId.NORMAL);
@@ -288,9 +287,9 @@ export class AddSalesOrderCommandHandler extends BaseCommandHandler<AddSalesOrde
                 }
             }
 
-            const result = await repo.save(order);
+            const result = await repo.saveEntity(order);
             result.code = result.generateCode(result.id);
-            await repo.save(result);
+            await repo.saveEntity(result);
 
             if (status === SalesOrderStatus.New) {
                 // handle create delivery order
@@ -308,10 +307,10 @@ export class AddSalesOrderCommandHandler extends BaseCommandHandler<AddSalesOrde
                 result.itemType = responseDocument.itemType;
                 result.shippingFee = responseDocument.deliveryFee;
                 result.deliveryOrderCode = responseDocument.code;
-                await repo.save(result);
+                await repo.saveEntity(result);
             }
 
-            this.queryRunner.commitTransaction();
+            await this.queryRunner.commitTransaction();
             return result.id;
         } catch (error) {
             this.queryRunner.rollbackTransaction();

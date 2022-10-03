@@ -18,9 +18,9 @@ export class UpdateSalesOrderPostingDateHandler extends BaseCommandHandler<
     }
     async apply(command: UpdateSalesOrderPostingDateCommand): Promise<any> {
         const { id, postingDate } = command;
-        const salesOrder = await this.salesOrderRepo.repository.findOne({ where: { id } });
+        const salesOrder = await this.salesOrderRepo.findOneEntity({ where: { id } });
         if (!salesOrder) throw new NotFoundException('Sales Order not found');
         salesOrder.changePostingDate(postingDate);
-        this.salesOrderRepo.repository.save(salesOrder);
+        this.salesOrderRepo.saveEntity(salesOrder);
     }
 }

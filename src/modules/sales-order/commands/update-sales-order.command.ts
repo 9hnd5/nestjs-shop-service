@@ -25,7 +25,7 @@ export class UpdateSalesOrderCommandHanlder extends BaseCommandHandler<
     }
     async apply(command: UpdateSalesOrderCommand) {
         const { data } = command;
-        const salesOrder = await this.salesOrderRepo.repository.findOne({
+        const salesOrder = await this.salesOrderRepo.findOneEntity({
             where: { id: data.id },
             relations: {
                 items: true,
@@ -449,7 +449,7 @@ export class UpdateSalesOrderCommandHanlder extends BaseCommandHandler<
             }
         }
 
-        const result = await this.salesOrderRepo.repository.save(salesOrder);
+        const result = await this.salesOrderRepo.saveEntity(salesOrder);
         return result.id;
     }
 }
