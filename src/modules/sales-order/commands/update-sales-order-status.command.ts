@@ -35,9 +35,6 @@ export class UpdateSalesOrderStatusCommandHanlder extends BaseCommandHandler<
             const repo = new SalesOrderRepo(this.queryRunner.manager);
             const salesOrder = await repo.findOneEntity({
                 where: { id },
-                relations: {
-                    items: true,
-                },
             });
 
             if (!salesOrder) {

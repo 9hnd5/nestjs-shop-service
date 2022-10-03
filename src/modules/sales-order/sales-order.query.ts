@@ -34,7 +34,7 @@ export class SalesOrderQuery {
             paymentStatus,
         } = query;
         const condition = this.salesOrderRepo
-            .createQuerybuild('s')
+            .createQueryBuilder('s')
             .where('s.is_deleted = :isDeleted', { isDeleted: false });
 
         if (paymentStatus) {
@@ -69,8 +69,6 @@ export class SalesOrderQuery {
             condition.andWhere('s.salesman_code= :salesmanCode', { salesmanCode });
         }
 
-        condition.orderBy('s.modified_date', 'DESC').addOrderBy('s.created_date', 'DESC');
-
         const [dataSource, totalRow] = await condition
             .orderBy('s.modified_date', 'DESC')
             .addOrderBy('s.created_date', 'DESC')
@@ -90,7 +88,7 @@ export class SalesOrderQuery {
 
     async getById(id: number) {
         const salesOrder = await this.salesOrderRepo.findOneEntity({
-            where: { id, isDeleted: false },
+            where: { id },
             relations: { items: true },
         });
         if (!salesOrder) {
@@ -123,7 +121,7 @@ export class SalesOrderQuery {
     async getStatusSummary(query: SummaryQuery) {
         const { salesChannelCode, fromDate, toDate, salesmanCode, orderStatus } = query;
         const condition = this.salesOrderRepo
-            .createQuerybuild('s')
+            .createQueryBuilder('s')
             .where('is_deleted = :isDeleted', { isDeleted: false });
 
         if (salesChannelCode) {

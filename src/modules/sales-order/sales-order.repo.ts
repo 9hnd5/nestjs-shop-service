@@ -10,7 +10,7 @@ export default class SalesOrderRepo extends BaseRepository<SalesOrderEntity> {
     }
 
     async findOneEntity(options: FindOneOptions<SalesOrderEntity>) {
-        const result = await this.repository.findOne(options);
+        const result = await super.findOne(options);
         if (result) {
             return SalesOrder.createFromPersistence(result);
         }
@@ -18,7 +18,7 @@ export default class SalesOrderRepo extends BaseRepository<SalesOrderEntity> {
     }
 
     async findEntities(options?: FindManyOptions<SalesOrderEntity> | undefined) {
-        const result = await this.repository.find(options);
+        const result = await super.find(options);
         if (result) {
             return result.map((x) => SalesOrder.createFromPersistence(x));
         }
@@ -27,13 +27,7 @@ export default class SalesOrderRepo extends BaseRepository<SalesOrderEntity> {
 
     async saveEntity(value: SalesOrder, options?: SaveOptions) {
         const entity = this.repository.create(value.toEntity());
-        entity.createdDate = entity.createdDate ?? new Date();
-        entity.createdBy = isNaN(entity.createdBy) ? 0 : entity.createdBy;
-        entity.items.forEach((item) => {
-            item.createdDate = item.createdDate ?? new Date();
-            item.createdBy = isNaN(item.createdBy) ? 0 : item.createdBy;
-        });
-        const result = await this.repository.save(entity, options);
+        const result = await super.save(entity, options);
         return SalesOrder.createFromPersistence(result);
     }
 }
