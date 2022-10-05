@@ -301,6 +301,7 @@ export class SalesInformationQuery {
             .select('so.id', 'OrderId')
             .addSelect('so.status', 'Status')
             .addSelect('so.salesman_code', 'SalesmanCode')
+            .addSelect('so.`total_before_discount`', 'TotalBeforeDiscount')
             .addSelect('sol.item_id', 'ItemId')
             .addSelect('sol.uom_id', 'UomId')
             .addSelect('sol.quantity', 'Quantity')
