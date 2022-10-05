@@ -22,4 +22,7 @@ export class GetOrderdData {
 
     @Expose()
     LineTotal: number;
+
+    @Expose()
+    TotalBeforeDiscount: number;
 }
