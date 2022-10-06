@@ -5,7 +5,7 @@ import { SalesOrderItem } from '@modules/sales-order/entities/sales-order-item.e
 import { SalesOrder } from '@modules/sales-order/entities/sales-order.entity';
 import SalesOrderRepo from '@modules/sales-order/sales-order.repo';
 import { BaseCommand, BaseCommandHandler, BusinessException, RequestHandler } from 'be-core';
-import { DataSource, QueryRunner } from 'typeorm';
+import { DataSource } from 'typeorm';
 import { ApplyPromotionDocLine } from '../dtos/apply-promotion.dto';
 import { SalesOrderStatus } from '../enums/sales-order-status.enum';
 import { SalesOrderService } from '../sales-order.service';
@@ -16,15 +16,13 @@ export class AddSalesOrderCommand extends BaseCommand<SalesOrder> {
 
 @RequestHandler(AddSalesOrderCommand)
 export class AddSalesOrderCommandHandler extends BaseCommandHandler<AddSalesOrderCommand, any> {
-    private queryRunner: QueryRunner;
     constructor(
-        dataSource: DataSource,
+        private dataSource: DataSource,
         private salesOrderService: SalesOrderService,
         private deliveryService: DeliveryService,
         private salesOrderRepo: SalesOrderRepo
     ) {
         super();
-        this.queryRunner = dataSource.createQueryRunner();
     }
     async apply(command: AddSalesOrderCommand) {
         const { data } = command;
@@ -53,8 +51,9 @@ export class AddSalesOrderCommandHandler extends BaseCommandHandler<AddSalesOrde
             deliveryDate: data.deliveryDate,
         });
 
-        const repo = this.salesOrderRepo.withManager(this.queryRunner.manager);
-        return await this.queryRunner.manager.transaction(async () => {
+        return await this.dataSource.transaction(async (manager) => {
+            const repo = this.salesOrderRepo.withManager(manager);
+
             // Calculate promotion only if order came from Comatic
             const onlyNormalLines = data.items.filter((t) => t.itemType === PromotionTypeId.NORMAL);
             const customer = await this.salesOrderService.getCustomerById(data.customerId ?? 0);

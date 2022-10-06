@@ -4,7 +4,7 @@ import { SalesOrder } from '@modules/sales-order/entities/sales-order.entity';
 import SalesOrderRepo from '@modules/sales-order/sales-order.repo';
 import { NotFoundException } from '@nestjs/common';
 import { BaseCommand, BaseCommandHandler, BusinessException, RequestHandler } from 'be-core';
-import { DataSource, QueryRunner } from 'typeorm';
+import { DataSource } from 'typeorm';
 import { SalesOrderStatus } from '../enums/sales-order-status.enum';
 import { SalesOrderService } from '../sales-order.service';
 
@@ -18,20 +18,18 @@ export class UpdateSalesOrderStatusCommandHanlder extends BaseCommandHandler<
     UpdateSalesOrderStatusCommand,
     any
 > {
-    private queryRunner: QueryRunner;
     constructor(
-        dataSource: DataSource,
+        private dataSource: DataSource,
         private deliveryService: DeliveryService,
         private salesOrderService: SalesOrderService,
         private salesOrderRepo: SalesOrderRepo
     ) {
         super();
-        this.queryRunner = dataSource.createQueryRunner();
     }
     async apply(command: UpdateSalesOrderStatusCommand) {
         const { id, status } = command;
-        const repo = this.salesOrderRepo.withManager(this.queryRunner.manager);
-        return await this.queryRunner.manager.transaction(async () => {
+        return await this.dataSource.transaction(async (manager) => {
+            const repo = this.salesOrderRepo.withManager(manager);
             const salesOrder = await repo.findOneEntity({
                 where: { id },
             });
