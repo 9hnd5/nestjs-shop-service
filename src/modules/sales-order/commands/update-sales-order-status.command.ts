@@ -30,10 +30,8 @@ export class UpdateSalesOrderStatusCommandHanlder extends BaseCommandHandler<
     }
     async apply(command: UpdateSalesOrderStatusCommand) {
         const { id, status } = command;
-        try {
-            await this.queryRunner.connect();
-            await this.queryRunner.startTransaction();
-            const repo = this.salesOrderRepo.withManager(this.queryRunner.manager);
+        const repo = this.salesOrderRepo.withManager(this.queryRunner.manager);
+        return await this.queryRunner.manager.transaction(async () => {
             const salesOrder = await repo.findOneEntity({
                 where: { id },
             });
@@ -105,11 +103,7 @@ export class UpdateSalesOrderStatusCommandHanlder extends BaseCommandHandler<
                 default:
                     break;
             }
-            await this.queryRunner.commitTransaction();
             return salesOrder.id;
-        } catch (error) {
-            this.queryRunner.rollbackTransaction();
-            throw error;
-        }
+        });
     }
 }

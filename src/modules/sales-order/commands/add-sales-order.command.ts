@@ -53,16 +53,12 @@ export class AddSalesOrderCommandHandler extends BaseCommandHandler<AddSalesOrde
             deliveryDate: data.deliveryDate,
         });
 
-        try {
-            await this.queryRunner.connect();
-            await this.queryRunner.startTransaction();
-            const repo = this.salesOrderRepo.withManager(this.queryRunner.manager);
-
+        const repo = this.salesOrderRepo.withManager(this.queryRunner.manager);
+        return await this.queryRunner.manager.transaction(async () => {
             // Calculate promotion only if order came from Comatic
             const onlyNormalLines = data.items.filter((t) => t.itemType === PromotionTypeId.NORMAL);
             const customer = await this.salesOrderService.getCustomerById(data.customerId ?? 0);
             if (data.customerId && onlyNormalLines.length > 0) {
-                //  const customer = await this.salesOrderService.getCustomerById(data.customerId);
                 const itemInfos = await this.salesOrderService.getItemByIds(
                     onlyNormalLines.map((t) => t.itemId),
                     customer.id
@@ -311,11 +307,7 @@ export class AddSalesOrderCommandHandler extends BaseCommandHandler<AddSalesOrde
                 await repo.saveEntity(result);
             }
 
-            await this.queryRunner.commitTransaction();
             return result.id;
-        } catch (error) {
-            this.queryRunner.rollbackTransaction();
-            throw error;
-        }
+        });
     }
 }
