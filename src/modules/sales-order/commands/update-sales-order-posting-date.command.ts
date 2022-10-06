@@ -1,3 +1,4 @@
+import { MessageConst } from '@constants/.';
 import { SalesOrder } from '@modules/sales-order/entities/sales-order.entity';
 import SalesOrderRepo from '@modules/sales-order/sales-order.repo';
 import { NotFoundException } from '@nestjs/common';
@@ -19,7 +20,7 @@ export class UpdateSalesOrderPostingDateHandler extends BaseCommandHandler<
     async apply(command: UpdateSalesOrderPostingDateCommand): Promise<any> {
         const { id, postingDate } = command;
         const salesOrder = await this.salesOrderRepo.findOneEntity({ where: { id } });
-        if (!salesOrder) throw new NotFoundException('Sales Order not found');
+        if (!salesOrder) throw new NotFoundException(MessageConst.SalesOrderNotExist);
         salesOrder.changePostingDate(postingDate);
         this.salesOrderRepo.saveEntity(salesOrder);
     }

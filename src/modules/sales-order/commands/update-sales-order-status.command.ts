@@ -1,4 +1,4 @@
-import { MessageConst } from '@constants/message.const';
+import { MessageConst } from '@constants/.';
 import { DeliveryService } from '@modules/delivery/delivery.service';
 import { SalesOrder } from '@modules/sales-order/entities/sales-order.entity';
 import SalesOrderRepo from '@modules/sales-order/sales-order.repo';
@@ -22,7 +22,8 @@ export class UpdateSalesOrderStatusCommandHanlder extends BaseCommandHandler<
     constructor(
         dataSource: DataSource,
         private deliveryService: DeliveryService,
-        private salesOrderService: SalesOrderService
+        private salesOrderService: SalesOrderService,
+        private salesOrderRepo: SalesOrderRepo
     ) {
         super();
         this.queryRunner = dataSource.createQueryRunner();
@@ -32,13 +33,13 @@ export class UpdateSalesOrderStatusCommandHanlder extends BaseCommandHandler<
         try {
             await this.queryRunner.connect();
             await this.queryRunner.startTransaction();
-            const repo = new SalesOrderRepo(this.queryRunner.manager);
+            const repo = this.salesOrderRepo.withManager(this.queryRunner.manager);
             const salesOrder = await repo.findOneEntity({
                 where: { id },
             });
 
             if (!salesOrder) {
-                throw new NotFoundException('Sales Order not found');
+                throw new NotFoundException(MessageConst.SalesOrderNotExist);
             }
 
             switch (status) {

@@ -20,7 +20,8 @@ export class AddSalesOrderCommandHandler extends BaseCommandHandler<AddSalesOrde
     constructor(
         dataSource: DataSource,
         private salesOrderService: SalesOrderService,
-        private deliveryService: DeliveryService
+        private deliveryService: DeliveryService,
+        private salesOrderRepo: SalesOrderRepo
     ) {
         super();
         this.queryRunner = dataSource.createQueryRunner();
@@ -55,7 +56,7 @@ export class AddSalesOrderCommandHandler extends BaseCommandHandler<AddSalesOrde
         try {
             await this.queryRunner.connect();
             await this.queryRunner.startTransaction();
-            const repo = new SalesOrderRepo(this.queryRunner.manager);
+            const repo = this.salesOrderRepo.withManager(this.queryRunner.manager);
 
             // Calculate promotion only if order came from Comatic
             const onlyNormalLines = data.items.filter((t) => t.itemType === PromotionTypeId.NORMAL);
