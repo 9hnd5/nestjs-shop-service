@@ -33,7 +33,7 @@ export class UpdateSalesOrderCommandHanlder extends BaseCommandHandler<
         });
 
         if (!salesOrder) {
-            throw new NotFoundException('Entity not found');
+            throw new NotFoundException(MessageConst.SalesOrderNotExist);
         }
 
         salesOrder.update({

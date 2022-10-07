@@ -1,10 +1,10 @@
-import { MessageConst } from '@constants/message.const';
+import { MessageConst } from '@constants/.';
 import { DeliveryService } from '@modules/delivery/delivery.service';
 import { SalesOrder } from '@modules/sales-order/entities/sales-order.entity';
 import SalesOrderRepo from '@modules/sales-order/sales-order.repo';
 import { NotFoundException } from '@nestjs/common';
 import { BaseCommand, BaseCommandHandler, BusinessException, RequestHandler } from 'be-core';
-import { DataSource, QueryRunner } from 'typeorm';
+import { DataSource } from 'typeorm';
 import { SalesOrderStatus } from '../enums/sales-order-status.enum';
 import { SalesOrderService } from '../sales-order.service';
 
@@ -18,27 +18,24 @@ export class UpdateSalesOrderStatusCommandHanlder extends BaseCommandHandler<
     UpdateSalesOrderStatusCommand,
     any
 > {
-    private queryRunner: QueryRunner;
     constructor(
-        dataSource: DataSource,
+        private dataSource: DataSource,
         private deliveryService: DeliveryService,
-        private salesOrderService: SalesOrderService
+        private salesOrderService: SalesOrderService,
+        private salesOrderRepo: SalesOrderRepo
     ) {
         super();
-        this.queryRunner = dataSource.createQueryRunner();
     }
     async apply(command: UpdateSalesOrderStatusCommand) {
         const { id, status } = command;
-        try {
-            await this.queryRunner.connect();
-            await this.queryRunner.startTransaction();
-            const repo = new SalesOrderRepo(this.queryRunner.manager);
+        return await this.dataSource.transaction(async (manager) => {
+            const repo = this.salesOrderRepo.withManager(manager);
             const salesOrder = await repo.findOneEntity({
                 where: { id },
             });
 
             if (!salesOrder) {
-                throw new NotFoundException('Sales Order not found');
+                throw new NotFoundException(MessageConst.SalesOrderNotExist);
             }
 
             switch (status) {
@@ -104,11 +101,7 @@ export class UpdateSalesOrderStatusCommandHanlder extends BaseCommandHandler<
                 default:
                     break;
             }
-            await this.queryRunner.commitTransaction();
             return salesOrder.id;
-        } catch (error) {
-            this.queryRunner.rollbackTransaction();
-            throw error;
-        }
+        });
     }
 }
