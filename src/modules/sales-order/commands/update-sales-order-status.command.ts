@@ -3,7 +3,7 @@ import { DeliveryService } from '@modules/delivery/delivery.service';
 import { SalesOrder } from '@modules/sales-order/entities/sales-order.entity';
 import SalesOrderRepo from '@modules/sales-order/sales-order.repo';
 import { NotFoundException } from '@nestjs/common';
-import { BaseCommand, BaseCommandHandler, BusinessException, RequestHandler } from 'be-core';
+import { BaseCommand, BaseCommandHandler, RequestHandler } from 'be-core';
 import { DataSource } from 'typeorm';
 import { SalesOrderStatus } from '../enums/sales-order-status.enum';
 import { SalesOrderService } from '../sales-order.service';
@@ -42,23 +42,23 @@ export class UpdateSalesOrderStatusCommandHanlder extends BaseCommandHandler<
                 case SalesOrderStatus.New:
                     {
                         salesOrder.changeStatusToNew(status);
-                        const deliveryAddress = await this.salesOrderService.getAddressById(
-                            salesOrder.contactAddressId
-                        );
-                        if (!deliveryAddress) {
-                            throw new BusinessException(MessageConst.AddressNotExist);
-                        }
-                        const responseDocument = await this.deliveryService.addDocument(
-                            salesOrder,
-                            deliveryAddress,
-                            deliveryAddress
-                        );
+                        // const deliveryAddress = await this.salesOrderService.getAddressById(
+                        //     salesOrder.contactAddressId
+                        // );
+                        // if (!deliveryAddress) {
+                        //     throw new BusinessException(MessageConst.AddressNotExist);
+                        // }
+                        // const responseDocument = await this.deliveryService.addDocument(
+                        //     salesOrder,
+                        //     deliveryAddress,
+                        //     deliveryAddress
+                        // );
 
-                        salesOrder.paymentType = responseDocument.paymentType;
-                        salesOrder.serviceLevel = responseDocument.serviceLevel;
-                        salesOrder.itemType = responseDocument.itemType;
-                        salesOrder.shippingFee = responseDocument.deliveryFee;
-                        salesOrder.deliveryOrderCode = responseDocument.code;
+                        // salesOrder.paymentType = responseDocument.paymentType;
+                        // salesOrder.serviceLevel = responseDocument.serviceLevel;
+                        // salesOrder.itemType = responseDocument.itemType;
+                        // salesOrder.shippingFee = responseDocument.deliveryFee;
+                        // salesOrder.deliveryOrderCode = responseDocument.code;
                         await repo.saveEntity(salesOrder);
                     }
                     break;
@@ -66,20 +66,20 @@ export class UpdateSalesOrderStatusCommandHanlder extends BaseCommandHandler<
                     {
                         salesOrder.changeStatusToConfirmed(status);
                         await repo.saveEntity(salesOrder);
-                        if (salesOrder.deliveryOrderCode) {
-                            await this.deliveryService.confirmedDocument(
-                                salesOrder.deliveryOrderCode
-                            );
-                        }
+                        // if (salesOrder.deliveryOrderCode) {
+                        //     await this.deliveryService.confirmedDocument(
+                        //         salesOrder.deliveryOrderCode
+                        //     );
+                        // }
                     }
                     break;
                 case SalesOrderStatus.Canceled:
                     {
                         salesOrder.changeStatusToCanceled(status);
                         await repo.saveEntity(salesOrder);
-                        if (salesOrder.deliveryOrderCode) {
-                            await this.deliveryService.cancelDocument(salesOrder.deliveryOrderCode);
-                        }
+                        // if (salesOrder.deliveryOrderCode) {
+                        //     await this.deliveryService.cancelDocument(salesOrder.deliveryOrderCode);
+                        // }
                     }
                     break;
                 case SalesOrderStatus.OrderPreparation:

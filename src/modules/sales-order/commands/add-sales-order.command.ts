@@ -287,24 +287,24 @@ export class AddSalesOrderCommandHandler extends BaseCommandHandler<AddSalesOrde
             result.code = result.generateCode(result.id);
             await repo.saveEntity(result);
 
-            if (status === SalesOrderStatus.New) {
-                // handle create delivery order
-                const deliveryAddress = await this.salesOrderService.getAddressById(
-                    data.contactAddressId
-                );
-                if (!deliveryAddress) throw new BusinessException(MessageConst.AddressNotExist);
-                const responseDocument = await this.deliveryService.addDocument(
-                    result,
-                    deliveryAddress,
-                    deliveryAddress
-                );
-                result.paymentType = responseDocument.paymentType;
-                result.serviceLevel = responseDocument.serviceLevel;
-                result.itemType = responseDocument.itemType;
-                result.shippingFee = responseDocument.deliveryFee;
-                result.deliveryOrderCode = responseDocument.code;
-                await repo.saveEntity(result);
-            }
+            // if (status === SalesOrderStatus.New) {
+            //     // handle create delivery order
+            //     const deliveryAddress = await this.salesOrderService.getAddressById(
+            //         data.contactAddressId
+            //     );
+            //     if (!deliveryAddress) throw new BusinessException(MessageConst.AddressNotExist);
+            //     const responseDocument = await this.deliveryService.addDocument(
+            //         result,
+            //         deliveryAddress,
+            //         deliveryAddress
+            //     );
+            //     result.paymentType = responseDocument.paymentType;
+            //     result.serviceLevel = responseDocument.serviceLevel;
+            //     result.itemType = responseDocument.itemType;
+            //     result.shippingFee = responseDocument.deliveryFee;
+            //     result.deliveryOrderCode = responseDocument.code;
+            //     await repo.saveEntity(result);
+            // }
 
             return result.id;
         });
