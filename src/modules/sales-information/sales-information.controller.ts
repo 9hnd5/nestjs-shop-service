@@ -6,7 +6,7 @@ import { GetQuery } from './dtos/get-query.dto';
 import { GetSalesInformation } from './dtos/get-sales-information.dto';
 import { SalesInformationQuery } from './sales-information.query';
 
-@Controller('sales-information')
+@Controller('/shop/v1/sales-information')
 export class SalesInformationController extends BaseController {
     constructor(private salesInformationQuery: SalesInformationQuery) {
         super();

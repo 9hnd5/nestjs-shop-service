@@ -25,7 +25,7 @@ import { UpdateSalesOrderStatusCommand } from './commands/update-sales-order-sta
 import { SalesOrderStatus } from './enums/sales-order-status.enum';
 import { SalesOrderService } from './sales-order.service';
 
-@Controller('sales-order')
+@Controller('/shop/v1/sales-order')
 export class SalesOrderController extends BaseController {
     constructor(
         private mediator: Mediator,
@@ -46,6 +46,8 @@ export class SalesOrderController extends BaseController {
             }
             query.salesmanCode = response.code;
         }
+        console.log(query);
+
         return this.salesOrderQuery.get(query);
     }
 

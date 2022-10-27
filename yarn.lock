@@ -1664,10 +1664,10 @@ base64-js@^1.3.1:
   resolved "https://registry.yarnpkg.com/base64-js/-/base64-js-1.5.1.tgz#1b1b440160a5bf7ad40b650f095963481903930a"
   integrity sha512-AKpaYlHn8t4SVbOHCy+b5+KKgvR4vrsD8vbvrbiQJps7fKDTkjkDry6ji0rUJjC0kzbNePLwzxq8iypo41qeWA==
 
-be-core@^1.2.7:
-  version "1.2.10"
-  resolved "https://registry.yarnpkg.com/be-core/-/be-core-1.2.10.tgz#c41ec09d8e0039a693ec6fac44aa1470fe49ebc5"
-  integrity sha512-yQNdrd87MeO0KZT4eNUWLORTQQn8HF/5xqidEK1MzdXJXPU3jihiMCnO/O25k7dpdhLITgMBkBdo6jZYclPatg==
+be-core@^1.3.0:
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/be-core/-/be-core-1.3.0.tgz#2fa8f0a2ffecf479a93454062b52c933bcad3947"
+  integrity sha512-ml6uHYdKEbITZ5Lrywca1BMDz6CvtWQYxSGLMHPgHJUp2wVeHYh/0HU6Z8jUJJIfCga7/fwH/mnEsh0y5fztIw==
   dependencies:
     "@nestjs/common" "^9.1.2"
     "@nestjs/config" "^2.2.0"

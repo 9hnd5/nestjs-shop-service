@@ -5,7 +5,7 @@ import { GetPartnerPricesQuery } from './dtos/get-partner-prices-query.dto';
 import { GetPartnersQuery } from './dtos/get-partners-query.dto';
 import { UpdateDocument } from './dtos/update-document.dto';
 
-@Controller('deliveries')
+@Controller('/shop/v1/deliveries')
 export class DeliveryController {
     constructor(private deliveryService: DeliveryService) {}
 
