@@ -14,7 +14,7 @@ export class SalesOrderItemEntity extends TenantEntity {
     uomId: number;
     @Column({ name: 'tax', type: Number })
     tax: number;
-    @Column({ name: 'percentage_discount', type: Number })
+    @Column({ name: 'percentage_discount', type: Number, default: 0 })
     percentageDiscount: number;
     @Column({ name: 'discount_amount', type: Number })
     discountAmount: number;

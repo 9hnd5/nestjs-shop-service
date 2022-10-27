@@ -50,6 +50,7 @@ export class AddSalesOrderCommandHandler extends BaseCommandHandler<AddSalesOrde
             postingDate: data.postingDate,
             deliveryDate: data.deliveryDate,
         });
+        order.code = '';
 
         return await this.dataSource.transaction(async (manager) => {
             const repo = this.salesOrderRepo.withManager(manager);
