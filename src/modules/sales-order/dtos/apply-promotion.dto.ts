@@ -15,5 +15,5 @@ export class ApplyPromotionDocLine {
     discountValue: number;
     rateDiscount: number;
     promotionCode?: string;
-    promotionDescription?: string;
+    promotionName?: string;
 }
