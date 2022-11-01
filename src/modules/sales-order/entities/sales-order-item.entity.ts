@@ -37,8 +37,8 @@ export class SalesOrderItemEntity extends TenantEntity {
     itemName?: string;
     @Column({ name: 'promotion_code', type: String, nullable: true, length: 50 })
     promotionCode?: string;
-    @Column({ name: 'promotion_description', type: String, nullable: true, length: 1000 })
-    promotionDescription?: string;
+    @Column({ name: 'promotion_name', type: String, nullable: true, length: 100 })
+    promotionName?: string;
     @Column({ name: 'weight', type: 'double', default: 0 })
     weight: number;
     @Column({ name: 'length', type: 'double', default: 0 })
@@ -57,7 +57,7 @@ type AddProps = Pick<
     | 'tax'
     | 'itemType'
     | 'promotionCode'
-    | 'promotionDescription'
+    | 'promotionName'
     | 'itemCode'
     | 'itemName'
     | 'weight'

@@ -69,7 +69,10 @@ class Item {
     priceListDetails: PriceListDetail[];
 
     @Expose()
-    promotionDescription?: string;
+    promotionName?: string;
+
+    @Expose()
+    promotionCode?: string;
 }
 
 class PriceListDetail {
