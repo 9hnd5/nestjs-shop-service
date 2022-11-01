@@ -8,6 +8,7 @@
     "type": "commonjs",
     "scripts": {
         "prebuild": "rimraf dist",
+        "migration:fake": "node -r tsconfig-paths/register node_modules/typeorm/cli-ts-node-commonjs.js migration:run -d src/ds.ts --fake",
         "migration:generate": "node -r tsconfig-paths/register node_modules/typeorm/cli-ts-node-commonjs.js migration:generate -d src/ds.ts",
         "migration:run": "node -r tsconfig-paths/register node_modules/typeorm/cli-ts-node-commonjs.js migration:run -d src/ds.ts",
         "migration:revert": "node -r tsconfig-paths/register node_modules/typeorm/cli-ts-node-commonjs.js migration:revert -d src/ds.ts",
